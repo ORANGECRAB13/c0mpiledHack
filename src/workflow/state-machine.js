@@ -10,6 +10,7 @@ import {
   validateOfficerAuthority
 } from './policy.js';
 import { approvalDecision, planConfirmation } from './types.js';
+import { assessHardship } from '../hardship/index.js';
 
 /**
  * The workflow state machine.
@@ -119,9 +120,81 @@ export async function startCase({ customerId, caseId, asOf, forecast, operator =
     authorityIds: [stack.boundaries.authoritySourceId]
   });
 
+  await flagHardship(state, { asOf, operator });
+
   await retrieveExplanations(id, stack.eligible);
 
   return state;
+}
+
+/**
+ * Hardship flagging pass.
+ *
+ * Runs after the benefit stack so the operator sees why this household is in the
+ * queue alongside what it is owed. The external (Crustdata) half is gated in
+ * hardship/index.js and is corroboration only — it changes urgency and gives the
+ * agent something honest to open with, never eligibility, which stays entirely
+ * deterministic in graph/resolve.js.
+ *
+ * Every external lookup is written into the event log with the endpoint it came
+ * from and the identity-match confidence that justified using it, so an audit can
+ * establish exactly what was looked up about a customer and why.
+ */
+async function flagHardship(state, { asOf, operator }) {
+  try {
+    const assessment = await assessHardship({
+      customerId: state.customerId,
+      asOf: asOf || undefined,
+      external: true,
+      requestedBy: operator
+    });
+    state.hardship = assessment;
+
+    if (assessment.external.attempted) {
+      appendEvent(state.caseId, 'hardship.external_lookup', {
+        payload: {
+          provider: 'crustdata',
+          permitted: assessment.external.permitted,
+          identityResolved: Boolean(assessment.external.identity?.resolved),
+          matchConfidence: assessment.external.identity?.confidence ?? null,
+          matchReasons: assessment.external.identity?.reasons || [],
+          lookups: assessment.external.lookups,
+          reason: assessment.external.reason
+        }
+      });
+    }
+
+    appendEvent(state.caseId, 'hardship.flagged', {
+      payload: {
+        tier: assessment.tier,
+        score: assessment.score,
+        internalScore: assessment.internal.score,
+        externalScore: assessment.external.score,
+        escalatedByExternal: assessment.escalatedByExternal,
+        signals: [...assessment.internal.signals, ...assessment.external.signals].map((s) => ({
+          id: s.id,
+          family: s.family,
+          label: s.label,
+          weight: s.weight,
+          sourceId: s.sourceId,
+          sourceUrl: s.sourceUrl || null
+        })),
+        rationale: assessment.rationale,
+        recommendedAction: assessment.recommendedAction
+      },
+      sourceIds: [
+        ...new Set(
+          [...assessment.internal.signals, ...assessment.external.signals]
+            .map((s) => s.sourceId)
+            .filter(Boolean)
+        )
+      ]
+    });
+  } catch (err) {
+    // Flagging is prioritisation, not entitlement. A failure here must not stop
+    // a customer's case from being worked.
+    appendEvent(state.caseId, 'hardship.flag_failed', { payload: { error: err.message } });
+  }
 }
 
 /**

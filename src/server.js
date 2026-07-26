@@ -17,6 +17,7 @@ const { buildAudit } = await import('./audit.js');
 const { attachVoiceBridge, resumeLiveCall, hasLiveCall } = await import('./voice/bridge.js');
 const { realtimeConfig } = await import('./voice/config.js');
 const { deliverEscalationToBand } = await import('./workflow/escalation.js');
+const { assessAll, assessHardship, hardshipEngineStatus, hardshipSummary } = await import('./hardship/index.js');
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -54,7 +55,8 @@ app.get('/api/health', wrap(async (_req, res) => {
       semantic: { engine: 'neo4j', configured: Boolean(process.env.NEO4J_URI) },
       guild: { configured: Boolean(process.env.GUILD_API_KEY) },
       band: { configured: Boolean(process.env.BAND_API_KEY) },
-      pioneer: { configured: Boolean(process.env.PIONEER_API_KEY) }
+      pioneer: { configured: Boolean(process.env.PIONEER_API_KEY) },
+      crustdata: await hardshipEngineStatus()
     },
     engine
   });
@@ -86,9 +88,14 @@ app.get('/api/context/jurisdiction', wrap(async (req, res) =>
 
 app.get('/api/customers', wrap(async (_req, res) => {
   const dataset = await loadDataset();
+  // Internal-ledger scoring only — the list view must not fan out to Crustdata
+  // for every customer on every page load. External corroboration is pulled per
+  // customer, on demand, from /api/hardship/:customerId.
+  const flags = new Map((await assessAll()).map((a) => [a.customerId, hardshipSummary(a)]));
   ok(res, {
     utility: dataset.utility,
     customers: dataset.customers.map((c) => ({
+      hardship: flags.get(c.id) || null,
       id: c.id,
       caseId: c.caseId,
       name: c.name,
@@ -102,6 +109,36 @@ app.get('/api/customers', wrap(async (_req, res) => {
       demoRole: c.demoRole || null
     }))
   });
+}));
+
+// ── hardship flagging ────────────────────────────────────────────────
+
+/** Full assessment for one customer, including Crustdata corroboration when permitted. */
+app.get('/api/hardship/:customerId', wrap(async (req, res) =>
+  ok(res, {
+    assessment: await assessHardship({
+      customerId: req.params.customerId,
+      external: req.query.external !== 'false',
+      employerHint: req.query.employer || null,
+      requestedBy: req.query.operator || 'operator'
+    })
+  })
+));
+
+/** Ranked worklist. Internal-only by default; `?external=true` enriches the top N. */
+app.get('/api/hardship', wrap(async (req, res) => {
+  const assessments = await assessAll();
+  if (req.query.external !== 'true') return ok(res, { assessments });
+
+  const depth = Math.min(Number(req.query.depth || 3), assessments.length);
+  const enriched = await Promise.all(
+    assessments.map((a, i) =>
+      i < depth && a.tier !== 'none'
+        ? assessHardship({ customerId: a.customerId, external: true, requestedBy: 'worklist' })
+        : a
+    )
+  );
+  ok(res, { assessments: enriched.sort((a, b) => b.score - a.score) });
 }));
 
 app.get('/api/cases', wrap(async (_req, res) => ok(res, { cases: wf.listCases() })));
@@ -286,6 +323,17 @@ app.post('/api/guild/approval/decide', wrap(async (req, res) => {
   ok(res, wf.decideApproval(caseId, decision));
 }));
 
+app.post('/api/guild/hardship/assess', wrap(async (req, res) =>
+  ok(res, {
+    assessment: await assessHardship({
+      customerId: req.body.customerId,
+      external: req.body.external !== false,
+      employerHint: req.body.employerHint || null,
+      requestedBy: req.body.requestedBy || 'guild-agent'
+    })
+  })
+));
+
 app.post('/api/guild/knowledge/gaps', wrap(async (req, res) => {
   const gaps = await wf.knowledgeGaps();
   const filtered = req.body?.status ? gaps.filter((g) => g.status === req.body.status) : gaps;
@@ -360,6 +408,7 @@ function publicCase(state) {
     mode: state.mode || null,
     sessionId: state.sessionId || null,
     stack: state.stack,
+    hardship: state.hardship || null,
     traces: state.traces,
     transcript: state.transcript,
     approval: state.approval,

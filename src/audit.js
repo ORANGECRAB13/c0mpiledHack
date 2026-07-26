@@ -90,6 +90,48 @@ export async function buildAudit(state, events, cited) {
         }
       : null,
 
+    // Why this household was in the queue at all, and — where public records were
+    // consulted — exactly what was looked up, on what identity match, and how much
+    // it was allowed to count. External evidence is capped and can never create a
+    // flag on its own, so this section always shows the internal score separately.
+    hardshipAssessment: state.hardship
+      ? {
+          tier: state.hardship.tier,
+          score: state.hardship.score,
+          internal: {
+            score: state.hardship.internal.score,
+            tier: state.hardship.internal.tier,
+            signals: state.hardship.internal.signals.map((s) => ({
+              id: s.id,
+              label: s.label,
+              weight: s.weight,
+              sourceId: s.sourceId
+            }))
+          },
+          external: {
+            provider: 'crustdata',
+            attempted: state.hardship.external.attempted,
+            permitted: state.hardship.external.permitted,
+            reason: state.hardship.external.reason,
+            identityMatchConfidence: state.hardship.external.identity?.confidence ?? null,
+            identityMatchReasons: state.hardship.external.identity?.reasons || [],
+            cap: state.hardship.external.cap,
+            score: state.hardship.external.score,
+            lookups: state.hardship.external.lookups,
+            signals: state.hardship.external.signals.map((s) => ({
+              id: s.id,
+              label: s.label,
+              weight: s.weight,
+              sourceId: s.sourceId,
+              sourceUrl: s.sourceUrl || null
+            }))
+          },
+          escalatedByExternal: state.hardship.escalatedByExternal,
+          rationale: state.hardship.rationale,
+          note: 'Hardship flagging affects prioritisation and call framing only. Benefit eligibility is determined solely by the deterministic rules in the benefitPackage section.'
+        }
+      : null,
+
     conversation: {
       mode: state.mode || null,
       sessionId: state.sessionId || null,
