@@ -18,6 +18,11 @@ const { attachVoiceBridge, resumeLiveCall, hasLiveCall } = await import('./voice
 const { realtimeConfig } = await import('./voice/config.js');
 const { deliverEscalationToBand } = await import('./workflow/escalation.js');
 const { assessAll, assessHardship, hardshipEngineStatus, hardshipSummary } = await import('./hardship/index.js');
+const { listLearnings, learningSummary, playbookFor } = await import('./graph/learnings.js');
+const authorityAgent = await import('./agents/authority.js');
+const ratificationAgent = await import('./agents/ratification.js');
+const reflectionAgent = await import('./agents/reflection.js');
+const { agentModelStatus } = await import('./agents/azure.js');
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -62,7 +67,9 @@ app.get('/api/health', wrap(async (_req, res) => {
   });
 }));
 
-app.get('/api/engine/status', wrap(async (_req, res) => ok(res, { engine: await engineStatus() })));
+app.get('/api/engine/status', wrap(async (_req, res) =>
+  ok(res, { engine: await engineStatus(), agentTier: agentModelStatus(), learning: await learningSummary() })
+));
 app.post('/api/graph/sync', wrap(async (_req, res) => ok(res, { result: await syncGraph() })));
 app.get('/api/graph/visualization', wrap(async (req, res) =>
   ok(res, { graph: await visualization({ state: req.query.state || null, dense: req.query.dense === '1' }) })
@@ -294,15 +301,63 @@ app.post('/api/knowledge/gaps/:gapId/ratify', wrap(async (req, res) =>
   })
 ));
 
-// ── Guild-facing surface ─────────────────────────────────────────────
+// ── Proprietary agent tier ───────────────────────────────────────────
 //
-// Guild's integration generator only carries JSON request-body schemas through
-// to the agent tool types — path and query parameters are dropped. So the
-// Guild agents get their own body-only POST surface over the same handlers.
+// The two governed agents that used to run on Guild's hosted runtime now run
+// in-process on gpt-oss-120b (Azure AI Foundry), alongside a third agent —
+// reflection — that has no Guild counterpart and is what makes the system
+// self-improving. See src/agents/ for the guardrail reasoning; the short
+// version is that the models write prose and code writes numbers.
 //
-// Every call here originates from Guild's hosted runtime, not the browser, so
-// it is authenticated with the shared secret configured on the
-// vocare-arrearage-api integration (auth_config sends `X-Vocare-Key: <token>`).
+// These routes are same-origin and carry no Guild shared secret, because no
+// hosted third-party runtime calls them any more. The legacy /api/guild/*
+// surface below is retained as a thin alias so the published OpenAPI contract
+// and any in-flight integration keep working.
+
+app.get('/api/agents/status', wrap(async (_req, res) =>
+  ok(res, {
+    model: agentModelStatus(),
+    agents: ['authority', 'ratification', 'reflection'],
+    learning: await learningSummary()
+  })
+));
+
+app.post('/api/agents/authority/decide', wrap(async (req, res) =>
+  ok(res, { decision: await authorityAgent.decide(req.body) })
+));
+
+app.post('/api/agents/ratification/review', wrap(async (req, res) =>
+  ok(res, { result: await ratificationAgent.ratify({ ...req.body, dryRun: true }) })
+));
+
+app.post('/api/agents/ratification/ratify', wrap(async (req, res) =>
+  ok(res, { result: await ratificationAgent.ratify({ ...req.body, dryRun: false }) })
+));
+
+// Reflection normally fires itself when a case reaches a terminal stage. This
+// route is the manual trigger, and unlike the automatic path it awaits the
+// result so an operator can see what the call taught.
+app.post('/api/agents/reflect', wrap(async (req, res) =>
+  ok(res, await reflectionAgent.reflectOnCase(req.body.caseId))
+));
+
+// ── learning loop ────────────────────────────────────────────────────
+
+app.get('/api/learnings', wrap(async (req, res) =>
+  ok(res, {
+    learnings: await listLearnings({ state: req.query.state, kind: req.query.kind }),
+    summary: await learningSummary()
+  })
+));
+
+app.get('/api/learnings/playbook', wrap(async (req, res) =>
+  ok(res, { playbook: await playbookFor(req.query.state) })
+));
+
+// ── legacy Guild-compatible surface ──────────────────────────────────
+//
+// Body-only POST aliases: Guild's integration generator dropped path and query
+// parameters, so these mirror the routes above over the same handlers.
 app.use('/api/guild', (req, res, next) => {
   const expected = process.env.VOCARE_API_KEY;
   if (!expected) return next(); // no key configured yet — demo/dev fallback, matches other providers' pattern

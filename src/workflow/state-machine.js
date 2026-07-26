@@ -11,6 +11,18 @@ import {
 } from './policy.js';
 import { approvalDecision, planConfirmation } from './types.js';
 import { assessHardship } from '../hardship/index.js';
+import { playbookFor } from '../graph/learnings.js';
+
+/**
+ * Kicks off post-call reflection without importing the agent at module scope —
+ * reflection.js reads cases back out of this module, and a static import would
+ * close a cycle. Deliberately not awaited: see reflection.js.
+ */
+function reflectInBackground(caseId) {
+  import('../agents/reflection.js')
+    .then((m) => m.reflectInBackground(caseId))
+    .catch((err) => console.error('[reflection] could not start:', err.message));
+}
 
 /**
  * The workflow state machine.
@@ -99,7 +111,22 @@ export async function startCase({ customerId, caseId, asOf, forecast, operator =
   transition(state, 'assembling_context');
 
   const stack = await benefitStackFor({ customerId, asOf, forecast });
+
+  // Everything the system has learned from prior calls in this jurisdiction,
+  // carried into this one. Advisory only — it shapes how the agent talks, and
+  // is read by no part of the eligibility or authority computation.
+  stack.playbook = await playbookFor(jurisdiction.state?.code).catch(() => []);
   state.stack = stack;
+
+  if (stack.playbook.length) {
+    appendEvent(id, 'context.playbook_loaded', {
+      payload: {
+        state: jurisdiction.state?.code,
+        count: stack.playbook.length,
+        learningIds: stack.playbook.map((p) => p.id)
+      }
+    });
+  }
 
   for (const source of collectSources(stack)) {
     appendEvent(id, 'context.source_resolved', { payload: source, sourceIds: [source.sourceId] });
@@ -531,6 +558,9 @@ export function completeCase(caseId) {
   appendEvent(caseId, 'case.completed', {
     payload: { amount: state.agreed?.amount, benefitsUnlocked: state.stack?.totals.benefitsUnlocked }
   });
+  // The call is over for the customer the moment this returns. Reflection runs
+  // detached so the system learns from the call without the call waiting on it.
+  reflectInBackground(caseId);
   return state;
 }
 
@@ -540,6 +570,9 @@ export function requestHandoff(caseId, reason) {
     actor: { type: 'customer', id: state.customerId },
     payload: { reason }
   });
+  // A handoff is the most informative outcome we get — it is the agent
+  // conceding. Reflect on it exactly as we would on a success.
+  reflectInBackground(caseId);
   return { transferring: true, reason };
 }
 

@@ -1,0 +1,150 @@
+{
+  "_synthetic": true,
+  "_purpose": "Starts empty. After every completed call the reflection agent writes what it learned here — negotiation tactics that worked, objection patterns, trends, and process friction. These are ADVISORY: they shape how the agent negotiates on the next call. They are never treated as ground truth about what a program is or who qualifies; that path stays in knowledge-gaps.json and requires human ratification.",
+  "learnings": [
+    {
+      "id": "LRN-1785034306556-6116",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "When the customer offered a higher payment (“nine hundred a month if I really stretched”), the agent responded with a sustainability framing (“I don’t want to set you up to fail… see what’s actually sustainable”).",
+      "guidance": "Begin any payment‑increase discussion by explicitly stating you’ll verify what the household can realistically sustain before proposing a figure. This reduces risk of over‑commitment and builds trust.",
+      "confidence": 0.68,
+      "observations": 1,
+      "createdAt": "2026-07-26T02:51:46.556Z",
+      "lastSeenAt": "2026-07-26T02:51:46.556Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785034306560-de80",
+      "kind": "objection_pattern",
+      "state": "IL",
+      "insight": "The customer referenced a local assistance program (Cook County emergency utility fund) that the agent could not confirm.",
+      "guidance": "Equip agents with a quick‑reference sheet or searchable FAQ for common Illinois county‑level emergency utility funds so they can answer confidently or direct the customer without needing to “flag and confirm” mid‑call.",
+      "confidence": 0.62,
+      "observations": 1,
+      "createdAt": "2026-07-26T02:51:46.560Z",
+      "lastSeenAt": "2026-07-26T02:51:46.560Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785034306561-8776",
+      "kind": "knowledge_gap_signal",
+      "state": "IL",
+      "insight": "The agent had no record of the Cook County emergency utility fund and had to flag it for later verification.",
+      "guidance": "Verify whether such a fund exists, add the details to the knowledge base, and give agents a quick reference script for local assistance programs.",
+      "confidence": 0.88,
+      "observations": 2,
+      "createdAt": "2026-07-26T02:51:46.561Z",
+      "lastSeenAt": "2026-07-26T02:52:32.727Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785034352724-0bc4",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "Introducing the medical certification option before asking for income details opened a pathway to eligibility and built trust.",
+      "guidance": "Start the call by asking if the customer has any medical conditions that might qualify for a certification, then explain the protection it offers before moving to income questions.",
+      "confidence": 0.65,
+      "observations": 1,
+      "createdAt": "2026-07-26T02:52:32.724Z",
+      "lastSeenAt": "2026-07-26T02:52:32.724Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785034352726-bae4",
+      "kind": "objection_pattern",
+      "state": "IL",
+      "insight": "The customer said they were never told a medical certification existed, which caused hesitation.",
+      "guidance": "When the customer mentions they were unaware of a benefit, immediately provide a concise explanation of the benefit and how it works, then ask if they’d like to pursue it.",
+      "confidence": 0.6,
+      "observations": 1,
+      "createdAt": "2026-07-26T02:52:32.726Z",
+      "lastSeenAt": "2026-07-26T02:52:32.726Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785034352728-1d6b",
+      "kind": "process_friction",
+      "state": "IL",
+      "insight": "The workflow logged multiple consecutive context.source_resolved events, indicating redundant data retrieval steps.",
+      "guidance": "Consolidate source resolution into a single step before the call begins to reduce latency and avoid unnecessary system calls.",
+      "confidence": 0.5,
+      "observations": 1,
+      "createdAt": "2026-07-26T02:52:32.728Z",
+      "lastSeenAt": "2026-07-26T02:52:32.728Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785034484107-e268",
+      "kind": "knowledge_gap_signal",
+      "state": "IL",
+      "insight": "Customers in IL referred to \"Cook County emergency utility fund\" before it existed in the knowledge base.",
+      "guidance": "Cook County Emergency Utility Assistance is now resolvable for IL. Listen for it by name and offer it proactively when the household profile fits.",
+      "confidence": 0.7,
+      "observations": 1,
+      "createdAt": "2026-07-26T02:54:44.107Z",
+      "lastSeenAt": "2026-07-26T02:54:44.107Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "ratification-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785034505065-ff32",
+      "kind": "trend",
+      "state": "IL",
+      "insight": "Neo4j mirror smoke test insight.",
+      "guidance": "n/a",
+      "confidence": 0.5,
+      "observations": 1,
+      "createdAt": "2026-07-26T02:55:05.065Z",
+      "lastSeenAt": "2026-07-26T02:55:05.065Z",
+      "sourceCaseIds": [
+        "C-TEST"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785035273155-034d",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "When the customer immediately lists multiple hardship factors (reduced hours, additional dependents), the agent presented the exact monthly payment at the affordability ceiling ($170) together with the total support amount ($1,842.60) in a single concise statement.",
+      "guidance": "In similar cases, after the customer describes their hardship, quickly summarize the total support you can offer and state the payment at the ceiling amount. This framing reinforces that the solution fits within the calculated affordability range and prompts a swift consent.",
+      "confidence": 0.72,
+      "observations": 1,
+      "createdAt": "2026-07-26T03:07:53.155Z",
+      "lastSeenAt": "2026-07-26T03:07:53.155Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    }
+  ]
+}

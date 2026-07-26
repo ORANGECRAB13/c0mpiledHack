@@ -9,7 +9,8 @@ const constraints = [
   'CREATE CONSTRAINT arr_authority_id IF NOT EXISTS FOR (a:AuthorityRule) REQUIRE a.sourceId IS UNIQUE',
   'CREATE CONSTRAINT arr_account_id IF NOT EXISTS FOR (a:AccountRecord) REQUIRE a.id IS UNIQUE',
   'CREATE CONSTRAINT arr_fact_key IF NOT EXISTS FOR (f:HouseholdFact) REQUIRE f.key IS UNIQUE',
-  'CREATE CONSTRAINT arr_gap_id IF NOT EXISTS FOR (g:KnowledgeGap) REQUIRE g.id IS UNIQUE'
+  'CREATE CONSTRAINT arr_gap_id IF NOT EXISTS FOR (g:KnowledgeGap) REQUIRE g.id IS UNIQUE',
+  'CREATE CONSTRAINT arr_learning_id IF NOT EXISTS FOR (l:Learning) REQUIRE l.id IS UNIQUE'
 ];
 
 const indexes = [

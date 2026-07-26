@@ -22,14 +22,15 @@ let cache = null;
 export async function loadDataset({ reload = false } = {}) {
   if (cache && !reload) return cache;
 
-  const [customersDoc, accounts, liheap, amps, pipps, stacking, gaps] = await Promise.all([
+  const [customersDoc, accounts, liheap, amps, pipps, stacking, gaps, learnings] = await Promise.all([
     readJson('customers.json'),
     readJson('accounts.json'),
     readJson('liheap.json'),
     readJson('amp-programs.json'),
     readJson('pipp-programs.json'),
     readJson('stacking-rules.json'),
-    readJson('knowledge-gaps.json')
+    readJson('knowledge-gaps.json'),
+    readJson('learnings.json')
   ]);
 
   const jurisdictions = await Promise.all(
@@ -55,6 +56,7 @@ export async function loadDataset({ reload = false } = {}) {
     stackingRules: stacking.rules,
     fallbackArrangement: stacking.fallbackArrangement,
     knowledgeGaps: gaps.gaps,
+    learnings: learnings.learnings,
     loadedAt: new Date().toISOString()
   };
 
@@ -70,6 +72,17 @@ export async function persistKnowledgeGaps(gapList) {
   };
   await writeFile(path.join(DATA_DIR, 'knowledge-gaps.json'), `${JSON.stringify(body, null, 2)}\n`, 'utf8');
   if (cache) cache.knowledgeGaps = gapList;
+}
+
+export async function persistLearnings(learningList) {
+  const body = {
+    _synthetic: true,
+    _purpose:
+      'Starts empty. After every completed call the reflection agent writes what it learned here — negotiation tactics that worked, objection patterns, trends, and process friction. These are ADVISORY: they shape how the agent negotiates on the next call. They are never treated as ground truth about what a program is or who qualifies; that path stays in knowledge-gaps.json and requires human ratification.',
+    learnings: learningList
+  };
+  await writeFile(path.join(DATA_DIR, 'learnings.json'), `${JSON.stringify(body, null, 2)}\n`, 'utf8');
+  if (cache) cache.learnings = learningList;
 }
 
 // ── lookups ──────────────────────────────────────────────────────────

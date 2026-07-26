@@ -181,6 +181,13 @@ function ratifiedGapPrograms(dataset) {
   return [...byId.values()];
 }
 
+// ── learnings (advisory, agent-written) ──────────────────────────────
+//
+// Re-exported through the facade so callers reach the learning layer the same
+// way they reach the rest of the context engine. See learnings.js for why these
+// are kept strictly separate from ratified ground truth.
+export { listLearnings, playbookFor, recordLearning, learningSummary, LEARNING_KINDS } from './learnings.js';
+
 // ── knowledge gaps ───────────────────────────────────────────────────
 
 export async function listKnowledgeGaps() {
