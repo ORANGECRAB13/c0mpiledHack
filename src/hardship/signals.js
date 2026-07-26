@@ -282,6 +282,53 @@ export async function externalSignals({ customer, identity, asOf = new Date(), e
     }
   }
 
+  // A role ending is worth noticing even when another role is listed as current.
+  // An internship or a fixed-term programme finishing removes income on a known
+  // date, and the "current" role it leaves behind may be unpaid or pre-revenue —
+  // which is precisely the household that starts missing bills while still
+  // looking employed on paper.
+  if (employment.monthsSinceLastRoleEnded !== null && employment.monthsSinceLastRoleEnded <= 12) {
+    const months = employment.monthsSinceLastRoleEnded;
+    out.push(
+      signal({
+        family: 'external',
+        id: 'recent_role_ended',
+        label: `Role at ${employment.lastEmployer || 'a previous employer'} ended ${
+          months < 1 ? 'within the last month' : `${Math.floor(months)} month${Math.floor(months) === 1 ? '' : 's'} ago`
+        }`,
+        weight: months <= 3 ? 12 : months <= 6 ? 8 : 4,
+        sourceId: profileRef,
+        detail: `Ended ${employment.lastRoleEnded?.slice(0, 10)}. Income from that role has stopped, whether or not another role is listed.`,
+        occurredAt: employment.lastRoleEnded
+      })
+    );
+  }
+
+  // Self-employment at a very small or pre-revenue company is not salaried income.
+  // Crustdata reports both the seniority level and the employer's headcount, so
+  // this is read off the record rather than guessed at.
+  const founderRole = employment.current.find(
+    (e) =>
+      /founder|owner|partner|self.?employed/i.test(`${e.title || ''} ${e.seniority_level || ''}`) &&
+      (e.company_headcount_latest ?? 0) <= 10
+  );
+  if (founderRole) {
+    out.push(
+      signal({
+        family: 'external',
+        id: 'unstable_current_employment',
+        label: `Current role is self-employment at ${founderRole.name} (${
+          founderRole.company_headcount_range || 'very small'
+        } employees)`,
+        weight: 8,
+        sourceId: profileRef,
+        sourceUrl: founderRole.company_website || null,
+        detail:
+          'Founder or owner income at an early-stage company is not equivalent to salaried income and may be irregular or absent. Confirm actual monthly income on the call rather than assuming employment means capacity to pay.'
+      })
+    );
+  }
+
   // ── employer distress ──
   const employerName = employment.current[0]?.name || employment.lastEmployer || employerHint;
   const employerDomain = employment.current[0]?.company_website || null;

@@ -170,11 +170,14 @@ const PERSON_FIELDS = [
  * `[.]` is Crustdata's phrase operator, so "Marcus Reyes" matches the full name
  * rather than every Marcus and every Reyes.
  */
-export async function searchPeople({ name, state, city = null, limit = 5 }) {
+export async function searchPeople({ name, state, city = null, limit = 5, anyLocation = false }) {
   if (!name) return { profiles: [], totalCount: 0 };
 
   const conditions = [{ field: 'basic_profile.name', type: '[.]', value: name }];
-  const stateFull = stateName(state);
+  // `anyLocation` drops the geography filter. Only used when an operator has
+  // already verified which profile belongs to the customer, where filtering on
+  // the service address would exclude the very profile we are trying to fetch.
+  const stateFull = anyLocation ? null : stateName(state);
   if (stateFull) conditions.push({ field: 'basic_profile.location.state', type: '=', value: stateFull });
 
   const body = {
@@ -183,7 +186,7 @@ export async function searchPeople({ name, state, city = null, limit = 5 }) {
     fields: PERSON_FIELDS
   };
 
-  const key = `person:${name}|${stateFull || ''}|${city || ''}|${limit}`;
+  const key = `person:${name}|${stateFull || (anyLocation ? 'any' : '')}|${city || ''}|${limit}`;
   const res = await cached(key, () => call('/person/search', body));
 
   return {

@@ -59,7 +59,10 @@ function scoreCandidate(profile, { name, state, city, employerHint }) {
   }
 
   const loc = profile?.basic_profile?.location || {};
-  const wantState = stateName(state);
+  // A US two-letter code expands to the full name Crustdata carries ("IL" →
+  // "Illinois"); anything else is compared literally, so a non-US service address
+  // ("New South Wales") still scores instead of silently earning nothing.
+  const wantState = stateName(state) || state;
   if (wantState && norm(loc.state) === norm(wantState)) {
     score += 0.2;
     reasons.push(`Profile state (${loc.state}) matches the service address state.`);
@@ -100,9 +103,50 @@ function scoreCandidate(profile, { name, state, city, employerHint }) {
  * Ambiguity is treated as failure: if two candidates score close together we
  * cannot tell them apart, so neither is used.
  */
-export async function resolveIdentity({ name, state, city = null, employerHint = null } = {}) {
+export async function resolveIdentity({
+  name,
+  state,
+  city = null,
+  employerHint = null,
+  verifiedIdentity = null
+} = {}) {
   const base = { resolved: false, confidence: 0, profile: null, reasons: [], candidatesConsidered: 0 };
   if (!name) return { ...base, reasons: ['No customer name on file.'] };
+
+  // An operator who has confirmed which profile belongs to the customer overrides
+  // the scorer. This is the one legitimate way past the geography check — a
+  // customer's service address and their public profile can honestly disagree
+  // (they moved, they work abroad, the profile predates the account). The pin
+  // names a specific person id, so it can only ever select the profile a human
+  // actually looked at, never widen the search.
+  if (verifiedIdentity?.crustdataPersonId) {
+    const { profiles } = await searchPeople({ name, state, city, anyLocation: true, limit: 10 });
+    const pinned = profiles.find(
+      (p) => String(p.crustdata_person_id) === String(verifiedIdentity.crustdataPersonId)
+    );
+    if (pinned) {
+      return {
+        resolved: true,
+        confidence: 1,
+        profile: pinned,
+        verified: true,
+        reasons: [
+          `Profile confirmed by ${verifiedIdentity.verifiedBy || 'an operator'}${
+            verifiedIdentity.verifiedOn ? ` on ${verifiedIdentity.verifiedOn}` : ''
+          } (person id ${verifiedIdentity.crustdataPersonId}).`,
+          ...(verifiedIdentity.note ? [verifiedIdentity.note] : [])
+        ],
+        candidatesConsidered: profiles.length
+      };
+    }
+    return {
+      ...base,
+      candidatesConsidered: profiles.length,
+      reasons: [
+        `Operator-verified profile ${verifiedIdentity.crustdataPersonId} was not returned by the search — falling back to no match.`
+      ]
+    };
+  }
 
   const { profiles } = await searchPeople({ name, state, city });
   if (!profiles.length) {

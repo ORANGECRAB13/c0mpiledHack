@@ -38,7 +38,7 @@ const TIERS = [
   { tier: 'none', min: 0, action: 'No hardship intervention indicated.' }
 ];
 
-const tierFor = (score) => TIERS.find((t) => score >= t.min);
+export const tierFor = (score) => TIERS.find((t) => score >= t.min);
 const tierRank = (tier) => TIERS.length - 1 - TIERS.findIndex((t) => t.tier === tier);
 
 const sum = (signals) => signals.reduce((total, s) => total + s.weight, 0);
@@ -72,7 +72,7 @@ export function externalLookupPermitted(customer) {
  *   - Otherwise the tier may rise by one step, and only if external evidence is
  *     substantial (at least half the cap).
  */
-function applyExternal(internalTier, externalScore) {
+export function applyExternal(internalTier, externalScore) {
   if (internalTier.tier === 'none') {
     return { tier: internalTier, escalated: false, reason: 'Internal records show no hardship; external evidence not applied.' };
   }
@@ -157,7 +157,8 @@ export async function assessHardship({
         name: customer.name,
         state: customer.state,
         city: customer.city,
-        employerHint: employerHint || customer.employerName || null
+        employerHint: employerHint || customer.employerName || null,
+        verifiedIdentity: customer.externalIdentity || null
       });
       result.external.identity = identity;
 
@@ -190,7 +191,7 @@ export async function assessHardship({
     `Internal ledger score ${internalScore} → ${internalTier.tier} (${result.internal.signals.length} signals).`,
     result.external.attempted
       ? `External corroboration ${result.external.score}/${EXTERNAL_CAP} (${result.external.signals.length} signals).`
-      : `External corroboration not run: ${result.external.reason}.`,
+      : `External corroboration not run: ${result.external.reason}`,
     applied.reason
   ].filter(Boolean);
 

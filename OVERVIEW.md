@@ -88,6 +88,14 @@ This is an AI cold-calling financially distressed people, so these are server-si
 3. **Instant human handoff on request** — one `transfer_to_human` tool call, no retention attempt.
 4. **Consent gate before any account write** — `confirm_plan` requires `customerConsent: true`; the
    state machine mechanically refuses execution without a logged consent event.
+5. **Public data can corroborate hardship, never establish it** — external (Crustdata) signals are
+   capped at 25 points and can raise an already-flagged household by at most one tier. A household
+   the ledger says is paying its bills can never be flagged from public records alone, and no
+   external signal touches benefit eligibility. Enforced in `src/hardship/index.js`.
+6. **External lookup is triple-gated and refuses to guess at identity** — it requires a configured
+   key, `HARDSHIP_EXTERNAL_ENRICHMENT=on`, and a customer record that has not opted out. A profile
+   is only used on a scored, explainable identity match; ambiguity resolves to *no match*, not to
+   the nearest name. Every lookup is written to the audit with its endpoint and match confidence.
 
 All data carries `_synthetic: true`; a disclaimer banner persists on every screen and in the audit.
 
@@ -102,6 +110,7 @@ All data carries `_synthetic: true`; a disclaimer banner persists on every scree
 | Voice | Azure AI Foundry `gpt-realtime-2.1` | Speech-to-speech, function calling, single-session hold/resume |
 | Governance | Guild agents + integration | Two governed action types modelled as real cloud agents |
 | Semantic retrieval | Actian VectorAI *(planned)* | Explanatory text only — never decides eligibility |
+| Hardship flagging | `src/hardship/` + **Crustdata** | Ledger signals decide the flag; public records (employment ended, employer contracting, local layoff reporting) corroborate it under a hard cap |
 | Structured extraction | Pioneer *(planned)* | Typed case summaries + a v1→v2 extraction-quality diff |
 | QA | Replay | End-to-end journey testing against the deployed app |
 | Transport | WebSocket bridge (browser ⟷ server ⟷ Azure) | Browser never sees the Azure key |
@@ -127,6 +136,18 @@ Server runs on **port 5182**. Full file map is in `HANDOFF.md §3`.
 - **Pioneer** *(planned)* — turns the finished call into a typed, structured case summary, and
   demonstrates extraction improving (v1 misses a compound disclosure like "I'm on disability and my
   daughter moved in with two kids"; v2 catches both) as an audit-view diff.
+- **Crustdata** — hardship *corroboration*. A missed bill tells you a household stopped paying; it
+  does not tell you why, and "why" is what decides whether the right opener is a payment plan or a
+  benefit package. `/person/search` resolves the customer to a public profile (only on a scored,
+  auditable identity match), `/company/enrich` reads their employer's headcount trend, `/job/search`
+  checks whether that employer is still hiring, and `/web/search/live` picks up local layoff and
+  WARN-notice reporting. An employment record that ended two months ago alongside three failed
+  direct debits is a different call from three failed direct debits alone.
+  **The cap is the point:** external evidence is worth at most 25 of 100 points, can move a case at
+  most one tier, and cannot flag anyone on its own — so a stale profile or a wrong match changes how
+  fast someone gets called, never whether they qualify for anything. Endpoints, gating and the
+  scoring table are in `src/hardship/`; `node scripts/check-hardship.js` asserts every one of those
+  bounds against the live API.
 - **Replay** — drives the deployed app through the full journey for QA; the "completed QA, all bugs
   fixed" criterion is met with a visible bug ledger, not a claim of zero bugs.
 

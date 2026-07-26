@@ -29,6 +29,13 @@
       "disconnectionNoticeDate": "2026-07-18",
       "medicalCertificationOnFile": false,
       "enrolledPrograms": [],
+      "externalIdentity": {
+        "crustdataPersonId": 502850589,
+        "verifiedBy": "operator",
+        "verifiedOn": "2026-07-25",
+        "note": "Profile confirmed by the operator during intake. The public profile is registered outside the service territory, so the automatic geography check would not have matched it — a human confirmation is required to use it, and is recorded here and in the audit.",
+        "_consent": "This is the demo author's own profile, looked up with their explicit consent. Every other record in this file is fictional."
+      },
       "demoRole": "call_1_knowledge_gap",
       "text": "Von Viray is a residential electricity customer in Chicago with four unpaid invoices, three failed automatic payments, and two prior extension requests. A disconnection notice was issued on 18 July 2026."
     },
