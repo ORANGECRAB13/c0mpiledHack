@@ -89,11 +89,31 @@ h1, h2, h3, p { margin: 0; }
   width: 100%; max-width: none;
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px; align-items: stretch; padding: 30px 24px 78px;
+  transition: grid-template-columns .85s cubic-bezier(.22, 1, .36, 1), gap .85s cubic-bezier(.22, 1, .36, 1);
+}
+.onboarding-screen.graph-maximized {
+  grid-template-columns: 0 minmax(0, 1fr);
+  gap: 0;
 }
 .erp-stage {
   min-width: 0; min-height: 650px; display: flex; flex-direction: column; overflow: hidden;
   border: 1px solid var(--line-strong); border-radius: 15px; background: #f8fafc;
   box-shadow: 0 30px 80px rgba(0,0,0,.35);
+  opacity: 1; transform: translateX(0) scale(1);
+  transition:
+    opacity .35s ease,
+    transform .7s cubic-bezier(.22, 1, .36, 1),
+    border-color .35s ease,
+    visibility 0s linear;
+}
+.onboarding-screen.graph-maximized .erp-stage {
+  opacity: 0; transform: translateX(-32px) scale(.985); visibility: hidden;
+  border-color: transparent; pointer-events: none;
+  transition:
+    opacity .3s ease,
+    transform .7s cubic-bezier(.22, 1, .36, 1),
+    border-color .3s ease,
+    visibility 0s linear .7s;
 }
 .erp-frame-head {
   flex: 0 0 42px; display: flex; align-items: center; justify-content: space-between;
@@ -153,6 +173,7 @@ h1, h2, h3, p { margin: 0; }
 .onboarding-graph {
   min-height: 650px; position: relative; overflow: hidden; border: 1px solid var(--line-strong);
   border-radius: 15px; background: #050403; box-shadow: 0 30px 80px rgba(0,0,0,.35);
+  transition: width .85s cubic-bezier(.22, 1, .36, 1);
 }
 .onboarding-graph .context-mesh3d { min-height: 650px; border: 0; border-radius: 0; }
 .graph-stage-head {
@@ -470,6 +491,8 @@ footer { position: relative; z-index: 2; max-width: 1320px; margin: 0 auto; padd
 @media (max-width: 1080px) {
   .flow-nav { display: none; }
   .onboarding-screen, .ready-screen, .detect-screen, .call-columns, .complete-grid { grid-template-columns: 1fr; gap: 24px; }
+  .onboarding-screen.graph-maximized { grid-template-columns: 1fr; gap: 0; }
+  .onboarding-screen.graph-maximized .erp-stage { min-height: 0; height: 0; }
   .erp-stage, .onboarding-graph, .onboarding-graph .context-mesh3d { min-height: 520px; }
   .context-map { transform: scale(.85); }
   .screen { padding: 34px 22px 40px; }

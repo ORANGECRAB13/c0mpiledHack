@@ -423,8 +423,14 @@ export default function App() {
           unmounts instantly, so a re-render during a transition can never deadlock. */}
       <>
         {stage === 'onboarding' && (
-          <motion.section key="onboarding" className="screen onboarding-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }}>
-            <div className="erp-stage">
+          <motion.section
+            key="onboarding"
+            className={`screen onboarding-screen ${discovery?.status === 'complete' ? 'graph-maximized' : ''}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.22 }}
+          >
+            <div className="erp-stage" aria-hidden={discovery?.status === 'complete'}>
               <div className="erp-frame-head">
                 <div><Database size={13} /><span>CALIFORNIA GRID ERP</span></div>
                 <em>SYNTHETIC DEMO</em>
@@ -435,6 +441,7 @@ export default function App() {
                 src="/erp/"
                 title="California Grid ERP synthetic demo"
                 loading="eager"
+                tabIndex={discovery?.status === 'complete' ? -1 : 0}
                 onLoad={() => notifyErp(discovery?.currentAgent || null, discovery?.currentAgent
                   ? discovery.agents.find((agent) => agent.id === discovery.currentAgent)?.progress || 0
                   : 0, discovery?.status || 'empty')}
