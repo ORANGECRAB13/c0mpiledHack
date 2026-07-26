@@ -1,0 +1,270 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Vocare Arrearage API",
+    "version": "1.0.0",
+    "description": "Operational context, authority boundaries and governed writes for the Vocare US arrearage workflow. Synthetic data only."
+  },
+  "paths": {
+    "/api/case/{caseId}": {
+      "get": {
+        "operationId": "get_case",
+        "summary": "Read a case: resolved benefit stack, authority boundaries, transcript and current stage",
+        "tags": ["case"],
+        "parameters": [
+          { "name": "caseId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The case",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean" },
+                    "case": {
+                      "type": "object",
+                      "properties": {
+                        "caseId": { "type": "string" },
+                        "customerId": { "type": "string" },
+                        "stage": { "type": "string", "description": "Workflow stage; approvals are only valid at awaiting_credit_officer" },
+                        "stack": {
+                          "type": "object",
+                          "properties": {
+                            "customerName": { "type": "string" },
+                            "totals": {
+                              "type": "object",
+                              "properties": {
+                                "arrears": { "type": "number" },
+                                "benefitsUnlocked": { "type": "number" },
+                                "monthlyPayment": { "type": "number" }
+                              }
+                            },
+                            "boundaries": {
+                              "type": "object",
+                              "properties": {
+                                "authorityFloor": { "type": "number", "description": "Below this monthly amount, a credit officer must approve" },
+                                "authoritySourceId": { "type": "string" },
+                                "requiresRole": { "type": "string" },
+                                "requiresLevel": { "type": "string" },
+                                "affordabilityCeiling": { "type": "number", "nullable": true, "description": "The household income cap. No amount above this may ever be agreed, by agent or human." },
+                                "affordabilitySourceId": { "type": "string", "nullable": true }
+                              }
+                            }
+                          }
+                        },
+                        "approval": { "type": "object", "nullable": true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/case/{caseId}/approval/decide": {
+      "post": {
+        "operationId": "decide_approval",
+        "summary": "Record a credit-officer decision on a held case. Validates officer authority and clamps the amount to the affordability ceiling.",
+        "tags": ["approval", "governed"],
+        "parameters": [
+          { "name": "caseId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["decision", "officer"],
+                "properties": {
+                  "decision": { "type": "string", "enum": ["approved", "declined"] },
+                  "approvedAmount": { "type": "number", "description": "Monthly amount approved. Required when decision is approved." },
+                  "instruction": { "type": "string", "description": "Instruction passed back to the voice agent" },
+                  "officer": {
+                    "type": "object",
+                    "required": ["id", "name", "authority"],
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" },
+                      "role": { "type": "string", "default": "credit_officer" },
+                      "authority": { "type": "string", "description": "Authority level, e.g. L2" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Decision outcome",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean" },
+                    "accepted": { "type": "boolean", "description": "False when the officer lacks the required authority" },
+                    "validation": {
+                      "type": "object",
+                      "properties": {
+                        "valid": { "type": "boolean" },
+                        "reason": { "type": "string" },
+                        "required": { "type": "object" },
+                        "presented": { "type": "object" }
+                      }
+                    },
+                    "approval": {
+                      "type": "object",
+                      "properties": {
+                        "status": { "type": "string" },
+                        "approvedAmount": { "type": "number", "nullable": true },
+                        "clamped": { "type": "boolean" },
+                        "requestedAmount": { "type": "number" }
+                      }
+                    },
+                    "clamp": {
+                      "type": "object",
+                      "properties": {
+                        "amount": { "type": "number", "nullable": true },
+                        "clamped": { "type": "boolean" },
+                        "reason": { "type": "string", "nullable": true }
+                      }
+                    },
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/knowledge/gaps": {
+      "get": {
+        "operationId": "list_knowledge_gaps",
+        "summary": "List knowledge gaps flagged by the voice agent, open and ratified",
+        "tags": ["knowledge"],
+        "responses": {
+          "200": {
+            "description": "Knowledge gaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean" },
+                    "gaps": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "status": { "type": "string", "enum": ["open", "ratified"] },
+                          "state": { "type": "string" },
+                          "caseId": { "type": "string" },
+                          "programMentioned": { "type": "string" },
+                          "customerQuote": { "type": "string" },
+                          "proposedBy": { "type": "string" },
+                          "createdAt": { "type": "string" },
+                          "program": { "type": "object", "description": "The proposed ground-truth entry awaiting ratification" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/knowledge/gaps/{gapId}/ratify": {
+      "post": {
+        "operationId": "ratify_knowledge_gap",
+        "summary": "Ratify a flagged knowledge gap so the resolver may use it. This is a governed write — the agent cannot use unratified knowledge.",
+        "tags": ["knowledge", "governed"],
+        "parameters": [
+          { "name": "gapId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["ratifiedBy", "authority"],
+                "properties": {
+                  "ratifiedBy": { "type": "string", "description": "Identity of the human ratifying this entry" },
+                  "authority": { "type": "string", "description": "The authority under which they ratified it" },
+                  "caseId": { "type": "string" },
+                  "program": { "type": "object", "description": "Optional corrected program definition to write instead of the proposal" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The ratified gap",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean" },
+                    "gap": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "status": { "type": "string" },
+                        "ratifiedBy": { "type": "string" },
+                        "authority": { "type": "string" },
+                        "ratifiedAt": { "type": "string" },
+                        "program": { "type": "object" }
+                      }
+                    },
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/context/resolve": {
+      "get": {
+        "operationId": "resolve_benefit_stack",
+        "summary": "Resolve jurisdiction and the full benefit stack for a customer. Deterministic — never inferred from semantic similarity.",
+        "tags": ["context"],
+        "parameters": [
+          { "name": "customerId", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "householdSize", "in": "query", "required": false, "schema": { "type": "integer" } },
+          { "name": "annualIncome", "in": "query", "required": false, "schema": { "type": "number" } },
+          { "name": "asOf", "in": "query", "required": false, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resolved stack",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean" },
+                    "stack": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
