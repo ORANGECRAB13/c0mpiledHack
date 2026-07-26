@@ -169,11 +169,14 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
         type GraphNode = {
           id: string; title: string; meta: string; group: string; degree: number;
           x: number; y: number; z: number; sx: number; sy: number; sz: number;
-          tx: number; ty: number; tz: number; createdAt: number; moveStartedAt: number; baseSize: number;
+          tx: number; ty: number; tz: number; createdAt: number; moveStartedAt: number;
+          moveDuration: number; baseSize: number;
         };
         type GraphLink = { id: string; source: string; target: string; type: string; bornAt: number };
         const nodeMap = new Map<string, GraphNode>();
         const linkMap = new Map<string, GraphLink>();
+        let consolidated = false;
+        let consolidationDueAt: number | null = null;
         let nodeOrder: GraphNode[] = [];
         let linkOrder: GraphLink[] = [];
         let nodePositions = new Float32Array();
@@ -238,6 +241,30 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
           child.ty = destination.y;
           child.tz = destination.z;
           child.moveStartedAt = now;
+          child.moveDuration = 1050;
+        }
+
+        function consolidateGraph(now: number) {
+          for (const node of nodeMap.values()) {
+            const direction = sphericalPosition(`consolidated:${node.id}`, 1);
+            const magnitude = Math.hypot(direction.x, direction.y, direction.z) || 1;
+            const seed = hash(`radius:${node.id}`) % 1000;
+            const [minimumRadius, maximumRadius] =
+              node.group === 'State' ? [52, 74]
+                : ['PucRule', 'AuthorityRule', 'BenefitProgram'].includes(node.group) ? [78, 135]
+                  : node.group === 'Customer' ? [105, 178]
+                    : [135, 218];
+            const radius = minimumRadius + (seed / 1000) * (maximumRadius - minimumRadius);
+            node.sx = node.x;
+            node.sy = node.y;
+            node.sz = node.z;
+            node.tx = (direction.x / magnitude) * radius;
+            node.ty = (direction.y / magnitude) * radius;
+            node.tz = (direction.z / magnitude) * radius;
+            node.moveStartedAt = now;
+            node.moveDuration = 1900;
+          }
+          consolidated = true;
         }
 
         async function syncGraph() {
@@ -253,6 +280,8 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
             if (graph.nodes.length === 0 && nodeMap.size > 0) {
               nodeMap.clear();
               linkMap.clear();
+              consolidated = false;
+              consolidationDueAt = null;
               rebuildBuffers();
             }
 
@@ -266,7 +295,7 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
                 x: target.x * 0.06, y: target.y * 0.06, z: target.z * 0.06,
                 sx: target.x * 0.06, sy: target.y * 0.06, sz: target.z * 0.06,
                 tx: target.x, ty: target.y, tz: target.z,
-                createdAt: now, moveStartedAt: now, baseSize: 5
+                createdAt: now, moveStartedAt: now, moveDuration: 1050, baseSize: 5
               });
               changed = true;
             }
@@ -278,6 +307,11 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
               changed = true;
             }
             if (changed) rebuildBuffers();
+
+            if (graph.summary?.discoveryStatus === 'complete' && nodeMap.size > 0 && !consolidated) {
+              if (consolidationDueAt === null) consolidationDueAt = now + 900;
+              if (now >= consolidationDueAt) consolidateGraph(now);
+            }
 
             setCounts({ nodes: nodeMap.size, links: linkMap.size });
             setGroups([...new Set([...nodeMap.values()].map((node) => node.group))].slice(0, 9));
@@ -382,7 +416,7 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
           const now = performance.now();
           const indexById = new Map(nodeOrder.map((node, index) => [node.id, index]));
           nodeOrder.forEach((node, index) => {
-            const moveProgress = ease(Math.min(1, (now - node.moveStartedAt) / 1050));
+            const moveProgress = ease(Math.min(1, (now - node.moveStartedAt) / node.moveDuration));
             const sizeProgress = ease(Math.min(1, (now - node.createdAt) / 1050));
             node.x = node.sx + (node.tx - node.sx) * moveProgress;
             node.y = node.sy + (node.ty - node.sy) * moveProgress;
