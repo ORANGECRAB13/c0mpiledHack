@@ -1,0 +1,134 @@
+{
+  "_synthetic": true,
+  "_note": "Illustrative approximation of real program structure for a hackathon demo. Figures are synthetic and must not be relied on operationally.",
+  "federalPovertyLevel": {
+    "year": 2026,
+    "base1Person": 15650,
+    "perAdditionalPerson": 5500,
+    "note": "48 contiguous states and DC. Synthetic figures."
+  },
+  "stateMedianIncome": {
+    "year": 2026,
+    "_note": "Synthetic 4-person State Median Income, scaled by household size using the standard LIHEAP adjustment.",
+    "base4Person": { "CA": 108000, "TX": 92000, "IL": 98000, "NY": 104000 },
+    "householdAdjustment": { "1": 0.52, "2": 0.68, "3": 0.84, "4": 1.0, "5": 1.16, "6": 1.32 },
+    "perAdditionalPersonAbove6": 0.03
+  },
+  "programs": [
+    {
+      "id": "LIHEAP-IL",
+      "kind": "LIHEAP",
+      "state": "IL",
+      "name": "Illinois LIHEAP",
+      "administeredBy": "Illinois Department of Commerce and Economic Opportunity",
+      "sourceId": "LIHEAP-IL-2026",
+      "citation": "LIHEAP — federal block grant administered by the State of Illinois",
+      "intakeVia": {
+        "agencyId": "AGENCY-IL-CEDA",
+        "name": "Community and Economic Development Association of Cook County (CEDA)",
+        "channel": "local_community_action_agency",
+        "note": "Applications are taken by the local community action agency, not the utility."
+      },
+      "effectiveFrom": "2025-10-01",
+      "effectiveTo": "2026-08-31",
+      "criteria": [
+        { "id": "IL-LIHEAP-INCOME", "kind": "income_percent_fpl", "comparator": "lte", "value": 200,
+          "text": "Household income at or below 200% of the Federal Poverty Level." },
+        { "id": "IL-LIHEAP-RESPONSIBILITY", "kind": "bill_responsibility", "comparator": "eq", "value": true,
+          "text": "Applicant is responsible for paying the home energy costs." }
+      ],
+      "tiers": [
+        { "id": "LIHEAP-IL-REGULAR", "kind": "regular", "name": "Regular benefit",
+          "maxBenefit": 750, "text": "One-time benefit applied to the energy account, scaled by income and household size." },
+        { "id": "LIHEAP-IL-CRISIS", "kind": "crisis", "name": "Crisis / reconnection assistance",
+          "maxBenefit": 1200,
+          "requires": ["disconnection_notice", "already_disconnected", "less_than_25_percent_fuel_remaining"],
+          "text": "Additional emergency assistance where service is disconnected or subject to imminent disconnection." }
+      ]
+    },
+    {
+      "id": "LIHEAP-NY",
+      "kind": "LIHEAP",
+      "state": "NY",
+      "name": "New York HEAP",
+      "administeredBy": "New York State Office of Temporary and Disability Assistance",
+      "sourceId": "LIHEAP-NY-2026",
+      "citation": "LIHEAP — federal block grant administered by New York State as HEAP",
+      "intakeVia": {
+        "agencyId": "AGENCY-NY-LDSS",
+        "name": "Local Department of Social Services",
+        "channel": "county_social_services",
+        "note": "Regular and emergency HEAP components have separate intake windows."
+      },
+      "effectiveFrom": "2025-11-01",
+      "effectiveTo": "2026-06-30",
+      "criteria": [
+        { "id": "NY-HEAP-INCOME", "kind": "income_percent_smi", "comparator": "lte", "value": 60,
+          "text": "Household income at or below 60% of State Median Income." },
+        { "id": "NY-HEAP-RESPONSIBILITY", "kind": "bill_responsibility", "comparator": "eq", "value": true,
+          "text": "Applicant is responsible for paying the home energy costs." }
+      ],
+      "tiers": [
+        { "id": "LIHEAP-NY-REGULAR", "kind": "regular", "name": "Regular HEAP benefit", "maxBenefit": 900,
+          "text": "Seasonal benefit credited to the energy account." },
+        { "id": "LIHEAP-NY-CRISIS", "kind": "crisis", "name": "Emergency HEAP benefit", "maxBenefit": 1000,
+          "requires": ["disconnection_notice", "already_disconnected"],
+          "text": "Emergency component for households facing loss of heat or heat-related utility service." }
+      ]
+    },
+    {
+      "id": "LIHEAP-CA",
+      "kind": "LIHEAP",
+      "state": "CA",
+      "name": "California LIHEAP",
+      "administeredBy": "California Department of Community Services and Development",
+      "sourceId": "LIHEAP-CA-2026",
+      "citation": "LIHEAP — federal block grant administered by the State of California",
+      "intakeVia": {
+        "agencyId": "AGENCY-CA-LSP",
+        "name": "Local service provider (county community action agency)",
+        "channel": "local_community_action_agency"
+      },
+      "effectiveFrom": "2025-10-01",
+      "effectiveTo": "2026-09-30",
+      "criteria": [
+        { "id": "CA-LIHEAP-INCOME", "kind": "income_percent_smi", "comparator": "lte", "value": 60,
+          "text": "Household income at or below 60% of State Median Income." }
+      ],
+      "tiers": [
+        { "id": "LIHEAP-CA-REGULAR", "kind": "regular", "name": "Home Energy Assistance Program payment", "maxBenefit": 700,
+          "text": "One-time payment credited to the energy account." },
+        { "id": "LIHEAP-CA-CRISIS", "kind": "crisis", "name": "Fast Track / crisis assistance", "maxBenefit": 1000,
+          "requires": ["disconnection_notice", "already_disconnected"],
+          "text": "Expedited assistance for households in an energy crisis." }
+      ]
+    },
+    {
+      "id": "LIHEAP-TX",
+      "kind": "LIHEAP",
+      "state": "TX",
+      "name": "Texas CEAP",
+      "administeredBy": "Texas Department of Housing and Community Affairs",
+      "sourceId": "LIHEAP-TX-2026",
+      "citation": "LIHEAP — federal block grant administered by Texas as the Comprehensive Energy Assistance Program",
+      "intakeVia": {
+        "agencyId": "AGENCY-TX-CEAP",
+        "name": "Local CEAP subrecipient agency",
+        "channel": "local_community_action_agency"
+      },
+      "effectiveFrom": "2025-10-01",
+      "effectiveTo": "2026-09-30",
+      "criteria": [
+        { "id": "TX-CEAP-INCOME", "kind": "income_percent_fpl", "comparator": "lte", "value": 150,
+          "text": "Household income at or below 150% of the Federal Poverty Level." }
+      ],
+      "tiers": [
+        { "id": "LIHEAP-TX-REGULAR", "kind": "regular", "name": "CEAP utility assistance", "maxBenefit": 800,
+          "text": "Utility assistance payment made directly to the energy provider." },
+        { "id": "LIHEAP-TX-CRISIS", "kind": "crisis", "name": "CEAP crisis component", "maxBenefit": 1200,
+          "requires": ["disconnection_notice", "already_disconnected", "weather_emergency"],
+          "text": "Crisis component for households facing disconnection or a weather emergency." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "_synthetic": true,
+  "_note": "Illustrative approximation of real program structure for a hackathon demo. Figures are synthetic and must not be relied on operationally.",
+  "state": {
+    "code": "TX",
+    "name": "Texas",
+    "regulator": "Public Utility Commission of Texas",
+    "regulatorAbbr": "PUCT"
+  },
+  "pucRule": {
+    "sourceId": "PUCT-16-TAC-25.483",
+    "citation": "16 Tex. Admin. Code § 25.483 — Disconnection of Service",
+    "title": "Texas retail electric disconnection rules",
+    "effectiveFrom": "2019-09-01",
+    "summary": "Governs disconnection notice, deferred payment plans, and weather-related disconnection prohibitions for retail electric providers.",
+    "noticeDays": 10,
+    "reconnectionMaxFee": 25,
+    "deferredPaymentArrangement": {
+      "available": true,
+      "maxTermMonths": 5,
+      "maxDownPaymentPercent": 50,
+      "note": "Deferred payment plans are required in defined circumstances; terms are shorter than most states."
+    }
+  },
+  "moratoria": [
+    {
+      "sourceId": "PUCT-25.483-WEATHER-HEAT",
+      "kind": "weather_trigger",
+      "label": "Extreme heat disconnection prohibition",
+      "trigger": "heat_index_f",
+      "thresholdF": 103,
+      "comparator": "gte",
+      "appliesTo": "Residential customers when the National Weather Service issues a heat advisory for the county",
+      "citation": "16 TAC § 25.483 — weather-related disconnection prohibitions"
+    },
+    {
+      "sourceId": "PUCT-25.483-WEATHER-COLD",
+      "kind": "weather_trigger",
+      "label": "Freeze disconnection prohibition",
+      "trigger": "temperature_min_f",
+      "thresholdF": 32,
+      "comparator": "lte",
+      "appliesTo": "Residential customers when the forecast low for the county is at or below freezing",
+      "citation": "16 TAC § 25.483 — weather-related disconnection prohibitions"
+    }
+  ],
+  "authorityRule": {
+    "sourceId": "SOP-TX-14.2-V6.4",
+    "kind": "internal_policy",
+    "title": "Meridian Energy voice-agent delegated authority — Texas",
+    "effectiveFrom": "2026-03-03",
+    "floorAmount": 165,
+    "frequency": "monthly",
+    "requiresRole": "credit_officer",
+    "requiresLevel": "L2",
+    "text": "Voice agents may agree residual payment arrangements at or above $165 per month in Texas. Amounts below the floor require credit-officer approval at authority level L2 or above."
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "_synthetic": true,
+  "_note": "Illustrative approximation of real program structure for a hackathon demo. Figures are synthetic and must not be relied on operationally.",
+  "state": {
+    "code": "NY",
+    "name": "New York",
+    "regulator": "New York State Public Service Commission",
+    "regulatorAbbr": "NYPSC"
+  },
+  "pucRule": {
+    "sourceId": "NY-HEFPA-PSL-30",
+    "citation": "N.Y. Public Service Law §§ 30–53 — Home Energy Fair Practices Act (HEFPA)",
+    "title": "New York residential customer protections",
+    "effectiveFrom": "1981-01-01",
+    "summary": "Establishes residential protections covering deferred payment agreements, special protections for elderly, blind or disabled customers, and cold-weather procedures.",
+    "noticeDays": 15,
+    "reconnectionMaxFee": 0,
+    "deferredPaymentArrangement": {
+      "available": true,
+      "maxTermMonths": 24,
+      "maxDownPaymentPercent": 15,
+      "note": "HEFPA requires utilities to offer a deferred payment agreement fitted to the customer's financial circumstances."
+    }
+  },
+  "moratoria": [
+    {
+      "sourceId": "NY-HEFPA-COLDWEATHER",
+      "kind": "seasonal_date",
+      "label": "Cold weather period protections",
+      "trigger": "date_window",
+      "windowStart": "11-01",
+      "windowEnd": "04-15",
+      "appliesTo": "Residential customers; heightened procedures before termination",
+      "requiresEnrollment": false,
+      "citation": "HEFPA cold weather period procedures"
+    },
+    {
+      "sourceId": "NY-HEFPA-SPECIALPROTECTIONS",
+      "kind": "household_status",
+      "label": "Special protections household",
+      "trigger": "household_flag",
+      "flags": ["elderly", "blind", "disabled", "medical_certification", "child_under_18_sole_adult"],
+      "appliesTo": "Households meeting a special-protections category — termination requires additional process year-round",
+      "citation": "HEFPA special protections provisions"
+    }
+  ],
+  "authorityRule": {
+    "sourceId": "SOP-NY-14.2-V6.4",
+    "kind": "internal_policy",
+    "title": "Meridian Energy voice-agent delegated authority — New York",
+    "effectiveFrom": "2026-03-03",
+    "floorAmount": 155,
+    "frequency": "monthly",
+    "requiresRole": "credit_officer",
+    "requiresLevel": "L2",
+    "text": "Voice agents may agree residual payment arrangements at or above $155 per month in New York. Amounts below the floor require credit-officer approval at authority level L2 or above."
+  }
+}

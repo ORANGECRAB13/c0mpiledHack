@@ -1,0 +1,23 @@
+# secrets & env
+.env
+.env.local
+.env.*.local
+
+# dependencies
+node_modules
+frontend/node_modules
+guild-agents/*/node_modules
+
+# build output
+frontend-dist
+guild-agents/*/dist
+
+# Actian VectorAI local database (auth tokens, license, DB state)
+local_data
+
+# guild agent local config (agent ids, machine-local)
+guild-agents/*/guild.json
+
+# logs & os
+*.log
+.DS_Store

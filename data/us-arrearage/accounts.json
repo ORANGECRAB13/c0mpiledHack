@@ -1,0 +1,46 @@
+{
+  "_synthetic": true,
+  "_note": "Synthetic billing and payment history supporting the arrears signals.",
+  "invoices": [
+    { "id": "INV-2026-8841", "customerId": "CUS-77241", "type": "invoice_summary",
+      "outstandingBalance": 1842.6, "unpaidInvoices": 4, "oldestUnpaidDate": "2026-03-12",
+      "debtIncrease90Days": 0.61,
+      "text": "Four invoices remain unpaid totalling $1,842.60. The balance has grown 61% over the last 90 days." },
+    { "id": "INV-2026-8907", "customerId": "CUS-77302", "type": "invoice_summary",
+      "outstandingBalance": 970.4, "unpaidInvoices": 2, "oldestUnpaidDate": "2026-05-09",
+      "debtIncrease90Days": 0.38,
+      "text": "Two invoices remain unpaid totalling $970.40." },
+    { "id": "INV-2026-8955", "customerId": "CUS-64118", "type": "invoice_summary",
+      "outstandingBalance": 1130.15, "unpaidInvoices": 3, "oldestUnpaidDate": "2026-04-21",
+      "debtIncrease90Days": 0.44,
+      "text": "Three invoices remain unpaid totalling $1,130.15." }
+  ],
+  "payments": [
+    { "id": "PAY-90D-4107", "customerId": "CUS-77241", "type": "payment_summary",
+      "failedAutoPayments": 3, "lastSuccessfulPayment": "2026-02-28", "lastSuccessfulAmount": 96.4,
+      "extensionRequests": 2,
+      "text": "Three automatic payments failed for insufficient funds. Two payment extensions were requested and granted." },
+    { "id": "PAY-90D-4188", "customerId": "CUS-77302", "type": "payment_summary",
+      "failedAutoPayments": 1, "lastSuccessfulPayment": "2026-05-30", "lastSuccessfulAmount": 74.1,
+      "extensionRequests": 1,
+      "text": "One automatic payment failed. One extension was requested." },
+    { "id": "PAY-90D-4210", "customerId": "CUS-64118", "type": "payment_summary",
+      "failedAutoPayments": 2, "lastSuccessfulPayment": "2026-04-14", "lastSuccessfulAmount": 118.0,
+      "extensionRequests": 0,
+      "text": "Two automatic payments failed. No extensions requested." }
+  ],
+  "contactNotes": [
+    { "id": "CC-291104", "customerId": "CUS-77241", "type": "contact_centre_note", "date": "2026-05-21",
+      "channel": "inbound_call", "agent": "contact-centre",
+      "text": "Customer called about a payment extension. Mentioned her hours at the clinic were cut in April. No hardship program was offered on this call.",
+      "signals": ["reduced_income_disclosure", "extension_request"] },
+    { "id": "CC-291540", "customerId": "CUS-77241", "type": "contact_centre_note", "date": "2026-06-30",
+      "channel": "inbound_call", "agent": "contact-centre",
+      "text": "Second extension granted. Customer asked whether there was 'any kind of help program'. Agent advised to check the website.",
+      "signals": ["assistance_enquiry_unresolved"] },
+    { "id": "CC-292008", "customerId": "CUS-77302", "type": "contact_centre_note", "date": "2026-06-11",
+      "channel": "inbound_call", "agent": "contact-centre",
+      "text": "Customer reported reduced shifts. Requested a payment plan.",
+      "signals": ["reduced_income_disclosure"] }
+  ]
+}

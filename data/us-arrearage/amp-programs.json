@@ -1,0 +1,66 @@
+{
+  "_synthetic": true,
+  "_note": "Illustrative approximation of real program structure for a hackathon demo. Figures are synthetic and must not be relied on operationally.",
+  "_coverageNote": "Arrearage Management Programs exist in some states and not others. CA and TX are deliberately absent — that absence is part of the demo.",
+  "programs": [
+    {
+      "id": "AMP-IL",
+      "kind": "AMP",
+      "state": "IL",
+      "name": "Illinois Arrearage Reduction Credit",
+      "sourceId": "AMP-IL-2026",
+      "citation": "Illinois arrearage reduction credit administered alongside the state PIPP",
+      "administeredBy": "Illinois Department of Commerce and Economic Opportunity",
+      "intakeVia": {
+        "agencyId": "AGENCY-IL-CEDA",
+        "name": "Community and Economic Development Association of Cook County (CEDA)",
+        "channel": "local_community_action_agency"
+      },
+      "effectiveFrom": "2025-10-01",
+      "criteria": [
+        { "id": "IL-AMP-INCOME", "kind": "income_percent_fpl", "comparator": "lte", "value": 200,
+          "text": "Household income at or below 200% of the Federal Poverty Level." },
+        { "id": "IL-AMP-ARREARS", "kind": "arrears_minimum", "comparator": "gte", "value": 250,
+          "text": "Account carries at least $250 in arrears." },
+        { "id": "IL-AMP-ENROLLED-PIPP", "kind": "requires_program", "comparator": "eq", "value": "PIPP-IL",
+          "text": "Customer is enrolled in the Illinois Percentage of Income Payment Plan." }
+      ],
+      "forgiveness": {
+        "model": "monthly_credit_on_time_payment",
+        "monthlyCreditMax": 150,
+        "termMonths": 12,
+        "totalForgivenessMax": 1800,
+        "text": "For each on-time monthly payment, a credit of up to $150 is applied against pre-existing arrears, for up to 12 months."
+      }
+    },
+    {
+      "id": "AMP-NY",
+      "kind": "AMP",
+      "state": "NY",
+      "name": "New York Energy Affordability Program arrears credit",
+      "sourceId": "AMP-NY-2026",
+      "citation": "NYPSC Energy Affordability Program — arrears forgiveness component",
+      "administeredBy": "Meridian Energy under NYPSC oversight",
+      "intakeVia": {
+        "agencyId": "AGENCY-NY-UTILITY",
+        "name": "Utility-administered enrolment",
+        "channel": "utility_direct",
+        "note": "Enrolment is automatic for HEAP recipients — the customer does not apply separately."
+      },
+      "effectiveFrom": "2025-07-01",
+      "criteria": [
+        { "id": "NY-AMP-HEAP", "kind": "requires_program", "comparator": "eq", "value": "LIHEAP-NY",
+          "text": "Household received a HEAP benefit in the current program year." },
+        { "id": "NY-AMP-ARREARS", "kind": "arrears_minimum", "comparator": "gte", "value": 100,
+          "text": "Account carries at least $100 in arrears." }
+      ],
+      "forgiveness": {
+        "model": "monthly_credit_on_time_payment",
+        "monthlyCreditMax": 125,
+        "termMonths": 24,
+        "totalForgivenessMax": 3000,
+        "text": "Arrears are credited down over up to 24 months while the customer stays current on the affordable monthly amount."
+      }
+    }
+  ]
+}

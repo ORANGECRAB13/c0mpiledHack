@@ -1,0 +1,58 @@
+{
+  "_synthetic": true,
+  "_note": "Illustrative approximation of real program structure for a hackathon demo. Figures are synthetic and must not be relied on operationally.",
+  "state": {
+    "code": "CA",
+    "name": "California",
+    "regulator": "California Public Utilities Commission",
+    "regulatorAbbr": "CPUC"
+  },
+  "pucRule": {
+    "sourceId": "CPUC-SB598-DISCONNECTION",
+    "citation": "CPUC residential disconnection rules (SB 598 implementation)",
+    "title": "California residential disconnection and arrearage rules",
+    "effectiveFrom": "2020-02-01",
+    "summary": "Caps reconnection fees, requires extended amortization of arrears, and limits residential disconnection for non-payment.",
+    "noticeDays": 15,
+    "reconnectionMaxFee": 0,
+    "deferredPaymentArrangement": {
+      "available": true,
+      "maxTermMonths": 12,
+      "maxDownPaymentPercent": 0,
+      "note": "Residential customers are entitled to amortize arrears over at least 12 months with no down payment required."
+    }
+  },
+  "moratoria": [
+    {
+      "sourceId": "CPUC-EXTREME-WEATHER",
+      "kind": "weather_trigger",
+      "label": "Extreme weather disconnection suspension",
+      "trigger": "temperature_max_f",
+      "thresholdF": 100,
+      "comparator": "gte",
+      "appliesTo": "Residential customers in an area under an excessive heat warning",
+      "citation": "CPUC extreme weather disconnection suspension"
+    },
+    {
+      "sourceId": "CPUC-COLD-TRIGGER",
+      "kind": "weather_trigger",
+      "label": "Freezing conditions suspension",
+      "trigger": "temperature_min_f",
+      "thresholdF": 32,
+      "comparator": "lte",
+      "appliesTo": "Residential customers when forecast lows reach freezing",
+      "citation": "CPUC extreme weather disconnection suspension"
+    }
+  ],
+  "authorityRule": {
+    "sourceId": "SOP-CA-14.2-V6.4",
+    "kind": "internal_policy",
+    "title": "Meridian Energy voice-agent delegated authority — California",
+    "effectiveFrom": "2026-03-03",
+    "floorAmount": 140,
+    "frequency": "monthly",
+    "requiresRole": "credit_officer",
+    "requiresLevel": "L2",
+    "text": "Voice agents may agree residual payment arrangements at or above $140 per month in California. Amounts below the floor require credit-officer approval at authority level L2 or above."
+  }
+}

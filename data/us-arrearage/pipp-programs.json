@@ -1,0 +1,60 @@
+{
+  "_synthetic": true,
+  "_note": "Illustrative approximation of real program structure for a hackathon demo. Figures are synthetic and must not be relied on operationally.",
+  "_coverageNote": "Percentage of Income Payment Plans exist in some states and not others. CA and TX are deliberately absent — that absence is part of the demo.",
+  "programs": [
+    {
+      "id": "PIPP-IL",
+      "kind": "PIPP",
+      "state": "IL",
+      "name": "Illinois Percentage of Income Payment Plan",
+      "sourceId": "PIPP-IL-2026",
+      "citation": "Illinois PIPP administered by DCEO under the LIHEAP state plan",
+      "administeredBy": "Illinois Department of Commerce and Economic Opportunity",
+      "intakeVia": {
+        "agencyId": "AGENCY-IL-CEDA",
+        "name": "Community and Economic Development Association of Cook County (CEDA)",
+        "channel": "local_community_action_agency"
+      },
+      "effectiveFrom": "2025-10-01",
+      "criteria": [
+        { "id": "IL-PIPP-INCOME", "kind": "income_percent_fpl", "comparator": "lte", "value": 200,
+          "text": "Household income at or below 200% of the Federal Poverty Level." },
+        { "id": "IL-PIPP-ARREARS", "kind": "arrears_minimum", "comparator": "gte", "value": 250,
+          "text": "Account carries at least $250 in arrears." },
+        { "id": "IL-PIPP-CAPACITY", "kind": "program_capacity", "comparator": "eq", "value": "open",
+          "text": "Enrolment is capped and closes when funding is exhausted." }
+      ],
+      "incomeCap": {
+        "percentOfMonthlyIncome": 6,
+        "minMonthlyPayment": 30,
+        "text": "The customer's monthly electricity payment is capped at 6% of gross monthly household income, with a $30 minimum."
+      }
+    },
+    {
+      "id": "PIPP-NY",
+      "kind": "PIPP",
+      "state": "NY",
+      "name": "New York Energy Affordability Program discount",
+      "sourceId": "PIPP-NY-2026",
+      "citation": "NYPSC Energy Affordability Program — bill discount component",
+      "administeredBy": "Meridian Energy under NYPSC oversight",
+      "intakeVia": {
+        "agencyId": "AGENCY-NY-UTILITY",
+        "name": "Utility-administered enrolment",
+        "channel": "utility_direct",
+        "note": "Automatic for HEAP recipients."
+      },
+      "effectiveFrom": "2025-07-01",
+      "criteria": [
+        { "id": "NY-EAP-HEAP", "kind": "requires_program", "comparator": "eq", "value": "LIHEAP-NY",
+          "text": "Household received a HEAP benefit in the current program year." }
+      ],
+      "incomeCap": {
+        "percentOfMonthlyIncome": 6,
+        "minMonthlyPayment": 25,
+        "text": "Energy burden is targeted at 6% of household income through a tiered monthly bill discount."
+      }
+    }
+  ]
+}

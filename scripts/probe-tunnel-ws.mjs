@@ -1,0 +1,10 @@
+import WebSocket from 'ws';
+const wss = 'wss://lanes-kentucky-taxes-sunday.trycloudflare.com/api/voice/stream?caseId=C-20481';
+console.log('connecting:', wss);
+const ws = new WebSocket(wss);
+let audio = 0; const seen = new Set();
+ws.on('open', () => console.log('WSS open through tunnel'));
+ws.on('message', (d) => { const e = JSON.parse(d); if (e.type==='audio'){audio++;return;} seen.add(e.type); if (e.type==='transcript') console.log('  [' + e.speaker + ']', e.text.slice(0,70)); });
+ws.on('error', (err) => console.log('WSS error:', err.message));
+ws.on('unexpected-response', (_q,res) => console.log('HTTP', res.statusCode));
+setTimeout(() => { console.log('--- types:', [...seen].join(', '), '| audio:', audio); ws.close(); process.exit(0); }, 12000);

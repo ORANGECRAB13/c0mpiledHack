@@ -1,0 +1,59 @@
+{
+  "_synthetic": true,
+  "_note": "Illustrative approximation of real program structure for a hackathon demo. Figures are synthetic and must not be relied on operationally.",
+  "state": {
+    "code": "IL",
+    "name": "Illinois",
+    "regulator": "Illinois Commerce Commission",
+    "regulatorAbbr": "ICC"
+  },
+  "pucRule": {
+    "sourceId": "ICC-83-IAC-280",
+    "citation": "83 Ill. Adm. Code 280 — Procedures for Gas, Electric, Water and Sanitary Sewer Utilities",
+    "title": "Illinois disconnection and deferred payment arrangement rules",
+    "effectiveFrom": "2021-01-01",
+    "summary": "Governs disconnection notice periods, deferred payment arrangements, and reconnection for regulated Illinois utilities.",
+    "noticeDays": 14,
+    "reconnectionMaxFee": 45,
+    "deferredPaymentArrangement": {
+      "available": true,
+      "maxTermMonths": 12,
+      "maxDownPaymentPercent": 25,
+      "note": "Residential customers may request a deferred payment arrangement on arrears before disconnection."
+    }
+  },
+  "moratoria": [
+    {
+      "sourceId": "ICC-280-WINTER",
+      "kind": "seasonal_date",
+      "label": "Winter disconnection protection",
+      "trigger": "date_window",
+      "windowStart": "12-01",
+      "windowEnd": "03-31",
+      "appliesTo": "Residential customers; heating-related service",
+      "requiresEnrollment": false,
+      "citation": "83 Ill. Adm. Code 280 — winter disconnection provisions"
+    },
+    {
+      "sourceId": "ICC-280-HEAT",
+      "kind": "weather_trigger",
+      "label": "Excessive heat protection",
+      "trigger": "temperature_max_f",
+      "thresholdF": 95,
+      "comparator": "gte",
+      "appliesTo": "Residential customers when a heat advisory or forecast high meets the threshold",
+      "citation": "83 Ill. Adm. Code 280 — hot weather disconnection provisions"
+    }
+  ],
+  "authorityRule": {
+    "sourceId": "SOP-IL-14.2-V6.4",
+    "kind": "internal_policy",
+    "title": "Meridian Energy voice-agent delegated authority — Illinois",
+    "effectiveFrom": "2026-03-03",
+    "floorAmount": 150,
+    "frequency": "monthly",
+    "requiresRole": "credit_officer",
+    "requiresLevel": "L2",
+    "text": "Voice agents may agree residual payment arrangements at or above $150 per month in Illinois. Amounts below the floor require credit-officer approval at authority level L2 or above."
+  }
+}

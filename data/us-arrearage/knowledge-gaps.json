@@ -1,0 +1,5 @@
+{
+  "_synthetic": true,
+  "_purpose": "Starts empty. The agent writes an entry here when it hits a program it does not know about; a human ratifies it, and the next call can use it.",
+  "gaps": []
+}

@@ -1,0 +1,94 @@
+{
+  "_synthetic": true,
+  "_note": "Illustrative approximation of real program structure for a hackathon demo. Figures are synthetic and must not be relied on operationally.",
+  "_purpose": "Which benefits combine, which exclude each other, and which are prerequisites. Resolution is deterministic — never inferred from semantic similarity.",
+  "rules": [
+    {
+      "id": "STACK-IL-1",
+      "state": "IL",
+      "relation": "STACKS_WITH",
+      "from": "LIHEAP-IL",
+      "to": "PIPP-IL",
+      "sourceId": "STACK-IL-2026",
+      "text": "A LIHEAP benefit and PIPP enrolment may be held at the same time; the LIHEAP benefit is applied to the account and PIPP caps the ongoing monthly payment."
+    },
+    {
+      "id": "STACK-IL-2",
+      "state": "IL",
+      "relation": "REQUIRES",
+      "from": "AMP-IL",
+      "to": "PIPP-IL",
+      "sourceId": "STACK-IL-2026",
+      "text": "The arrearage reduction credit is only available to customers enrolled in PIPP. PIPP must be enrolled first."
+    },
+    {
+      "id": "STACK-IL-3",
+      "state": "IL",
+      "relation": "STACKS_WITH",
+      "from": "LIHEAP-IL",
+      "to": "AMP-IL",
+      "sourceId": "STACK-IL-2026",
+      "text": "A LIHEAP benefit does not reduce arrearage-reduction credit entitlement."
+    },
+    {
+      "id": "STACK-IL-4",
+      "state": "IL",
+      "relation": "EXCLUDES",
+      "from": "PIPP-IL",
+      "to": "DPA-STANDARD",
+      "sourceId": "STACK-IL-2026",
+      "text": "A customer on PIPP does not simultaneously carry a standard deferred payment arrangement on the same arrears — the arrearage credit replaces it."
+    },
+    {
+      "id": "STACK-NY-1",
+      "state": "NY",
+      "relation": "REQUIRES",
+      "from": "PIPP-NY",
+      "to": "LIHEAP-NY",
+      "sourceId": "STACK-NY-2026",
+      "text": "Energy Affordability Program enrolment follows from receiving a HEAP benefit in the program year."
+    },
+    {
+      "id": "STACK-NY-2",
+      "state": "NY",
+      "relation": "REQUIRES",
+      "from": "AMP-NY",
+      "to": "LIHEAP-NY",
+      "sourceId": "STACK-NY-2026",
+      "text": "The arrears credit component follows from HEAP receipt."
+    },
+    {
+      "id": "STACK-NY-3",
+      "state": "NY",
+      "relation": "STACKS_WITH",
+      "from": "PIPP-NY",
+      "to": "AMP-NY",
+      "sourceId": "STACK-NY-2026",
+      "text": "The monthly discount and the arrears credit run together."
+    },
+    {
+      "id": "STACK-CA-1",
+      "state": "CA",
+      "relation": "STACKS_WITH",
+      "from": "LIHEAP-CA",
+      "to": "DPA-STANDARD",
+      "sourceId": "STACK-CA-2026",
+      "text": "A LIHEAP payment reduces the balance amortized under the standard 12-month arrangement."
+    },
+    {
+      "id": "STACK-TX-1",
+      "state": "TX",
+      "relation": "STACKS_WITH",
+      "from": "LIHEAP-TX",
+      "to": "DPA-STANDARD",
+      "sourceId": "STACK-TX-2026",
+      "text": "A CEAP payment reduces the balance covered by a deferred payment plan."
+    }
+  ],
+  "fallbackArrangement": {
+    "id": "DPA-STANDARD",
+    "kind": "DPA",
+    "name": "Deferred payment arrangement",
+    "text": "The baseline arrangement available in every state under the applicable PUC rule. Terms come from the state's pucRule.deferredPaymentArrangement."
+  }
+}
