@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vocare — Context Engine</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="context-engine.css" />
+  </head>
+  <body class="ce-page" data-active="false">
+    <div class="synthetic-banner" role="note">
+      Synthetic data — no real customer, account, or regulatory determination is represented.
+    </div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <h1>Vocare</h1>
+          <p>Context engine · live retrieval</p>
+        </div>
+      </div>
+
+      <div class="topbar-status">
+        <span class="chip" id="case-chip">no active case</span>
+        <a class="ghost ce-navlink" href="graph.html">🕸 Knowledge graph</a>
+        <a class="ghost ce-navlink" href="index.html">← Operator console</a>
+      </div>
+    </header>
+
+    <div class="ce-shell">
+      <div class="ce-stage" aria-label="Vocare context engine">
+        <div class="ce-grid"></div>
+        <div class="ce-ambient ce-ambient-one"></div>
+        <div class="ce-ambient ce-ambient-two"></div>
+
+        <svg class="ce-connections" viewBox="0 0 1000 590" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="ceLine" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#72634a" stop-opacity=".2" />
+              <stop offset="48%" stop-color="#f6d382" stop-opacity=".95" />
+              <stop offset="100%" stop-color="#72634a" stop-opacity=".2" />
+            </linearGradient>
+            <filter id="ceGlow">
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
+          </defs>
+          <path class="ce-path" id="path-actian" d="M205 115 C315 115 322 252 433 270" />
+          <path class="ce-path" id="path-graph" d="M205 270 C315 270 325 286 433 286" />
+          <path class="ce-path" id="path-live" d="M205 425 C315 425 330 320 433 304" />
+          <path class="ce-path" id="path-stack" d="M570 278 C660 278 668 165 770 165" />
+          <path class="ce-path" id="path-trace" d="M570 304 C665 304 675 337 770 337" />
+          <circle class="ce-pulse" id="pulse-actian" r="4"></circle>
+          <circle class="ce-pulse" id="pulse-graph" r="4"></circle>
+          <circle class="ce-pulse" id="pulse-live" r="4"></circle>
+          <circle class="ce-pulse" id="pulse-stack" r="4"></circle>
+          <circle class="ce-pulse" id="pulse-trace" r="4"></circle>
+        </svg>
+
+        <div class="ce-col-label ce-col-sources"><span>01</span> Retrieval sources</div>
+        <div class="ce-col-label ce-col-brain"><span>02</span> Context engine</div>
+        <div class="ce-col-label ce-col-outputs"><span>03</span> Governed output</div>
+
+        <article class="ce-node ce-source ce-source-one" id="node-actian">
+          <div class="ce-node-icon">◈</div>
+          <div>
+            <small>Semantic retrieval</small>
+            <strong>Actian VectorAI</strong>
+            <span id="actian-status">checking…</span>
+          </div>
+        </article>
+        <article class="ce-node ce-source ce-source-two">
+          <div class="ce-node-icon">◎</div>
+          <div><small>Deterministic ruleset</small><strong>Context graph</strong><span>State, PUC, LIHEAP, AMP/PIPP</span></div>
+        </article>
+        <article class="ce-node ce-source ce-source-three">
+          <div class="ce-node-icon">↗</div>
+          <div><small>Live signal</small><strong>Call disclosures</strong><span>Household · income · hardship</span></div>
+        </article>
+
+        <div class="ce-edge-label ce-edge-synth">Explains</div>
+        <div class="ce-edge-label ce-edge-ground">Decides</div>
+
+        <div class="ce-brain-wrap">
+          <div class="ce-brain-ring ce-brain-ring-outer"></div>
+          <div class="ce-brain-ring ce-brain-ring-inner"></div>
+          <div class="ce-brain" id="brain">
+            <span class="ce-brain-glyph" aria-hidden="true">
+              <svg viewBox="0 0 48 48">
+                <path d="M24 8c-7.8 0-14 5.3-14 12 0 3.5 1.7 6.7 4.5 8.9V37l7.1-4.2c.8.1 1.6.2 2.4.2 7.8 0 14-5.3 14-12S31.8 8 24 8Z"/>
+                <path d="M17 20.5c1.7-3.5 4.2-5.2 7.4-5.2 4.8 0 7.5 3.4 7.5 7.2 0 4.1-3.2 7-7.6 7-3.6 0-6.6-2-7.8-5.1"/>
+                <circle cx="17" cy="20.5" r="2.2"/><circle cx="16.5" cy="24.5" r="2.2"/>
+              </svg>
+            </span>
+            <small>Vocare</small>
+            <strong>Resolver</strong>
+            <span id="brain-hint">Idle</span>
+          </div>
+        </div>
+
+        <article class="ce-node ce-output ce-output-one">
+          <div class="ce-node-icon">✦</div>
+          <div><small>Resolved live</small><strong>Benefit stack</strong><span id="stack-summary">Not yet resolved</span></div>
+        </article>
+        <article class="ce-node ce-output ce-output-two">
+          <div class="ce-node-icon">⌁</div>
+          <div><small>Cited, governed</small><strong>Decision trace</strong><span id="trace-summary">Awaiting a case</span></div>
+        </article>
+
+        <div class="ce-learning-loop"><span>↻</span> Cosine similarity never decides eligibility — only the resolver does</div>
+      </div>
+
+      <aside class="ce-panel">
+        <div class="ce-panel-head">
+          <div>
+            <p class="ce-kicker"><span>04</span> Engine activity</p>
+            <h3>Live retrieval feed</h3>
+          </div>
+        </div>
+        <div class="ce-feed" id="ce-feed">
+          <div class="ce-empty">
+            <span class="ce-empty-orbit"></span>
+            <strong>Waiting for a case</strong>
+            <p>Start outreach on the operator console to see retrieval activate here.</p>
+          </div>
+        </div>
+        <div class="ce-panel-footer">
+          <span><i class="ce-legend-dot ce-source-dot"></i> Sources</span>
+          <span><i class="ce-legend-dot ce-brain-dot"></i> Context</span>
+          <span><i class="ce-legend-dot ce-output-dot"></i> Output</span>
+        </div>
+      </aside>
+    </div>
+
+    <script type="module" src="context-engine.js"></script>
+  </body>
+</html>

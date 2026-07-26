@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vocare — Arrearage Outreach</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="synthetic-banner" role="note">
+      Synthetic data — no real customer, account, or regulatory determination is represented.
+    </div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <h1>Vocare</h1>
+          <p>Arrearage outreach · Meridian Energy</p>
+        </div>
+      </div>
+
+      <div class="topbar-status">
+        <span class="pill" id="stage-pill" data-stage="idle">No case</span>
+        <span class="chip" id="backend-chip" title="Context engine backend">engine…</span>
+        <a class="ghost" href="graph.html" style="text-decoration:none; padding:8px 14px; border-radius:8px; border:1px solid var(--line); font-size:13px; color:var(--text);">🕸 Knowledge graph</a>
+        <a class="ghost" href="context-engine.html" style="text-decoration:none; padding:8px 14px; border-radius:8px; border:1px solid var(--line); font-size:13px; color:var(--text);">◈ Context engine</a>
+        <button id="quick-call-btn" class="primary" type="button">🎙 Test live call</button>
+        <button id="reset-btn" class="ghost" type="button">Reset demo</button>
+      </div>
+    </header>
+
+    <p class="error-bar" id="error-bar" role="alert" hidden></p>
+
+    <main class="layout">
+      <!-- ── Column 1: context ─────────────────────────────────────── -->
+      <section class="col col-context" aria-label="Operational context">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Outreach queue</h2>
+          </div>
+          <div class="panel-body">
+            <ul class="customer-list" id="customer-list"></ul>
+            <button id="start-btn" class="primary block" type="button" disabled>
+              Start outreach
+            </button>
+          </div>
+        </div>
+
+        <div class="panel" id="jurisdiction-panel" hidden>
+          <div class="panel-head">
+            <h2>Jurisdiction</h2>
+            <span class="chip" id="jurisdiction-state"></span>
+          </div>
+          <div class="panel-body">
+            <p class="rule-citation" id="rule-citation"></p>
+            <div class="protection" id="protection-status"></div>
+            <ul class="moratoria" id="moratoria-list"></ul>
+          </div>
+        </div>
+
+        <div class="panel" id="benefits-panel" hidden>
+          <div class="panel-head">
+            <h2>Benefit package</h2>
+            <span class="chip" id="benefits-count"></span>
+          </div>
+          <div class="panel-body">
+            <div class="unlocked" id="unlocked">
+              <span class="unlocked-label">Benefits unlocked</span>
+              <span class="unlocked-value" id="unlocked-value">$0</span>
+              <span class="unlocked-sub" id="unlocked-sub"></span>
+            </div>
+            <ul class="benefit-list" id="benefit-list"></ul>
+            <details class="ineligible" id="ineligible-wrap" hidden>
+              <summary>Not eligible <span id="ineligible-count"></span></summary>
+              <ul class="benefit-list muted-list" id="ineligible-list"></ul>
+            </details>
+            <dl class="boundaries" id="boundaries"></dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Column 2: conversation ────────────────────────────────── -->
+      <section class="col col-call" aria-label="Live call">
+        <div class="panel panel-fill">
+          <div class="panel-head">
+            <h2>Call</h2>
+            <span class="chip" id="call-mode">not started</span>
+          </div>
+
+          <div class="panel-body transcript-body">
+            <ol class="transcript" id="transcript" aria-live="polite">
+              <li class="transcript-empty">No call in progress.</li>
+            </ol>
+          </div>
+
+          <div class="call-controls">
+            <div class="script-row">
+              <button id="call-btn" class="primary" type="button" disabled>Start call</button>
+              <button id="live-btn" class="ghost" type="button" disabled>🎙 Live mic call</button>
+              <button id="script-btn" class="ghost" type="button" disabled>
+                Run scripted customer
+              </button>
+            </div>
+            <p class="script-hint" id="script-hint">
+              The browser microphone stands in for the customer's phone. The scripted customer
+              drives the same code path with audio input replaced.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Column 3: governance ──────────────────────────────────── -->
+      <section class="col col-governance" aria-label="Governance">
+        <div class="panel" id="gap-panel" hidden>
+          <div class="panel-head panel-head-alert">
+            <h2>Knowledge gap</h2>
+            <span class="chip chip-warn">needs ratification</span>
+          </div>
+          <div class="panel-body">
+            <p class="gap-program" id="gap-program"></p>
+            <blockquote class="gap-quote" id="gap-quote"></blockquote>
+            <p class="gap-note">
+              The agent did not assert eligibility. It cannot use this until a human ratifies it.
+            </p>
+            <div class="gap-actions">
+              <input id="ratifier" type="text" value="Alex Morgan" aria-label="Ratified by" />
+              <button id="ratify-btn" class="primary" type="button">Ratify</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="approval-panel" hidden>
+          <div class="panel-head panel-head-alert">
+            <h2>Credit approval</h2>
+            <span class="chip chip-warn" id="approval-status">customer on hold</span>
+          </div>
+          <div class="panel-body">
+            <div class="ask-row">
+              <div class="ask">
+                <span class="ask-label">Customer asked</span>
+                <span class="ask-value" id="ask-value">—</span>
+              </div>
+              <div class="ask">
+                <span class="ask-label">Delegated floor</span>
+                <span class="ask-value" id="floor-value">—</span>
+              </div>
+              <div class="ask">
+                <span class="ask-label">Affordability cap</span>
+                <span class="ask-value" id="ceiling-value">—</span>
+              </div>
+            </div>
+            <p class="citation" id="approval-citation"></p>
+            <p class="approval-summary" id="approval-summary"></p>
+
+            <label class="field">
+              <span>Approve amount ($/month)</span>
+              <input id="approved-amount" type="number" min="1" step="1" />
+            </label>
+            <label class="field">
+              <span>Officer</span>
+              <select id="officer-select">
+                <option value="alex-morgan|Alex Morgan|L2">Alex Morgan · L2</option>
+                <option value="jamie-fox|Jamie Fox|L1">Jamie Fox · L1</option>
+              </select>
+            </label>
+
+            <button id="approve-btn" class="primary block" type="button">
+              Approve and resume call
+            </button>
+            <p class="approval-error" id="approval-error" hidden></p>
+          </div>
+        </div>
+
+        <div class="panel panel-fill">
+          <div class="panel-head">
+            <h2>Decision trace</h2>
+            <span class="chip" id="trace-count">0</span>
+          </div>
+          <div class="panel-body">
+            <ol class="traces" id="traces">
+              <li class="traces-empty">Decisions appear here with their evidence and authority.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="panel" id="outcome-panel" hidden>
+          <div class="panel-head">
+            <h2>Outcome</h2>
+          </div>
+          <div class="panel-body">
+            <ul class="execution" id="execution"></ul>
+            <button id="audit-btn" class="primary block" type="button">Open audit document</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="audit-dialog" class="audit-dialog">
+      <div class="audit-head">
+        <h2>Audit document</h2>
+        <button id="audit-close" class="ghost" type="button">Close</button>
+      </div>
+      <div class="audit-body" id="audit-body"></div>
+    </dialog>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

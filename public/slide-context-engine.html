@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vocare — Context Engine</title>
+<style>
+  :root{ --gold:#e7b84e; --gold-dim:#a07d2c; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:#050403;overflow:hidden;}
+  #graph{position:fixed;inset:0;z-index:0;}
+  #graph canvas{display:block;}
+  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 45%,transparent 38%,rgba(0,0,0,.6) 100%);}
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
+  .scan{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.35;
+    background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.14) 3px 4px);}
+  #loading{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
+    color:var(--gold);font:12px/1 "Space Mono",ui-monospace,monospace;letter-spacing:4px;
+    background:#050403;text-transform:uppercase;}
+  /* hover detail card — only chrome that ever appears, and only on hover */
+  #tip{position:fixed;z-index:4;pointer-events:none;opacity:0;transition:opacity .12s;max-width:320px;
+    background:rgba(10,9,7,.92);border:1px solid var(--gold);border-radius:5px;padding:10px 13px;backdrop-filter:blur(4px);
+    box-shadow:0 8px 30px rgba(0,0,0,.6),0 0 20px rgba(231,184,78,.12);
+    font-family:"Space Mono",ui-monospace,monospace;}
+  #tip .t{font-size:12.5px;color:#fff;line-height:1.4;word-break:break-word;margin-bottom:5px;}
+  #tip .m{font-size:10px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;}
+  #tip .m .sep{color:#8a7f6a;}
+  /* debug HUD, hidden by default — press H to reveal for setup/testing only */
+  .dbg{position:fixed;z-index:3;font-family:"Space Mono",ui-monospace,monospace;
+    font-size:10px;letter-spacing:2px;color:#8a7f6a;text-transform:uppercase;opacity:0;pointer-events:none;transition:opacity .3s;}
+  body.dbg-on .dbg{opacity:.85;}
+  #dbgCounts{top:20px;left:24px;}
+  #dbgHint{bottom:20px;left:50%;transform:translateX(-50%);}
+</style>
+</head>
+<body>
+  <div id="graph"></div>
+  <div class="vignette"></div><div class="grain"></div><div class="scan"></div>
+  <div id="loading">◍ assembling context…</div>
+  <div id="tip"><div class="t"></div><div class="m"></div></div>
+  <div class="dbg" id="dbgCounts"></div>
+  <div class="dbg" id="dbgHint">drag to orbit · scroll to zoom · H to toggle this text</div>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script>
+const PALETTE = {
+  State:'#e7b84e', PucRule:'#f0d68a', Moratorium:'#7cb2d6', AuthorityRule:'#d9a94a',
+  BenefitProgram:'#5fb6a6', EligibilityCriterion:'#b8862f', LocalAgency:'#c99a3f',
+  Customer:'#d5493b', AccountRecord:'#e5533c', KnowledgeGap:'#b07cc6', Node:'#efe0b0'
+};
+const colorFor = g => PALETTE[g] ?? PALETTE.Node;
+const el = id => document.getElementById(id);
+
+let renderer, scene, camera, cage, core, nodesPts, adj, N=0;
+let px, sizeAttr, colAttr, baseSize;
+let NODES = [];
+let hlLines;
+let W=innerWidth, H=innerHeight;
+let az=0, elev=0.22, R=380, targetR=380, autoRot=true, dragging=false, lastX=0, lastY=0;
+
+const GLOW = (() => {
+  const cv=document.createElement('canvas'); cv.width=cv.height=64;
+  const g=cv.getContext('2d'); const grd=g.createRadialGradient(32,32,0,32,32,32);
+  grd.addColorStop(0,'rgba(255,246,220,1)'); grd.addColorStop(0.25,'rgba(231,184,78,0.9)');
+  grd.addColorStop(0.55,'rgba(231,184,78,0.35)'); grd.addColorStop(1,'rgba(231,184,78,0)');
+  g.fillStyle=grd; g.fillRect(0,0,64,64); const t=new THREE.CanvasTexture(cv); return t;
+})();
+
+function layout(nodes, links, iters){
+  const CELL=30, REST=24, MAXR=230;
+  for(let it=0; it<iters; it++){
+    for(const l of links){ let dx=l.t.x-l.s.x,dy=l.t.y-l.s.y,dz=l.t.z-l.s.z;
+      const d=Math.hypot(dx,dy,dz)||1, f=(d-REST)*0.04/d;
+      l.s.vx+=dx*f;l.s.vy+=dy*f;l.s.vz+=dz*f; l.t.vx-=dx*f;l.t.vy-=dy*f;l.t.vz-=dz*f; }
+    const grid=new Map();
+    for(const n of nodes){ const k=(Math.floor(n.x/CELL))+','+(Math.floor(n.y/CELL))+','+(Math.floor(n.z/CELL));
+      let a=grid.get(k); if(!a){a=[];grid.set(k,a);} a.push(n); }
+    for(const n of nodes){ const cx=Math.floor(n.x/CELL),cy=Math.floor(n.y/CELL),cz=Math.floor(n.z/CELL);
+      for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)for(let c=-1;c<=1;c++){
+        const cell=grid.get((cx+a)+','+(cy+b)+','+(cz+c)); if(!cell)continue;
+        for(const m of cell){ if(m===n)continue; let ex=n.x-m.x,ey=n.y-m.y,ez=n.z-m.z; let d2=ex*ex+ey*ey+ez*ez||1;
+          if(d2>CELL*CELL*4)continue; const f=170/d2,d=Math.sqrt(d2); n.vx+=ex/d*f;n.vy+=ey/d*f;n.vz+=ez/d*f; } } }
+    for(const n of nodes){ n.vx*=0.82;n.vy*=0.82;n.vz*=0.82; n.x+=n.vx;n.y+=n.vy;n.z+=n.vz;
+      const r=Math.hypot(n.x,n.y,n.z); if(r>MAXR){const s=MAXR/r; n.x*=s;n.y*=s;n.z*=s; n.vx*=0.5;n.vy*=0.5;n.vz*=0.5;} }
+  }
+}
+
+function nodeTitle(n){
+  const p = n.properties || {};
+  const bits = [p.citation || p.summary || p.name || n.label];
+  return `${n.label}\n[${n.primaryLabel}${p.state ? ' · ' + p.state : ''}]${bits[0] && bits[0] !== n.label ? '\n' + bits[0] : ''}`;
+}
+
+async function boot(){
+  const res = await fetch('/api/graph/visualization');
+  if(!res.ok) throw new Error('uplink '+res.status);
+  const body = await res.json();
+  const data = body.graph;
+
+  const map=new Map();
+  data.nodes.forEach(n=>{ const th=2*Math.PI*Math.random(), ph=Math.acos(2*Math.random()-1), rr=40+Math.sqrt(Math.random())*160;
+    map.set(n.id,{ id:n.id, title:nodeTitle(n), group:n.primaryLabel, deg:0,
+      x:rr*Math.sin(ph)*Math.cos(th), y:rr*Math.sin(ph)*Math.sin(th), z:rr*Math.cos(ph), vx:0,vy:0,vz:0 }); });
+  const links=data.links.filter(e=>map.has(e.source)&&map.has(e.target)).map(e=>({s:map.get(e.source),t:map.get(e.target)}));
+  links.forEach(l=>{l.s.deg++;l.t.deg++;});
+  const nodes=[...map.values()];
+  layout(nodes, links, nodes.length>1500?46:80);
+  const idx=new Map(); nodes.forEach((n,i)=>idx.set(n.id,i));
+  adj=nodes.map(()=>[]);
+  links.forEach(l=>{ const a=idx.get(l.s.id),b=idx.get(l.t.id); adj[a].push(b); adj[b].push(a); });
+  N=nodes.length; NODES=nodes;
+
+  scene=new THREE.Scene(); scene.fog=new THREE.FogExp2(0x050403,0.0013);
+  camera=new THREE.PerspectiveCamera(58,W/H,1,6000);
+  renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(2,devicePixelRatio));
+  renderer.setSize(W,H); renderer.setClearColor(0x050403,1); el('graph').appendChild(renderer.domElement);
+
+  const sN=700, sp=new Float32Array(sN*3);
+  for(let i=0;i<sN;i++){ const rr=1200+Math.random()*1600, t=Math.random()*6.28, p=Math.acos(2*Math.random()-1);
+    sp[i*3]=rr*Math.sin(p)*Math.cos(t); sp[i*3+1]=rr*Math.sin(p)*Math.sin(t); sp[i*3+2]=rr*Math.cos(p); }
+  const sg=new THREE.BufferGeometry(); sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+  scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0x6b5a34,size:2,sizeAttenuation:false,transparent:true,opacity:0.5})));
+
+  const lpos=new Float32Array(links.length*6);
+  links.forEach((l,i)=>lpos.set([l.s.x,l.s.y,l.s.z,l.t.x,l.t.y,l.t.z],i*6));
+  const lg=new THREE.BufferGeometry(); lg.setAttribute('position',new THREE.BufferAttribute(lpos,3));
+  const lines=new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:0xe7b84e,transparent:true,opacity:0.09,depthWrite:false}));
+  scene.add(lines);
+
+  px=new Float32Array(N*3); sizeAttr=new Float32Array(N); colAttr=new Float32Array(N*3); baseSize=new Float32Array(N);
+  const col=new THREE.Color();
+  nodes.forEach((n,i)=>{ px[i*3]=n.x;px[i*3+1]=n.y;px[i*3+2]=n.z;
+    const s=6+Math.min(30,n.deg*2.2); sizeAttr[i]=s; baseSize[i]=s;
+    col.set(colorFor(n.group)); colAttr[i*3]=col.r;colAttr[i*3+1]=col.g;colAttr[i*3+2]=col.b; });
+  const ng=new THREE.BufferGeometry();
+  ng.setAttribute('position',new THREE.BufferAttribute(px,3));
+  ng.setAttribute('size',new THREE.BufferAttribute(sizeAttr,1));
+  ng.setAttribute('acolor',new THREE.BufferAttribute(colAttr,3));
+  const nmat=new THREE.ShaderMaterial({
+    uniforms:{ map:{value:GLOW}, hscale:{value:H*0.55}, boost:{value:1.0} },
+    vertexShader:`attribute float size; attribute vec3 acolor; varying vec3 vC;
+      uniform float hscale, boost;
+      void main(){ vec4 mv=modelViewMatrix*vec4(position,1.0);
+        float depth=clamp(1.0-(-mv.z-200.0)/1400.0,0.28,1.0);
+        vC=acolor*depth*boost;
+        gl_PointSize=size*(hscale/-mv.z); gl_Position=projectionMatrix*mv; }`,
+    fragmentShader:`uniform sampler2D map; varying vec3 vC;
+      void main(){ vec4 t=texture2D(map,gl_PointCoord); gl_FragColor=vec4(vC,1.0)*t; if(gl_FragColor.a<0.02)discard; }`,
+    transparent:true, blending:THREE.AdditiveBlending, depthWrite:false });
+  nodesPts=new THREE.Points(ng,nmat); scene.add(nodesPts); window.__nmat=nmat;
+
+  const hg=new THREE.BufferGeometry(); hg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3));
+  hlLines=new THREE.LineSegments(hg,new THREE.LineBasicMaterial({color:0xfff2c8,transparent:true,opacity:0.75}));
+  hlLines.visible=false; scene.add(hlLines);
+
+  cage=new THREE.Mesh(new THREE.IcosahedronGeometry(46,2),new THREE.MeshBasicMaterial({color:0xe7b84e,wireframe:true,transparent:true,opacity:0.22}));
+  scene.add(cage);
+  core=new THREE.Mesh(new THREE.SphereGeometry(20,32,32),new THREE.MeshBasicMaterial({color:0x2f6d8f,transparent:true,opacity:0.5}));
+  scene.add(core);
+
+  el('dbgCounts').textContent = `MESH: ${N.toLocaleString()} nodes · ${links.length.toLocaleString()} links`;
+  initControls(renderer.domElement);
+  addEventListener('resize',onResize);
+  el('loading').style.display='none';
+  animate();
+}
+
+function onResize(){ W=innerWidth;H=innerHeight; camera.aspect=W/H; camera.updateProjectionMatrix(); renderer.setSize(W,H);
+  if(window.__nmat) window.__nmat.uniforms.hscale.value=H*0.55; }
+
+let mouseX=-1, mouseY=-1, hovered=-1, pickPending=false;
+function initControls(canvas){
+  canvas.addEventListener('pointerdown',e=>{dragging=true;autoRot=false;lastX=e.clientX;lastY=e.clientY;});
+  addEventListener('pointerup',()=>{dragging=false; clearTimeout(window.__ar); window.__ar=setTimeout(()=>autoRot=true,4500);});
+  addEventListener('pointermove',e=>{
+    if(dragging){ az-=(e.clientX-lastX)*0.005; elev=Math.max(-1.35,Math.min(1.35,elev+(e.clientY-lastY)*0.005)); lastX=e.clientX;lastY=e.clientY; }
+    mouseX=e.clientX;mouseY=e.clientY; pickPending=true;
+  });
+  canvas.addEventListener('wheel',e=>{e.preventDefault(); targetR=Math.max(140,Math.min(1100,targetR+e.deltaY*0.5));},{passive:false});
+}
+const _v=new THREE.Vector3();
+function pick(){
+  let best=-1,bestD=22*22;
+  for(let i=0;i<N;i++){ _v.set(px[i*3],px[i*3+1],px[i*3+2]).project(camera);
+    if(_v.z>1) continue; const sx=(_v.x*0.5+0.5)*W, sy=(-_v.y*0.5+0.5)*H;
+    const d=(sx-mouseX)*(sx-mouseX)+(sy-mouseY)*(sy-mouseY); if(d<bestD){bestD=d;best=i;} }
+  return best;
+}
+function setHover(i){
+  if(i===hovered) return;
+  if(hovered>=0){ sizeAttr[hovered]=baseSize[hovered]; }
+  hovered=i;
+  const tip=el('tip');
+  if(i<0){ tip.style.opacity=0; hlLines.visible=false; }
+  else{
+    sizeAttr[i]=baseSize[i]*2.2;
+    const n=NODES[i]; const parts=(n.title||'').split('\n');
+    tip.querySelector('.t').textContent=parts[0]||'(untitled)';
+    const meta=(parts[1]||'').replace(/^\[|\]$/g,'');
+    tip.querySelector('.m').innerHTML=`${meta}${parts[2] ? ' <span class="sep">·</span> '+parts[2] : ''}`;
+    tip.style.opacity=1;
+    const nb=adj[i], hp=new Float32Array(nb.length*6);
+    for(let k=0;k<nb.length;k++){ const j=nb[k];
+      hp.set([px[i*3],px[i*3+1],px[i*3+2], px[j*3],px[j*3+1],px[j*3+2]], k*6); }
+    hlLines.geometry.dispose(); const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(hp,3));
+    hlLines.geometry=g; hlLines.visible=true;
+  }
+  nodesPts.geometry.attributes.size.needsUpdate=true;
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  if(autoRot && !dragging) az+=0.0009;
+  R += (targetR - R)*0.06;
+  camera.position.set(Math.cos(elev)*Math.sin(az)*R, Math.sin(elev)*R, Math.cos(elev)*Math.cos(az)*R);
+  camera.lookAt(0,0,0);
+  if(cage){ cage.rotation.y+=0.0016; cage.rotation.x+=0.0006; }
+  if(core) core.material.opacity=0.5+Math.sin(Date.now()/400)*0.08;
+  if(pickPending){ pickPending=false; camera.updateMatrixWorld(); setHover(pick());
+    el('tip').style.left=Math.min(W-330,mouseX+16)+'px'; el('tip').style.top=(mouseY+14)+'px'; }
+  renderer.render(scene,camera);
+}
+
+addEventListener('keydown', e=>{ if(e.key==='h'||e.key==='H'){ document.body.classList.toggle('dbg-on'); } });
+
+boot().catch(e=>{ el('loading').textContent='uplink failed: '+e.message; });
+</script>
+</body>
+</html>

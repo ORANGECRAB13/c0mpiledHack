@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vocare — Live Context Graph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/d3@7/dist/d3.min.js"></script>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg:#0a0908; --ink:#f4efe6; --muted:#8f877a; --line:#221f1b; --panel:#141210;
+    --lime:#aecb43; --purple:#7a54c9; --pink:#e5468f; --orange:#f0662f;
+    --blue:#7cb2d6; --yellow:#f2c53d; --teal:#4bc2ad; --red:#e5533c;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--ink);
+    font-family:"DM Mono",ui-monospace,monospace; overflow:hidden; }
+  body { display:flex; flex-direction:column; }
+  body::after { content:""; position:fixed; inset:0; pointer-events:none; z-index:5; opacity:.045;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+  #app { display:grid; grid-template-rows:auto 1fr; flex:1 1 auto; min-height:0; }
+  .synthetic-banner {
+    flex:0 0 auto; text-align:center; padding:6px 12px; background:#1a1712; color:#c9a25a;
+    font-family:"DM Mono",monospace; font-size:11px; border-bottom:1px solid var(--line);
+  }
+  header { display:flex; align-items:baseline; gap:20px; padding:14px 22px;
+    border-bottom:1px solid var(--line); background:linear-gradient(180deg,#100e0c,#0a0908); flex-wrap:wrap; z-index:6; }
+  h1 { font-family:"Fraunces",serif; font-weight:700; font-size:24px; margin:0; letter-spacing:.2px; display:flex; align-items:center; gap:10px; }
+  h1 .star { color:var(--lime); font-size:20px; }
+  .kicker { font-family:"Fraunces",serif; font-style:italic; color:var(--muted); font-size:14px; font-weight:400; }
+  .stat { color:var(--muted); font-size:11px; letter-spacing:.4px; text-transform:uppercase; }
+  .stat b { color:var(--ink); font-size:16px; font-family:"Fraunces",serif; margin-right:3px; }
+  #status { font-size:11px; text-transform:uppercase; letter-spacing:.6px; }
+  #status.live{ color:var(--lime);} #status.err{ color:var(--red);}
+  .controls { display:flex; align-items:center; gap:8px; margin-left:auto; flex-wrap:wrap; }
+  select,button,a.navlink { background:var(--panel); color:var(--ink); border:1px solid var(--line);
+    border-radius:999px; padding:6px 13px; font-family:"DM Mono",monospace; font-size:12px; cursor:pointer; transition:.15s;
+    text-decoration:none; display:inline-flex; align-items:center; }
+  select:hover,button:hover,a.navlink:hover { border-color:var(--lime); color:var(--lime); }
+  button.go { background:var(--lime); color:#0a0908; border-color:var(--lime); font-weight:500; }
+  button.go:hover { background:var(--yellow); border-color:var(--yellow); color:#0a0908; }
+  #legend { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+  .legend-item { color:var(--muted); font-size:12px; white-space:nowrap; display:flex; align-items:center; gap:6px; }
+  .dot { width:11px; height:11px; border-radius:50%; }
+  #net { width:100%; height:100%; position:relative; }
+  svg { width:100%; height:100%; display:block; cursor:grab; }
+  svg:active { cursor:grabbing; }
+  line.edge { stroke:#2a2620; stroke-width:0.6; stroke-opacity:0.5; }
+  circle.node { stroke:#0a0908; stroke-width:1.5; cursor:pointer; transition:stroke .1s; }
+  circle.node:hover { stroke:var(--ink); stroke-width:2.5; }
+  circle.node.selected { stroke:var(--yellow); stroke-width:3; }
+  text.lbl { font-family:"DM Mono",monospace; font-size:9px; fill:#a79f90; pointer-events:none;
+    opacity:0; transition:opacity .15s; }
+  #tip { position:absolute; z-index:8; pointer-events:none; background:#141210; border:1px solid var(--line);
+    border-radius:8px; padding:7px 10px; font-size:11px; color:var(--ink); max-width:340px; white-space:pre-line;
+    opacity:0; transition:opacity .1s; box-shadow:0 6px 20px rgba(0,0,0,.5); }
+</style>
+</head>
+<body>
+<div class="synthetic-banner" role="note">
+  Synthetic data — no real customer, account, or regulatory determination is represented.
+</div>
+<div id="app">
+  <header>
+    <h1><span class="star">✦</span>Vocare <span class="kicker">— the context graph, live</span></h1>
+    <span class="stat"><b id="nodeCount">–</b>nodes</span>
+    <span class="stat"><b id="edgeCount">–</b>edges</span>
+    <span id="status" class="live">● connecting</span>
+    <div id="legend"></div>
+    <div class="controls">
+      <select id="source" title="Filter by state">
+        <option value="">all states</option>
+      </select>
+      <select id="interval" title="Live refresh">
+        <option value="0">refresh: off</option><option value="5000" selected>every 5s</option>
+        <option value="15000">every 15s</option><option value="30000">every 30s</option>
+      </select>
+      <button id="fit">fit</button>
+      <button id="refresh" class="go">↻ now</button>
+      <a class="navlink" href="context-engine.html">◈ context engine</a>
+      <a class="navlink" href="index.html">← console</a>
+    </div>
+  </header>
+  <div id="net"><div id="tip"></div></div>
+</div>
+<script>
+const PALETTE = ["#aecb43","#7a54c9","#e5468f","#f0662f","#7cb2d6","#f2c53d","#4bc2ad","#e5533c"];
+const groupColor = {}; let ci = 0;
+const colorFor = (g) => (groupColor[g] ??= PALETTE[ci++ % PALETTE.length]);
+const el = (id) => document.getElementById(id);
+
+const net = el("net");
+const svg = d3.select(net).append("svg");
+const root = svg.append("g");            // zoom/pan container
+const gEdges = root.append("g");
+const gNodes = root.append("g");
+const gLabels = root.append("g");
+const tip = el("tip");
+
+const zoom = d3.zoom().scaleExtent([0.05, 8]).on("zoom", (e) => root.attr("transform", e.transform));
+svg.call(zoom);
+
+let nodeById = new Map();
+const sim = d3.forceSimulation()
+  .force("link", d3.forceLink().id(d => d.id).distance(50).strength(0.4))
+  .force("charge", d3.forceManyBody().strength(-90).distanceMax(500).theta(0.9))
+  .force("center", d3.forceCenter())
+  .force("collide", d3.forceCollide().radius(d => d.r + 2))
+  .on("tick", ticked);
+
+let linkSel = gEdges.selectAll("line");
+let nodeSel = gNodes.selectAll("circle");
+let lblSel = gLabels.selectAll("text");
+
+function ticked() {
+  linkSel.attr("x1", d=>d.source.x).attr("y1", d=>d.source.y).attr("x2", d=>d.target.x).attr("y2", d=>d.target.y);
+  nodeSel.attr("cx", d=>d.x).attr("cy", d=>d.y);
+  lblSel.attr("x", d=>d.x+d.r+3).attr("y", d=>d.y+3);
+}
+
+function fitView() {
+  const nodesArr = sim.nodes(); if (!nodesArr.length) return;
+  const xs = nodesArr.map(n=>n.x), ys = nodesArr.map(n=>n.y);
+  const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
+  const w=net.clientWidth, h=net.clientHeight, pad=60;
+  const gw=(maxX-minX)||1, gh=(maxY-minY)||1;
+  const k=Math.min(8, 0.9*Math.min((w-2*pad)/gw, (h-2*pad)/gh));
+  const tx=w/2-k*(minX+maxX)/2, ty=h/2-k*(minY+maxY)/2;
+  svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(tx,ty).scale(k));
+}
+
+const setStatus=(t,c)=>{ const s=el("status"); s.textContent="● "+t; s.className=c; };
+function renderLegend(){ const b=el("legend"); b.innerHTML="";
+  Object.entries(groupColor).forEach(([g,c])=>{ const s=document.createElement("span"); s.className="legend-item";
+    s.innerHTML=`<span class="dot" style="background:${c}"></span>${g}`; b.appendChild(s); }); }
+
+const drag = (s) => d3.drag()
+  .on("start",(e,d)=>{ if(!e.active) s.alphaTarget(0.2).restart(); d.fx=d.x; d.fy=d.y; })
+  .on("drag",(e,d)=>{ d.fx=e.x; d.fy=e.y; })
+  .on("end",(e,d)=>{ if(!e.active) s.alphaTarget(0); d.fx=null; d.fy=null; });
+
+function nodeTitle(n) {
+  const p = n.properties || {};
+  const bits = [`${n.label}  ·  ${n.primaryLabel}`];
+  if (p.citation) bits.push(p.citation);
+  if (p.summary) bits.push(p.summary);
+  if (p.state && n.primaryLabel !== 'State') bits.push(`state: ${p.state}`);
+  if (p.estimatedValue) bits.push(`value: $${Number(p.estimatedValue).toLocaleString()}`);
+  return bits.join("\n");
+}
+
+let firstData = true;
+let statesSeeded = false;
+function update(graph) {
+  const deg = {}; graph.links.forEach(l=>{ deg[l.source]=(deg[l.source]||0)+1; deg[l.target]=(deg[l.target]||0)+1; });
+  const nodesArr = graph.nodes.map(n => {
+    const prev = nodeById.get(n.id);
+    return Object.assign(prev || {}, n, {
+      group: n.primaryLabel,
+      r: 4 + Math.min(9, (deg[n.id]||0) * 1.1)
+    });
+  });
+  nodeById = new Map(nodesArr.map(n=>[n.id,n]));
+  const linksArr = graph.links.map(l => ({ source:l.source, target:l.target })).filter(l => nodeById.has(l.source) && nodeById.has(l.target));
+
+  linkSel = gEdges.selectAll("line").data(linksArr).join("line").attr("class","edge");
+  nodeSel = gNodes.selectAll("circle").data(nodesArr, d=>d.id).join(
+    enter => enter.append("circle").attr("class","node").attr("r",d=>d.r)
+      .attr("fill",d=>colorFor(d.group)).call(drag(sim))
+      .on("mousemove",(e,d)=>{ tip.textContent=nodeTitle(d); tip.style.opacity=1;
+        tip.style.left=(e.offsetX+14)+"px"; tip.style.top=(e.offsetY+10)+"px"; })
+      .on("mouseleave",()=>tip.style.opacity=0)
+      .on("click",(e,d)=>{ nodeSel.classed("selected", n=>n.id===d.id); }),
+    upd => upd.attr("fill",d=>colorFor(d.group)).attr("r",d=>d.r)
+  );
+  const hubs = [...nodesArr].sort((a,b)=>b.r-a.r).slice(0,8);
+  lblSel = gLabels.selectAll("text").data(hubs, d=>d.id).join("text")
+    .attr("class","lbl").text(d=>d.label).style("opacity",0.9);
+
+  sim.nodes(nodesArr); sim.force("link").links(linksArr);
+  sim.alpha(firstData ? 1 : 0.15).restart();
+  firstData = false;
+  el("nodeCount").textContent = graph.summary?.nodeCount ?? nodesArr.length;
+  el("edgeCount").textContent = graph.summary?.relationshipCount ?? linksArr.length;
+  renderLegend(); setStatus("live","live");
+
+  if (!statesSeeded) {
+    statesSeeded = true;
+    const states = graph.nodes.filter(n => n.primaryLabel === 'State').map(n => n.properties.code).sort();
+    const sel = el("source");
+    for (const code of states) {
+      const opt = document.createElement("option");
+      opt.value = code; opt.textContent = code;
+      sel.appendChild(opt);
+    }
+  }
+}
+
+let firstFit=true;
+async function load(){
+  const state = el("source").value;
+  try {
+    setStatus("loading…","live");
+    const r = await fetch(`/api/graph/visualization`+(state?`?state=${state}`:""));
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const body = await r.json();
+    update(body.graph);
+    if(firstFit){ firstFit=false; setTimeout(fitView, 1200); }
+  } catch(e){ setStatus("error "+e.message,"err"); }
+}
+let timer=null;
+const reschedule=()=>{ if(timer) clearInterval(timer); const ms=+el("interval").value; if(ms>0) timer=setInterval(load,ms); };
+el("source").addEventListener("change",()=>{ firstFit=true; load(); });
+el("interval").addEventListener("change",reschedule);
+el("refresh").addEventListener("click",load);
+el("fit").addEventListener("click",fitView);
+load(); reschedule();
+</script>
+</body>
+</html>
