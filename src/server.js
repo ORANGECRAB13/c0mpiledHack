@@ -8,7 +8,16 @@ config({ path: '.env.local', override: true });
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
-const { engineStatus, syncGraph, visualization, benefitStackFor, jurisdictionFor } = await import('./graph/index.js');
+const {
+  engineStatus,
+  syncGraph,
+  visualization,
+  benefitStackFor,
+  jurisdictionFor,
+  discoveryStatus,
+  resetDiscovery,
+  runDiscoveryAgent
+} = await import('./graph/index.js');
 const { loadDataset } = await import('./graph/dataset.js');
 const wf = await import('./workflow/state-machine.js');
 const { bus, eventsFor, citedIds } = await import('./workflow/events.js');
@@ -31,6 +40,11 @@ app.use(express.json({ limit: '2mb' }));
 // the legacy vanilla console in public/ remains a fallback for API-less checks.
 import { existsSync } from 'node:fs';
 const reactDist = path.resolve(here, '../frontend-dist');
+const erpDist = path.resolve(here, '../energy-erp-dist');
+if (existsSync(erpDist)) {
+  app.use('/erp', express.static(erpDist));
+  app.get('/erp/*', (_req, res) => res.sendFile(path.join(erpDist, 'index.html')));
+}
 if (existsSync(reactDist)) app.use(express.static(reactDist));
 app.use(express.static(path.resolve(here, '../public')));
 
@@ -73,6 +87,22 @@ app.get('/api/engine/status', wrap(async (_req, res) =>
 app.post('/api/graph/sync', wrap(async (_req, res) => ok(res, { result: await syncGraph() })));
 app.get('/api/graph/visualization', wrap(async (req, res) =>
   ok(res, { graph: await visualization({ state: req.query.state || null, dense: req.query.dense === '1' }) })
+));
+
+app.get('/api/discovery/status', wrap(async (_req, res) =>
+  ok(res, { discovery: discoveryStatus() })
+));
+
+app.post('/api/discovery/reset', wrap(async (_req, res) =>
+  ok(res, { discovery: resetDiscovery() })
+));
+
+app.post('/api/discovery/agents/:agentId/run', wrap(async (req, res) =>
+  ok(res, {
+    discovery: await runDiscoveryAgent(req.params.agentId, {
+      batchSize: req.body?.batchSize
+    })
+  })
 ));
 
 app.get('/api/context/resolve', wrap(async (req, res) => {

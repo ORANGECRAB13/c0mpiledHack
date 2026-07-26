@@ -4,7 +4,7 @@ import { useApp } from '../App.jsx';
 const MODULE_ORDER = ['Customer Operations', 'Billing & Revenue', 'Grid Operations', 'Grid & Assets', 'Field Service', 'Inventory', 'Procurement', 'Workforce', 'Accounting', 'System'];
 
 export default function Sidebar() {
-  const { user, entities, docTypes } = useApp();
+  const { user, entities, docTypes, discovery } = useApp();
 
   // group: module -> { docs: [], entities: [] }
   const groups = new Map();
@@ -28,6 +28,16 @@ export default function Sidebar() {
     `block rounded-md px-3 py-1.5 text-sm ${
       isActive ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
     }`;
+  const focusTargets = {
+    regulatory: ['Operational Data Lake', 'Grid Operations', 'Grid & Assets', 'System'],
+    customer: ['Customer Operations', 'Billing & Revenue', 'Customers', 'Service Accounts', 'Utility Bills', 'Customer Payments'],
+    benefits: ['Anomalies', 'Customer Operations', 'Billing & Revenue', 'Rate Plans'],
+    relationships: ['Audit Log', 'Financial Audit', 'Accounting', 'Journal']
+  };
+  const isFocused = (...labels) =>
+    (focusTargets[discovery?.agentId] || []).some((target) => labels.includes(target));
+  const navClass = (...labels) => (args) =>
+    `${linkClass(args)} ${isFocused(...labels) ? 'erp-discovery-focus' : ''}`;
 
   return (
     <aside className="flex w-64 shrink-0 flex-col bg-slate-900">
@@ -39,22 +49,22 @@ export default function Sidebar() {
 
       <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
         <div>
-          <NavLink to="/" end className={linkClass}>
+          <NavLink to="/" end className={navClass('Dashboard')}>
             Dashboard
           </NavLink>
-          <NavLink to="/journal" className={linkClass}>
+          <NavLink to="/journal" className={navClass('Journal')}>
             Journal
           </NavLink>
-          <NavLink to="/anomalies" className={linkClass}>
+          <NavLink to="/anomalies" className={navClass('Anomalies')}>
             Anomalies
           </NavLink>
-          <NavLink to="/financial-audit" className={linkClass}>
+          <NavLink to="/financial-audit" className={navClass('Financial Audit')}>
             Financial Audit
           </NavLink>
-          <NavLink to="/audit" className={linkClass}>
+          <NavLink to="/audit" className={navClass('Audit Log')}>
             Audit Log
           </NavLink>
-          <NavLink to="/legacy" className={linkClass}>
+          <NavLink to="/legacy" className={navClass('Operational Data Lake')}>
             Operational Data Lake
           </NavLink>
         </div>
@@ -63,14 +73,14 @@ export default function Sidebar() {
           const group = groups.get(module);
           return (
             <div key={module}>
-              <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-slate-500">{module}</p>
+              <p className={`mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-slate-500 ${isFocused(module) ? 'erp-discovery-focus-label' : ''}`}>{module}</p>
               {group.docs.map((docType) => (
-                <NavLink key={docType.name} to={`/documents/${docType.name}`} className={linkClass}>
+                <NavLink key={docType.name} to={`/documents/${docType.name}`} className={navClass(module, docType.label)}>
                   {docType.label}
                 </NavLink>
               ))}
               {group.entities.map((entity) => (
-                <NavLink key={entity.name} to={`/entity/${entity.name}`} className={linkClass}>
+                <NavLink key={entity.name} to={`/entity/${entity.name}`} className={navClass(module, entity.label)}>
                   {entity.label}
                 </NavLink>
               ))}

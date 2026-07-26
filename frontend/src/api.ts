@@ -21,6 +21,10 @@ export const DEMO_CASE = 'C-20481';
 export const api = {
   health: () => req('/api/health'),
   customers: () => req('/api/customers'),
+  discoveryStatus: () => req('/api/discovery/status'),
+  resetDiscovery: () => post('/api/discovery/reset'),
+  runDiscoveryAgent: (agentId: string, batchSize?: number) =>
+    post(`/api/discovery/agents/${agentId}/run`, { batchSize }),
   startCase: (customerId: string) => post('/api/case/start', { customerId }),
   getCase: (caseId: string) => req(`/api/case/${caseId}`),
   beginCall: (caseId: string, mode = 'scripted') =>
@@ -125,4 +129,30 @@ export interface Customer {
   declaredHouseholdSize: number;
   declaredAnnualIncome: number;
   demoRole?: string;
+}
+
+export interface DiscoveryAgent {
+  id: string;
+  name: string;
+  system: string;
+  sources: string[];
+  description: string;
+  status: 'pending' | 'running' | 'complete';
+  nodesAdded: number;
+  relationshipsAdded: number;
+  processedUnits: number;
+  totalUnits: number;
+  progress: number;
+  completedAt: string | null;
+}
+
+export interface DiscoveryStatus {
+  runId: string;
+  status: 'empty' | 'running' | 'complete';
+  startedAt: string | null;
+  completedAt: string | null;
+  currentAgent: string | null;
+  version: number;
+  counts: { nodes: number; relationships: number };
+  agents: DiscoveryAgent[];
 }
