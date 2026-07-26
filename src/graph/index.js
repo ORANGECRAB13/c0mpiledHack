@@ -88,7 +88,10 @@ export async function syncGraph() {
   const schema = await withGraphSession(WRITE, (session) => ensureGraphSchema(session));
   const counts = await withGraphSession(WRITE, (session) => ingestDataset(session, dataset));
   const semantic = await withGraphSession(WRITE, (session) => indexPolicyChunks(session, dataset));
-  return { backend: 'neo4j', synced: true, schema, counts, semantic };
+  // Learnings recorded while the graph was unreachable live only in JSON.
+  // Reconcile them here so an outage heals itself on the next sync.
+  const learnings = await mirrorAllLearnings();
+  return { backend: 'neo4j', synced: true, schema, counts, semantic, learnings };
 }
 
 export async function visualization(options = {}) {
@@ -190,6 +193,7 @@ function ratifiedGapPrograms(dataset) {
 // way they reach the rest of the context engine. See learnings.js for why these
 // are kept strictly separate from ratified ground truth.
 export { listLearnings, playbookFor, recordLearning, learningSummary, LEARNING_KINDS } from './learnings.js';
+import { mirrorAllLearnings } from './learnings.js';
 
 // ── knowledge gaps ───────────────────────────────────────────────────
 

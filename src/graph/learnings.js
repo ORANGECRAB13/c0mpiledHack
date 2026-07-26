@@ -181,6 +181,29 @@ async function mirrorToGraph(learning) {
   );
 }
 
+/**
+ * Re-mirrors every stored learning into the graph.
+ *
+ * Learnings written while Neo4j was unreachable exist only in JSON — that is
+ * the intended failure mode, since losing a learning to a graph outage would be
+ * worse than a stale graph. This reconciles the two, and is called from
+ * syncGraph() so the gap closes on its own the next time the graph is synced
+ * rather than requiring anyone to notice it happened.
+ */
+export async function mirrorAllLearnings() {
+  const all = await listLearnings();
+  let mirrored = 0;
+  for (const learning of all) {
+    try {
+      await mirrorToGraph(learning);
+      mirrored += 1;
+    } catch {
+      // Best-effort by design; JSON remains authoritative.
+    }
+  }
+  return { total: all.length, mirrored };
+}
+
 /** Aggregate view for the operator UI — what has the system taught itself? */
 export async function learningSummary() {
   const all = await listLearnings();
