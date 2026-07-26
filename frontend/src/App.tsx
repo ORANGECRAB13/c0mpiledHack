@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api, CaseView, Customer, DiscoveryStatus } from './api';
-import ContextMesh3D from './ContextMesh3D';
+import ContextMesh3D, { MeshCinema } from './ContextMesh3D';
 import { runPhase1, runPhase2 } from './scripted';
 import { startVoiceCall, stopVoiceCall } from './voice';
 import { startVoiceCallWebRTC, stopVoiceCallWebRTC, sendResumeContext } from './voice-webrtc';
@@ -42,6 +42,145 @@ const detectNodes = [
   { label: 'Benefit programs', icon: SearchCheck, key: 'prog' }
 ];
 
+// ── Detect sequence ───────────────────────────────────────────────────
+// Four hops, deliberately. Each hop is one question the engine has to answer,
+// not one node it happens to touch — so a hop may sweep several nodes while the
+// narration card stays open on the single finding that hop produced.
+//
+// Node ids are read off the live case rather than hard-coded, so the camera is
+// genuinely flying to the records the compliance engine resolved.
+
+type Beat = {
+  key: string;
+  title: string;
+  detail: string;
+  facts: string[];
+  icon: any;
+  kind: 'alert' | 'trace' | 'resolved' | 'external';
+  /** Nodes this hop visits, in order. The first is where the camera lands. */
+  stops: string[];
+  inject?: { id: string; title: string; meta: string; group: string; anchor: string };
+  radius?: number;
+  hold: number;
+};
+
+function buildDetectScript(stack: any, hardship: any): Beat[] {
+  const beats: Beat[] = [];
+  const customerId = stack.customerId;
+  const invoice = stack.account?.invoice;
+  const payment = stack.account?.payment;
+  const notes = stack.account?.notes || [];
+  const failedId = `INV-FAILED-${stack.caseId}`;
+
+  // ── Hop 1 — the trigger ──
+  beats.push({
+    key: 'arrive',
+    title: 'Failed payment posted',
+    detail: 'A returned direct debit lands in the graph and attaches to the account it belongs to.',
+    facts: [
+      `${money(payment?.lastSuccessfulAmount ?? 0)} returned unpaid`,
+      `Account ${customerId} · ${stack.customerName}`,
+      `${money(stack.account?.arrears)} now outstanding`
+    ],
+    icon: ReceiptText,
+    inject: {
+      id: failedId,
+      title: `Failed payment · ${stack.customerName}`,
+      meta: 'AccountRecord · returned unpaid · just now',
+      group: 'AccountRecord',
+      anchor: customerId
+    },
+    stops: [failedId],
+    kind: 'alert',
+    radius: 96,
+    hold: 4200
+  });
+
+  // ── Hop 2 — who is this, really ──
+  // The Crustdata pass. Whatever it actually returned goes on the card, including
+  // the case where identity could not be resolved — a blank result is a finding.
+  const external = hardship?.external;
+  const identity = external?.identity;
+  const externalFacts: string[] = [];
+  if (identity?.resolved) {
+    externalFacts.push(`Public profile matched · confidence ${identity.confidence}`);
+    for (const signal of (external.signals || []).slice(0, 2)) externalFacts.push(signal.label);
+    externalFacts.push(`${external.score}/${external.cap} corroboration · capped by policy`);
+  } else if (external?.attempted) {
+    externalFacts.push('No public profile could be matched to this customer');
+    externalFacts.push(external.reason || 'Identity unresolved');
+    externalFacts.push('Assessment continues on internal records alone');
+  } else {
+    externalFacts.push('External lookup not enabled for this deployment');
+    externalFacts.push(external?.reason || 'Internal records only');
+  }
+
+  beats.push({
+    key: 'crustdata',
+    title: identity?.resolved ? 'Public record corroborated' : 'Public record checked',
+    detail: `Crustdata lookup against ${stack.customerName} — employment, employer health and local labour-market reporting.`,
+    facts: externalFacts,
+    icon: Link2,
+    stops: [customerId],
+    kind: 'external',
+    radius: 112,
+    hold: 5000
+  });
+
+  // ── Hop 3 — what the ledger already knew ──
+  const historyStops = [invoice?.id, payment?.id, ...notes.slice(0, 2).map((n: any) => n.id)].filter(Boolean);
+  const disclosure = notes.find((n: any) => (n.signals || []).includes('reduced_income_disclosure'));
+  beats.push({
+    key: 'history',
+    title: 'Account history traced',
+    detail: 'Billing, payment behaviour and every contact-centre note on this account.',
+    facts: [
+      invoice?.text || `${invoice?.unpaidInvoices ?? 0} unpaid invoices`,
+      payment?.text || 'Payment summary retrieved',
+      disclosure ? disclosure.text : `${notes.length} contact notes reviewed`
+    ].filter(Boolean),
+    icon: Headphones,
+    stops: historyStops,
+    kind: 'trace',
+    radius: 106,
+    hold: 5600
+  });
+
+  // ── Hop 4 — what the law says about it ──
+  const activeMoratorium = stack.jurisdiction.moratoria?.find((m: any) => m.active);
+  const programs = [...(stack.eligible || []), ...(stack.ineligible || [])].slice(0, 2);
+  const ruleStops = [
+    stack.jurisdiction.state.code,
+    stack.jurisdiction.pucRule.sourceId,
+    activeMoratorium?.sourceId,
+    stack.boundaries.authoritySourceId,
+    ...programs.map((p: any) => p.id)
+  ].filter(Boolean);
+
+  beats.push({
+    key: 'rules',
+    title: 'Jurisdiction and entitlements resolved',
+    detail: `${stack.jurisdiction.state.name} rules govern this account (${stack.jurisdiction.state.regulatorAbbr}).`,
+    facts: [
+      stack.jurisdiction.pucRule.citation,
+      activeMoratorium
+        ? `Disconnection protection ACTIVE — ${activeMoratorium.reason}`
+        : 'No disconnection moratorium active today',
+      `Agent may settle at or above ${money(stack.boundaries.authorityFloor)} without a human`,
+      stack.totals.benefitsUnlocked
+        ? `${money(stack.totals.benefitsUnlocked)} in benefits resolves on the current record`
+        : 'Nothing resolves on the current record — income data is stale'
+    ],
+    icon: Landmark,
+    stops: ruleStops,
+    kind: 'resolved',
+    radius: 130,
+    hold: 6000
+  });
+
+  return beats;
+}
+
 export default function App() {
   const [stage, setStage] = useState<Stage>('onboarding');
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -67,6 +206,13 @@ export default function App() {
   const resumedApprovalRef = useRef<string | null>(null);
   // Slide-style manual navigation: the presenter advances the big steps.
   const [detectReady, setDetectReady] = useState(false);
+  // Detect sequence: the camera controller, the narration beats played so far,
+  // and whether the closing report has assembled.
+  const cinemaRef = useRef<MeshCinema | null>(null);
+  const [beats, setBeats] = useState<Beat[]>([]);
+  const [beatIndex, setBeatIndex] = useState(-1);
+  const [reportOpen, setReportOpen] = useState(false);
+  const detectRunRef = useRef(0);
   const [callComplete, setCallComplete] = useState(false);
   const caseIdRef = useRef<string | null>(null);
   const busyRef = useRef(false);
@@ -211,14 +357,76 @@ export default function App() {
       caseIdRef.current = c.caseId;
       setKase(c);
       setStage('detecting');
-      // Animate the source nodes lighting up, then STOP and wait for the presenter
-      // to advance to the call (no auto-transition).
-      for (let i = 1; i <= detectNodes.length; i++) {
-        await new Promise((r) => setTimeout(r, 360));
-        setSourcesLoaded(i);
-      }
-      setDetectReady(true);
+      // Fly the graph. Stops on the report and waits for the presenter — no
+      // auto-transition into the call.
+      await runDetectCinema(c);
     } catch (e: any) { setError(e.message); } finally { busyRef.current = false; }
+  }
+
+  /**
+   * Plays the Detect sequence: the failed payment arrives as a node, the camera
+   * dives to it, then walks the customer's history through the graph before the
+   * findings assemble into a report.
+   *
+   * Every beat targets a node id taken from the resolved case, so this is a tour
+   * of the real context graph rather than a canned animation over a picture of one.
+   */
+  async function runDetectCinema(c: CaseView) {
+    const stack: any = c.stack;
+    if (!stack) return;
+    const run = ++detectRunRef.current;
+    const alive = () => detectRunRef.current === run;
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+    const script = buildDetectScript(stack, c.hardship);
+    setBeats(script);
+    setBeatIndex(-1);
+    setReportOpen(false);
+    setSourcesLoaded(0);
+
+    // The mesh mounts with the slide and has to load three.js over the network
+    // before it can accept commands; give it a moment rather than dropping beats.
+    for (let i = 0; i < 60 && !cinemaRef.current; i += 1) await wait(100);
+    if (!alive()) return;
+    const cinema = cinemaRef.current;
+    cinema?.reset();
+    await wait(500);
+
+    const visited: string[] = [];
+    for (let i = 0; i < script.length; i += 1) {
+      if (!alive()) return;
+      const beat = script[i];
+      if (beat.inject) cinemaRef.current?.inject(beat.inject);
+      // Let an injected node reach its resting orbit before the camera commits,
+      // otherwise the pivot chases it and the move reads as a drift.
+      if (beat.inject) await wait(420);
+      if (!alive()) return;
+
+      // The card pops open for the whole hop; the camera meanwhile sweeps every
+      // node this hop touches, dividing the hop's time between them.
+      setBeatIndex(i);
+      setSourcesLoaded(Math.min(detectNodes.length, i + 1));
+
+      const stops = beat.stops.length ? beat.stops : [];
+      const perStop = stops.length ? beat.hold / stops.length : beat.hold;
+      for (const stop of stops) {
+        if (!alive()) return;
+        cinemaRef.current?.mark(stop, beat.kind);
+        cinemaRef.current?.focus(stop, beat.radius);
+        visited.push(stop);
+        cinemaRef.current?.trail(visited);
+        await wait(perStop);
+      }
+      if (!stops.length) await wait(beat.hold);
+    }
+
+    if (!alive()) return;
+    // Pull back so the whole traversal is visible behind the report.
+    cinemaRef.current?.focus(null);
+    await wait(700);
+    if (!alive()) return;
+    setReportOpen(true);
+    setDetectReady(true);
   }
 
   async function runScript() {
@@ -513,8 +721,75 @@ export default function App() {
         {stage === 'detecting' && (
           <motion.section key="detecting" className="screen detect-screen-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
             <div className="context-map-full">
-              <ContextMesh3D refreshKey={discovery?.version ?? 0} />
+              <ContextMesh3D refreshKey={discovery?.version ?? 0} cinemaRef={cinemaRef} />
             </div>
+
+            {/* Narration rail — one line per camera move, newest at the bottom. */}
+            <div className="detect-rail">
+              <div className="detect-rail-head">
+                <span>CONTEXT ENGINE</span>
+                <strong>Tracing the record through the graph</strong>
+              </div>
+              <ol className="detect-beats">
+                <AnimatePresence initial={false}>
+                  {beats.slice(0, beatIndex + 1).map((beat, i) => {
+                    const Icon = beat.icon;
+                    const active = i === beatIndex && !reportOpen;
+                    return (
+                      // The active hop's card pops out to full size with its
+                      // findings; once the hop is done it collapses back to a
+                      // one-line entry so the rail stays readable.
+                      <motion.li key={beat.key}
+                        className={`detect-beat ${beat.kind} ${active ? 'active' : 'done'}`}
+                        initial={{ opacity: 0, x: -14, scale: 0.96 }}
+                        animate={{ opacity: active ? 1 : 0.62, x: 0, scale: active ? 1 : 0.955 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}>
+                        <i><Icon size={active ? 15 : 12} /></i>
+                        <div>
+                          <strong>{beat.title}</strong>
+                          <AnimatePresence initial={false}>
+                            {active && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                style={{ overflow: 'hidden' }}>
+                                <p>{beat.detail}</p>
+                                <ul className="beat-facts">
+                                  {beat.facts.map((fact, f) => (
+                                    <motion.li key={f}
+                                      initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                                      transition={{ delay: 0.14 + f * 0.16, duration: 0.3 }}>
+                                      {fact}
+                                    </motion.li>
+                                  ))}
+                                </ul>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                          <code>{beat.stops.length} node{beat.stops.length === 1 ? '' : 's'} · {beat.stops[0]}</code>
+                        </div>
+                      </motion.li>
+                    );
+                  })}
+                </AnimatePresence>
+              </ol>
+            </div>
+
+            {/* Closing report — what the traversal established, and the handoff. */}
+            <AnimatePresence>
+              {reportOpen && kase && (
+                <motion.div className="detect-report"
+                  initial={{ opacity: 0, y: 24, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 12 }}
+                  transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}>
+                  <DetectReport kase={kase} beats={beats} onEngage={goNext} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.section>
         )}
 
@@ -793,6 +1068,80 @@ export default function App() {
         <footer><span>VOCARE · DETERMINISTIC COMPLIANCE ENGINE</span><span>Synthetic demonstration · No real customer data</span></footer>
       )}
     </main>
+  );
+}
+
+/**
+ * What the traversal established. Deliberately assembled from the case rather
+ * than written into the animation — the risk tier, the signals and the source ids
+ * are the same ones that land in the audit document.
+ */
+function DetectReport({ kase, beats, onEngage }: { kase: CaseView; beats: Beat[]; onEngage: () => void }) {
+  const stack: any = kase.stack;
+  const hardship = kase.hardship;
+  const signals = [
+    ...(hardship?.internal.signals || []),
+    ...(hardship?.external.signals || [])
+  ].sort((a, b) => b.weight - a.weight).slice(0, 4);
+  const protectedToday = stack.jurisdiction.protectedFromDisconnection;
+
+  return (
+    <div className="panel report-card">
+      <div className="report-head">
+        <div>
+          <span className="report-kicker"><FileCheck2 size={12} /> DETECTION REPORT</span>
+          <h2>{stack.customerName}</h2>
+          <p>
+            {beats.length} hops · {beats.reduce((n, b) => n + b.stops.length, 0)} nodes traversed ·{' '}
+            {stack.jurisdiction.state.name} · case {kase.caseId}
+          </p>
+        </div>
+        {hardship && (
+          <div className={`risk-dial ${hardship.tier}`}>
+            <b>{hardship.score}</b>
+            <span>{hardship.tier}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="report-grid">
+        <div className="report-stat">
+          <span>Arrears</span>
+          <strong>{money(stack.account?.arrears)}</strong>
+        </div>
+        <div className="report-stat">
+          <span>Disconnection</span>
+          <strong className={protectedToday ? 'ok' : 'warn'}>
+            {protectedToday ? 'Protected today' : 'Not protected'}
+          </strong>
+        </div>
+        <div className="report-stat">
+          <span>Benefits on record</span>
+          <strong className={stack.totals.benefitsUnlocked ? 'ok' : 'warn'}>
+            {money(stack.totals.benefitsUnlocked)}
+          </strong>
+        </div>
+      </div>
+
+      {signals.length > 0 && (
+        <ul className="report-signals">
+          {signals.map((s) => (
+            <li key={s.id} className={s.family}>
+              <i>{s.family === 'external' ? <Link2 size={11} /> : <Database size={11} />}</i>
+              <p>{s.label}</p>
+              <code>{s.sourceId}</code>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="report-foot">
+        <p><ShieldCheck size={12} /> {hardship?.recommendedAction || 'Proceed to contact.'}</p>
+        <button className="report-cta" onClick={onEngage}>
+          Engage <ArrowRight size={14} />
+        </button>
+      </div>
+    </div>
   );
 }
 

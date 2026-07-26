@@ -1,4 +1,25 @@
-import { useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
+
+/**
+ * Imperative handle the Detect sequence drives the camera with.
+ *
+ * The mesh owns its own three.js scene inside one effect closure, so rather than
+ * lifting all of that into React state (which would re-render 1,200 nodes on
+ * every step) the parent gets a small command surface and the render loop stays
+ * untouched.
+ */
+export type MeshCinema = {
+  /** Adds a node that is not in the graph API response yet — the arriving record. */
+  inject: (spec: { id: string; title: string; meta: string; group: string; anchor?: string }) => void;
+  /** Eases the camera pivot onto a node and pulls the orbit radius in. */
+  focus: (id: string | null, radius?: number) => void;
+  /** Recolours and enlarges a node. `alert` is the red failed-payment treatment. */
+  mark: (id: string, kind: 'alert' | 'trace' | 'resolved' | 'external') => void;
+  /** Draws a polyline through the nodes visited so far. */
+  trail: (ids: string[]) => void;
+  /** Returns the camera to the wide establishing shot and clears every mark. */
+  reset: () => void;
+};
 
 const PALETTE: Record<string, string> = {
   State: '#e7b84e', PucRule: '#f0d68a', Moratorium: '#7cb2d6', AuthorityRule: '#d9a94a',
@@ -64,7 +85,23 @@ function nodeTitle(node: any): [string, string] {
 const ease = (progress: number) =>
   progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-export default function ContextMesh3D({ dense = true }: { dense?: boolean; refreshKey?: number }) {
+const MARK_COLORS: Record<string, number> = {
+  alert: 0xff4d3d,
+  trace: 0xc7f36b,
+  resolved: 0x70b9ff,
+  // Matches the violet the Crustdata hop uses in the narration rail, so the node
+  // the public-record lookup landed on reads as external at a glance.
+  external: 0xcba0e0
+};
+
+export default function ContextMesh3D({
+  dense = true,
+  cinemaRef
+}: {
+  dense?: boolean;
+  refreshKey?: number;
+  cinemaRef?: MutableRefObject<MeshCinema | null>;
+}) {
   const hostRef = useRef<HTMLDivElement>(null);
   const tipRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -186,6 +223,48 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
         let lineColors = new Float32Array();
         const color = new THREE.Color();
 
+        // ── cinematic layer ────────────────────────────────────────────
+        // Marks override a node's colour and size; the focus ring and the trail
+        // are separate scene objects so nothing here disturbs the point cloud's
+        // buffers except the two attributes the render loop already rewrites.
+        type Mark = { color: any; kind: string; born: number };
+        const marks = new Map<string, Mark>();
+        let marksVersion = 0;
+        let appliedMarksVersion = -1;
+
+        const ringMaterial = () =>
+          new THREE.MeshBasicMaterial({
+            color: 0xff4d3d,
+            transparent: true,
+            opacity: 0,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+        const focusRing = new THREE.Mesh(new THREE.RingGeometry(15, 16.4, 64), ringMaterial());
+        const pulseRing = new THREE.Mesh(new THREE.RingGeometry(15, 15.8, 64), ringMaterial());
+        focusRing.renderOrder = pulseRing.renderOrder = 3;
+        scene.add(focusRing);
+        scene.add(pulseRing);
+
+        // The investigation path, drawn as a polyline through the visited nodes.
+        let trailIds: string[] = [];
+        let trailPositions = new Float32Array(0);
+        let trailGeometry = new THREE.BufferGeometry();
+        const trailLine = new THREE.Line(
+          trailGeometry,
+          new THREE.LineBasicMaterial({
+            color: 0xc7f36b,
+            transparent: true,
+            opacity: 0.75,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          })
+        );
+        trailLine.renderOrder = 2;
+        trailLine.frustumCulled = false;
+        scene.add(trailLine);
+
         function rebuildBuffers() {
           nodeOrder = [...nodeMap.values()];
           linkOrder = [...linkMap.values()];
@@ -214,6 +293,9 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
           lineGeometry.setAttribute('color', new THREE.BufferAttribute(lineColors, 3));
           lineSegments.geometry = lineGeometry;
           cage.visible = core.visible = nodeOrder.length > 0;
+          // Base colours were just rewritten, so any active marks and the
+          // spotlight wash have to be reapplied on the next frame.
+          appliedMarksVersion = -1;
         }
 
         const hierarchy: Record<string, number> = {
@@ -379,6 +461,111 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
         window.addEventListener('pointermove', onPointerMove);
         canvas.addEventListener('wheel', onWheel, { passive: false });
 
+        // ── cinema command surface ─────────────────────────────────────
+        // Declared here (rather than beside the scene objects) because it drives
+        // the same orbit variables the pointer handlers above own.
+        let focusId: string | null = null;
+        const pivot = new THREE.Vector3();
+        const desiredPivot = new THREE.Vector3();
+        const restingRadius = targetRadius;
+
+        if (cinemaRef) {
+          cinemaRef.current = {
+            inject(spec) {
+              const now = performance.now();
+              if (nodeMap.has(spec.id)) return;
+              const anchor = spec.anchor ? nodeMap.get(spec.anchor) : null;
+              // A record belonging to a customer should arrive *at* that customer
+              // and settle onto its own orbit, not fly in from the origin like a
+              // node discovered during the initial build.
+              const destination = anchor
+                ? offsetFrom({ x: anchor.tx, y: anchor.ty, z: anchor.tz }, spec.id, 34)
+                : sphericalPosition(spec.id);
+              const origin = anchor ? { x: anchor.tx, y: anchor.ty, z: anchor.tz } : { x: 0, y: 0, z: 0 };
+              nodeMap.set(spec.id, {
+                id: spec.id, title: spec.title, meta: spec.meta, group: spec.group, degree: 2,
+                x: origin.x, y: origin.y, z: origin.z,
+                sx: origin.x, sy: origin.y, sz: origin.z,
+                tx: destination.x, ty: destination.y, tz: destination.z,
+                createdAt: now, moveStartedAt: now, moveDuration: 1050, baseSize: 13
+              });
+              if (anchor) {
+                const linkId = `${anchor.id}->${spec.id}:HAS_RECORD`;
+                linkMap.set(linkId, {
+                  id: linkId, source: anchor.id, target: spec.id, type: 'HAS_RECORD', bornAt: now
+                });
+              }
+              rebuildBuffers();
+              setCounts({ nodes: nodeMap.size, links: linkMap.size });
+            },
+            focus(id, radius) {
+              focusId = id;
+              targetRadius = id ? radius ?? 118 : restingRadius;
+              // Hand the camera back to the sequence even if the presenter has
+              // been dragging the scene around.
+              dragging = false;
+              autoRotate = true;
+              window.clearTimeout(autoRotateTimer);
+            },
+            mark(id, kind) {
+              marks.set(id, { color: new THREE.Color(MARK_COLORS[kind] ?? 0xffffff), kind, born: performance.now() });
+              marksVersion += 1;
+            },
+            trail(ids) {
+              trailIds = ids.filter((id) => nodeMap.has(id));
+              trailPositions = new Float32Array(Math.max(trailIds.length, 2) * 3);
+              trailGeometry.dispose();
+              trailGeometry = new THREE.BufferGeometry();
+              trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+              trailGeometry.setDrawRange(0, trailIds.length);
+              trailLine.geometry = trailGeometry;
+            },
+            reset() {
+              focusId = null;
+              marks.clear();
+              marksVersion += 1;
+              trailIds = [];
+              trailGeometry.setDrawRange(0, 0);
+              targetRadius = restingRadius;
+              autoRotate = true;
+            }
+          };
+        }
+
+        function updateCinema(now: number) {
+          const focused = focusId ? nodeMap.get(focusId) : null;
+          desiredPivot.set(focused ? focused.x : 0, focused ? focused.y : 0, focused ? focused.z : 0);
+          pivot.lerp(desiredPivot, 0.055);
+
+          if (focused) {
+            const mark = marks.get(focusId!);
+            const tint = mark ? mark.color : color.set(0xe7b84e);
+            const beat = 0.5 + Math.sin(now / 320) * 0.5;
+            focusRing.position.set(focused.x, focused.y, focused.z);
+            focusRing.lookAt(camera.position);
+            focusRing.material.color.copy(tint);
+            focusRing.material.opacity = 0.55 + beat * 0.25;
+            const grow = 1 + beat * 0.85;
+            pulseRing.position.copy(focusRing.position);
+            pulseRing.quaternion.copy(focusRing.quaternion);
+            pulseRing.scale.setScalar(grow);
+            pulseRing.material.color.copy(tint);
+            pulseRing.material.opacity = 0.4 * (1 - beat);
+          } else {
+            focusRing.material.opacity = 0;
+            pulseRing.material.opacity = 0;
+          }
+
+          if (trailIds.length > 1) {
+            trailIds.forEach((id, i) => {
+              const node = nodeMap.get(id);
+              if (node) trailPositions.set([node.x, node.y, node.z], i * 3);
+            });
+            trailGeometry.setDrawRange(0, trailIds.length);
+            trailGeometry.attributes.position.needsUpdate = true;
+          }
+        }
+
         function updateTooltip() {
           let bestIndex = -1;
           let bestDistance = 400;
@@ -422,8 +609,31 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
             node.y = node.sy + (node.ty - node.sy) * moveProgress;
             node.z = node.sz + (node.tz - node.sz) * moveProgress;
             nodePositions.set([node.x, node.y, node.z], index * 3);
-            nodeSizes[index] = Math.max(0.1, node.baseSize * sizeProgress);
+            const mark = marks.get(node.id);
+            // A marked node swells and breathes so it stays findable once the
+            // camera is inside the cloud and depth cues alone are not enough.
+            const emphasis = mark ? 2.1 + Math.sin((now - mark.born) / 260) * 0.45 : 1;
+            nodeSizes[index] = Math.max(0.1, node.baseSize * sizeProgress * emphasis);
           });
+
+          if (marksVersion !== appliedMarksVersion) {
+            appliedMarksVersion = marksVersion;
+            // Spotlight: once the tour starts, everything unvisited drops back to
+            // a dim wash. Without this the marked node is lost among ~1,200
+            // filler AccountRecords that are already red-orange.
+            const spotlight = marks.size > 0;
+            nodeOrder.forEach((node, index) => {
+              const mark = marks.get(node.id);
+              if (mark) color.copy(mark.color);
+              else {
+                color.set(colorFor(node.group));
+                if (spotlight) color.multiplyScalar(0.16);
+              }
+              nodeColors.set([color.r, color.g, color.b], index * 3);
+            });
+            if (nodeGeometry.attributes.acolor) nodeGeometry.attributes.acolor.needsUpdate = true;
+            lineMaterial.opacity = spotlight ? 0.05 : 0.22;
+          }
           linkOrder.forEach((link, index) => {
             const sourceIndex = indexById.get(link.source);
             const targetIndex = indexById.get(link.target);
@@ -448,14 +658,17 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
             lineGeometry.attributes.color.needsUpdate = true;
           }
 
-          if (autoRotate && !dragging) azimuth += 0.0011;
+          // Slower drift while focused — a tight orbit at the normal rate reads
+          // as a spin rather than an inspection.
+          if (autoRotate && !dragging) azimuth += focusId ? 0.0005 : 0.0011;
           radius += (targetRadius - radius) * 0.06;
+          updateCinema(now);
           camera.position.set(
-            Math.cos(elevation) * Math.sin(azimuth) * radius,
-            Math.sin(elevation) * radius,
-            Math.cos(elevation) * Math.cos(azimuth) * radius
+            pivot.x + Math.cos(elevation) * Math.sin(azimuth) * radius,
+            pivot.y + Math.sin(elevation) * radius,
+            pivot.z + Math.cos(elevation) * Math.cos(azimuth) * radius
           );
-          camera.lookAt(0, 0, 0);
+          camera.lookAt(pivot);
           cage.rotation.y += 0.0016;
           cage.rotation.x += 0.0006;
           core.material.opacity = 0.5 + Math.sin(Date.now() / 400) * 0.08;
@@ -487,8 +700,12 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean; refre
           window.removeEventListener('pointermove', onPointerMove);
           canvas.removeEventListener('wheel', onWheel);
           resizeObserver?.disconnect();
+          if (cinemaRef) cinemaRef.current = null;
           nodeGeometry.dispose();
           lineGeometry.dispose();
+          trailGeometry.dispose();
+          focusRing.geometry.dispose();
+          pulseRing.geometry.dispose();
           renderer.dispose();
           if (canvas.parentElement === host) host.removeChild(canvas);
         };

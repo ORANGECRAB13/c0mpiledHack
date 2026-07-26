@@ -598,3 +598,133 @@ footer { position: relative; z-index: 2; max-width: 1320px; margin: 0 auto; padd
 }
 .context-map-full { position: absolute; inset: 0; }
 .context-map-full .context-mesh3d { border-radius: 0; border: 0; min-height: 0; }
+
+/* ── Detect sequence: narration rail ────────────────────────────────── */
+.detect-rail {
+  position: absolute; z-index: 5; left: 22px; top: 58px; width: 336px; max-width: 38vw;
+  max-height: calc(100% - 130px); display: flex; flex-direction: column; gap: 10px;
+  pointer-events: none;
+}
+.detect-rail-head span { display: block; color: #8a7f6a; font: 600 8px var(--mono); letter-spacing: .16em; }
+.detect-rail-head strong { display: block; margin-top: 5px; font-size: 12.5px; font-weight: 560; color: var(--text); }
+.detect-beats {
+  list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px;
+  overflow: hidden; mask-image: linear-gradient(transparent, #000 34px);
+}
+.detect-beat {
+  display: flex; gap: 9px; padding: 9px 11px; border-radius: 9px;
+  background: rgba(10, 9, 7, .82); border: 1px solid var(--line);
+  backdrop-filter: blur(6px); transition: opacity .3s, border-color .3s;
+}
+.detect-beat i {
+  flex: none; width: 21px; height: 21px; border-radius: 6px; display: grid; place-items: center;
+  background: rgba(255,255,255,.05); color: var(--muted);
+}
+.detect-beat strong { display: block; font-size: 11.5px; font-weight: 560; line-height: 1.35; }
+.detect-beat p { margin: 3px 0 0; font-size: 10.5px; line-height: 1.45; color: var(--muted); }
+.detect-beat code {
+  display: inline-block; margin-top: 5px; font: 8.5px var(--mono); letter-spacing: .06em;
+  color: #8a7f6a; text-transform: uppercase;
+}
+.detect-beat.done { padding: 8px 11px; transform-origin: left center; }
+.detect-beat.done strong { font-size: 11px; }
+.detect-beat.active {
+  padding: 14px 15px; border-color: rgba(255,255,255,.24); background: rgba(16, 15, 12, .95);
+  box-shadow: 0 14px 44px rgba(0,0,0,.55); transform-origin: left center;
+}
+.detect-beat.active strong { font-size: 14px; letter-spacing: -.005em; }
+.detect-beat.active i { width: 27px; height: 27px; border-radius: 8px; }
+.detect-beat.active p { font-size: 11.5px; }
+
+/* The findings this hop produced, revealed one line at a time. */
+.beat-facts { list-style: none; margin: 9px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.beat-facts li {
+  position: relative; padding-left: 13px; font-size: 11px; line-height: 1.45; color: var(--text);
+}
+.beat-facts li::before {
+  content: ''; position: absolute; left: 0; top: 7px;
+  width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .55;
+}
+
+.detect-beat.alert i { background: rgba(255,77,61,.15); color: var(--coral); }
+.detect-beat.alert.active { border-color: rgba(255,128,104,.5); box-shadow: 0 0 34px rgba(255,77,61,.16), 0 14px 44px rgba(0,0,0,.55); }
+.detect-beat.alert .beat-facts li { color: var(--coral); }
+.detect-beat.trace i { background: rgba(199,243,107,.13); color: var(--lime); }
+.detect-beat.trace.active { border-color: rgba(199,243,107,.36); }
+.detect-beat.external i { background: rgba(176,124,198,.16); color: #cba0e0; }
+.detect-beat.external.active { border-color: rgba(176,124,198,.42); box-shadow: 0 0 30px rgba(176,124,198,.12), 0 14px 44px rgba(0,0,0,.55); }
+.detect-beat.external .beat-facts li { color: #cba0e0; }
+.detect-beat.resolved i { background: rgba(112,185,255,.14); color: var(--blue); }
+.detect-beat.resolved.active { border-color: rgba(112,185,255,.36); }
+
+/* ── Detect sequence: closing report ────────────────────────────────── */
+/* Centred in the space left over, rather than in the viewport — the footer nav
+   pill lives in the bottom-right corner and would otherwise cover the CTA. */
+.detect-report {
+  position: absolute; z-index: 7; right: 26px; top: 78px; bottom: 104px;
+  width: 392px; max-width: calc(100vw - 48px);
+  display: flex; align-items: center; pointer-events: none;
+}
+.detect-report > * { pointer-events: auto; width: 100%; }
+.report-card { padding: 18px 20px 16px; background: rgba(12, 13, 14, .93); backdrop-filter: blur(14px); }
+.report-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.report-kicker {
+  display: inline-flex; align-items: center; gap: 5px; color: var(--lime);
+  font: 600 8px var(--mono); letter-spacing: .16em;
+}
+.report-head h2 { margin-top: 7px; font-size: 19px; font-weight: 560; letter-spacing: -.01em; }
+.report-head > div > p { margin-top: 4px; font-size: 10.5px; color: var(--muted); }
+.risk-dial {
+  flex: none; width: 62px; padding: 8px 0; border-radius: 10px; text-align: center;
+  border: 1px solid var(--line-strong); background: rgba(255,255,255,.03);
+}
+.risk-dial b { display: block; font-size: 21px; font-weight: 600; line-height: 1; }
+.risk-dial span { display: block; margin-top: 4px; font: 600 7.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.risk-dial.priority { border-color: rgba(255,128,104,.45); background: rgba(255,128,104,.09); }
+.risk-dial.priority b, .risk-dial.priority span { color: var(--coral); }
+.risk-dial.elevated { border-color: rgba(244,189,104,.45); background: rgba(244,189,104,.09); }
+.risk-dial.elevated b, .risk-dial.elevated span { color: var(--amber); }
+.risk-dial.watch b, .risk-dial.watch span { color: var(--amber); }
+
+.report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
+.report-stat { padding: 9px 10px; border-radius: 8px; background: rgba(255,255,255,.035); border: 1px solid var(--line); }
+.report-stat span { display: block; font: 600 7.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.report-stat strong { display: block; margin-top: 5px; font-size: 13px; font-weight: 560; }
+.report-stat strong.ok { color: var(--lime); }
+.report-stat strong.warn { color: var(--coral); }
+
+.report-signals { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.report-signals li { display: flex; align-items: center; gap: 8px; font-size: 10.5px; line-height: 1.4; }
+.report-signals li i { flex: none; width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center; background: rgba(199,243,107,.12); color: var(--lime); }
+.report-signals li.external i { background: rgba(112,185,255,.14); color: var(--blue); }
+.report-signals li p { flex: 1; margin: 0; color: var(--text); }
+.report-signals li code { font: 8.5px var(--mono); color: var(--muted); letter-spacing: .05em; }
+
+.report-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line);
+}
+.report-foot p { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--muted); line-height: 1.4; }
+.report-cta {
+  flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 9px 15px;
+  border: 0; border-radius: 999px; background: var(--lime); color: #10130a;
+  font-size: 12px; font-weight: 600; transition: transform .15s, box-shadow .15s;
+}
+.report-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(199,243,107,.22); }
+
+@media (max-width: 1100px) {
+  .detect-rail { width: 280px; }
+  .detect-report { right: 16px; width: 340px; }
+}
+@media (max-width: 860px) {
+  .detect-rail { display: none; }
+  .detect-report { left: 16px; right: 16px; width: auto; }
+}
+/* Short viewports: the rail and the report would otherwise fight for the same
+   pixels, and the report is the payoff. */
+@media (max-height: 660px) {
+  .detect-rail { max-height: calc(100% - 190px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .detect-beat, .detect-report { transition: none; }
+}

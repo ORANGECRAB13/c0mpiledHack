@@ -107,11 +107,41 @@ export interface Stack {
   };
 }
 
+export interface HardshipSignal {
+  id: string;
+  family: 'internal' | 'external';
+  label: string;
+  weight: number;
+  sourceId: string;
+  sourceUrl?: string | null;
+  detail?: string | null;
+}
+
+export interface HardshipAssessment {
+  tier: 'none' | 'watch' | 'elevated' | 'priority';
+  score: number;
+  escalatedByExternal: boolean;
+  recommendedAction: string;
+  rationale: string[];
+  internal: { score: number; tier: string; signals: HardshipSignal[]; context: HardshipSignal[] };
+  external: {
+    attempted: boolean;
+    permitted: boolean;
+    reason: string | null;
+    score: number;
+    cap: number;
+    signals: HardshipSignal[];
+    lookups: { kind: string; endpoint: string; ref: string }[];
+    identity: { resolved: boolean; confidence: number; reasons: string[] } | null;
+  };
+}
+
 export interface CaseView {
   caseId: string;
   customerId: string;
   stage: string;
   stack: Stack;
+  hardship?: HardshipAssessment | null;
   transcript: { speaker: string; text: string }[];
   traces: any[];
   approval: any;
