@@ -1,73 +1,70 @@
 import { useEffect, useRef, useState } from 'react';
 
-// Same rendering engine/visual design as the ai-brain project's fable.html —
-// three.js additive-glow point cloud, wireframe cage + core, starfield,
-// vignette/grain/scanline — ported to run inside a normal React container
-// (not fullscreen) and fed from Vocare's real /api/graph/visualization.
-
 const PALETTE: Record<string, string> = {
   State: '#e7b84e', PucRule: '#f0d68a', Moratorium: '#7cb2d6', AuthorityRule: '#d9a94a',
   BenefitProgram: '#5fb6a6', EligibilityCriterion: '#b8862f', LocalAgency: '#c99a3f',
   Customer: '#d5493b', AccountRecord: '#e5533c', KnowledgeGap: '#b07cc6', Node: '#efe0b0'
 };
-const colorFor = (g: string) => PALETTE[g] ?? PALETTE.Node;
+const colorFor = (group: string) => PALETTE[group] ?? PALETTE.Node;
 
 let threeLoadPromise: Promise<any> | null = null;
 function loadThree(): Promise<any> {
   if ((window as any).THREE) return Promise.resolve((window as any).THREE);
   if (threeLoadPromise) return threeLoadPromise;
   threeLoadPromise = new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = 'https://unpkg.com/three@0.160.0/build/three.min.js';
-    s.onload = () => resolve((window as any).THREE);
-    s.onerror = reject;
-    document.head.appendChild(s);
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/three@0.160.0/build/three.min.js';
+    script.onload = () => resolve((window as any).THREE);
+    script.onerror = reject;
+    document.head.appendChild(script);
   });
   return threeLoadPromise;
 }
 
-function layout(THREE: any, nodes: any[], links: any[], iters: number) {
-  const CELL = 30, REST = 24, MAXR = 230;
-  for (let it = 0; it < iters; it++) {
-    for (const l of links) {
-      let dx = l.t.x - l.s.x, dy = l.t.y - l.s.y, dz = l.t.z - l.s.z;
-      const d = Math.hypot(dx, dy, dz) || 1, f = (d - REST) * 0.04 / d;
-      l.s.vx += dx * f; l.s.vy += dy * f; l.s.vz += dz * f;
-      l.t.vx -= dx * f; l.t.vy -= dy * f; l.t.vz -= dz * f;
-    }
-    const grid = new Map<string, any[]>();
-    for (const n of nodes) {
-      const k = Math.floor(n.x / CELL) + ',' + Math.floor(n.y / CELL) + ',' + Math.floor(n.z / CELL);
-      let a = grid.get(k); if (!a) { a = []; grid.set(k, a); } a.push(n);
-    }
-    for (const n of nodes) {
-      const cx = Math.floor(n.x / CELL), cy = Math.floor(n.y / CELL), cz = Math.floor(n.z / CELL);
-      for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
-        const cell = grid.get((cx + a) + ',' + (cy + b) + ',' + (cz + c)); if (!cell) continue;
-        for (const m of cell) {
-          if (m === n) continue;
-          const ex = n.x - m.x, ey = n.y - m.y, ez = n.z - m.z; const d2 = ex * ex + ey * ey + ez * ez || 1;
-          if (d2 > CELL * CELL * 4) continue;
-          const f = 170 / d2, d = Math.sqrt(d2);
-          n.vx += ex / d * f; n.vy += ey / d * f; n.vz += ez / d * f;
-        }
-      }
-    }
-    for (const n of nodes) {
-      n.vx *= 0.82; n.vy *= 0.82; n.vz *= 0.82; n.x += n.vx; n.y += n.vy; n.z += n.vz;
-      const r = Math.hypot(n.x, n.y, n.z);
-      if (r > MAXR) { const s = MAXR / r; n.x *= s; n.y *= s; n.z *= s; n.vx *= 0.5; n.vy *= 0.5; n.vz *= 0.5; }
-    }
+function hash(value: string) {
+  let result = 2166136261;
+  for (let i = 0; i < value.length; i += 1) {
+    result ^= value.charCodeAt(i);
+    result = Math.imul(result, 16777619);
   }
+  return Math.abs(result >>> 0);
 }
 
-function nodeTitle(n: any): [string, string] {
-  const p = n.properties || {};
-  const detail = p.citation || p.summary || p.text || '';
-  return [n.label, `${n.primaryLabel}${p.state ? ' · ' + p.state : ''}${detail && detail !== n.label ? ' · ' + detail : ''}`];
+function sphericalPosition(id: string, radius = 175) {
+  const seed = hash(id);
+  const theta = ((seed % 10000) / 10000) * Math.PI * 2;
+  const phi = Math.acos(2 * (((seed >>> 8) % 10000) / 10000) - 1);
+  const r = 42 + (((seed >>> 16) % 1000) / 1000) * radius;
+  return {
+    x: r * Math.sin(phi) * Math.cos(theta),
+    y: r * Math.sin(phi) * Math.sin(theta),
+    z: r * Math.cos(phi)
+  };
 }
 
-export default function ContextMesh3D({ dense = true }: { dense?: boolean }) {
+function offsetFrom(anchor: { x: number; y: number; z: number }, id: string, distance = 28) {
+  const direction = sphericalPosition(id, distance);
+  const magnitude = Math.hypot(direction.x, direction.y, direction.z) || 1;
+  return {
+    x: anchor.x + (direction.x / magnitude) * distance,
+    y: anchor.y + (direction.y / magnitude) * distance,
+    z: anchor.z + (direction.z / magnitude) * distance
+  };
+}
+
+function nodeTitle(node: any): [string, string] {
+  const properties = node.properties || {};
+  const detail = properties.citation || properties.summary || properties.text || '';
+  return [
+    node.label,
+    `${node.primaryLabel}${properties.state ? ` · ${properties.state}` : ''}${detail && detail !== node.label ? ` · ${detail}` : ''}`
+  ];
+}
+
+const ease = (progress: number) =>
+  progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+export default function ContextMesh3D({ dense = true }: { dense?: boolean; refreshKey?: number }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const tipRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -77,85 +74,59 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean }) {
 
   useEffect(() => {
     let disposed = false;
-    let renderer: any, scene: any, camera: any, raf = 0;
+    let renderer: any;
+    let raf = 0;
+    let pollTimer: number | undefined;
     let resizeObserver: ResizeObserver | null = null;
+    let syncing = false;
 
     (async () => {
       try {
         const THREE = await loadThree();
         if (disposed) return;
         const host = hostRef.current!;
-        const res = await fetch(`/api/graph/visualization${dense ? '?dense=1' : ''}`);
-        if (!res.ok) throw new Error('uplink ' + res.status);
-        const body = await res.json();
-        const data = body.graph;
-        if (disposed) return;
+        let width = host.clientWidth;
+        let height = host.clientHeight;
 
-        const map = new Map<string, any>();
-        data.nodes.forEach((n: any) => {
-          const th = 2 * Math.PI * Math.random(), ph = Math.acos(2 * Math.random() - 1), rr = 40 + Math.sqrt(Math.random()) * 160;
-          const [title, meta] = nodeTitle(n);
-          map.set(n.id, {
-            id: n.id, title, meta, group: n.primaryLabel, deg: 0,
-            x: rr * Math.sin(ph) * Math.cos(th), y: rr * Math.sin(ph) * Math.sin(th), z: rr * Math.cos(ph),
-            vx: 0, vy: 0, vz: 0
-          });
-        });
-        const links = data.links.filter((e: any) => map.has(e.source) && map.has(e.target)).map((e: any) => ({ s: map.get(e.source), t: map.get(e.target) }));
-        links.forEach((l: any) => { l.s.deg++; l.t.deg++; });
-        const nodes = [...map.values()];
-        layout(THREE, nodes, links, nodes.length > 800 ? 40 : 70);
-        const idx = new Map(nodes.map((n, i) => [n.id, i]));
-        const adj: number[][] = nodes.map(() => []);
-        links.forEach((l: any) => { const a = idx.get(l.s.id)!, b = idx.get(l.t.id)!; adj[a].push(b); adj[b].push(a); });
-        const N = nodes.length;
-
-        setCounts({ nodes: N, links: links.length });
-        setGroups([...new Set(nodes.map((n) => n.group))].slice(0, 9));
-
-        let W = host.clientWidth, H = host.clientHeight;
-        scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x050403, 0.0018);
-        camera = new THREE.PerspectiveCamera(58, W / H, 1, 6000);
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050403, 0.0018);
+        const camera = new THREE.PerspectiveCamera(58, width / height, 1, 6000);
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
         renderer.setPixelRatio(Math.min(2, devicePixelRatio));
-        renderer.setSize(W, H); renderer.setClearColor(0x050403, 1);
+        renderer.setSize(width, height);
+        renderer.setClearColor(0x050403, 1);
         host.appendChild(renderer.domElement);
 
-        const sN = 400, sp = new Float32Array(sN * 3);
-        for (let i = 0; i < sN; i++) {
-          const rr = 900 + Math.random() * 1200, t = Math.random() * 6.28, p = Math.acos(2 * Math.random() - 1);
-          sp[i * 3] = rr * Math.sin(p) * Math.cos(t); sp[i * 3 + 1] = rr * Math.sin(p) * Math.sin(t); sp[i * 3 + 2] = rr * Math.cos(p);
+        const starPositions = new Float32Array(1200);
+        for (let i = 0; i < 400; i += 1) {
+          const point = sphericalPosition(`star-${i}`, 1900);
+          starPositions[i * 3] = point.x * 6;
+          starPositions[i * 3 + 1] = point.y * 6;
+          starPositions[i * 3 + 2] = point.z * 6;
         }
-        const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(sp, 3));
-        scene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0x6b5a34, size: 2, sizeAttenuation: false, transparent: true, opacity: 0.5 })));
+        const starGeometry = new THREE.BufferGeometry();
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        scene.add(new THREE.Points(
+          starGeometry,
+          new THREE.PointsMaterial({ color: 0x6b5a34, size: 2, sizeAttenuation: false, transparent: true, opacity: 0.5 })
+        ));
 
-        const lpos = new Float32Array(links.length * 6);
-        links.forEach((l: any, i: number) => lpos.set([l.s.x, l.s.y, l.s.z, l.t.x, l.t.y, l.t.z], i * 6));
-        const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.BufferAttribute(lpos, 3));
-        const lines = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0xe7b84e, transparent: true, opacity: 0.08, depthWrite: false }));
-        scene.add(lines);
-
-        const GLOW = (() => {
-          const cv = document.createElement('canvas'); cv.width = cv.height = 64;
-          const g = cv.getContext('2d')!; const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-          grd.addColorStop(0, 'rgba(255,246,220,1)'); grd.addColorStop(0.25, 'rgba(231,184,78,0.9)');
-          grd.addColorStop(0.55, 'rgba(231,184,78,0.35)'); grd.addColorStop(1, 'rgba(231,184,78,0)');
-          g.fillStyle = grd; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(cv);
+        const glow = (() => {
+          const canvas = document.createElement('canvas');
+          canvas.width = canvas.height = 64;
+          const context = canvas.getContext('2d')!;
+          const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+          gradient.addColorStop(0, 'rgba(255,246,220,1)');
+          gradient.addColorStop(0.25, 'rgba(231,184,78,0.9)');
+          gradient.addColorStop(0.55, 'rgba(231,184,78,0.35)');
+          gradient.addColorStop(1, 'rgba(231,184,78,0)');
+          context.fillStyle = gradient;
+          context.fillRect(0, 0, 64, 64);
+          return new THREE.CanvasTexture(canvas);
         })();
 
-        const px = new Float32Array(N * 3), sizeAttr = new Float32Array(N), colAttr = new Float32Array(N * 3), baseSize = new Float32Array(N);
-        const col = new THREE.Color();
-        nodes.forEach((n, i) => {
-          px[i * 3] = n.x; px[i * 3 + 1] = n.y; px[i * 3 + 2] = n.z;
-          const s = 5 + Math.min(26, n.deg * 2); sizeAttr[i] = s; baseSize[i] = s;
-          col.set(colorFor(n.group)); colAttr[i * 3] = col.r; colAttr[i * 3 + 1] = col.g; colAttr[i * 3 + 2] = col.b;
-        });
-        const ng = new THREE.BufferGeometry();
-        ng.setAttribute('position', new THREE.BufferAttribute(px, 3));
-        ng.setAttribute('size', new THREE.BufferAttribute(sizeAttr, 1));
-        ng.setAttribute('acolor', new THREE.BufferAttribute(colAttr, 3));
-        const nmat = new THREE.ShaderMaterial({
-          uniforms: { map: { value: GLOW }, hscale: { value: H * 0.55 } },
+        const nodeMaterial = new THREE.ShaderMaterial({
+          uniforms: { map: { value: glow }, hscale: { value: height * 0.55 } },
           vertexShader: `attribute float size; attribute vec3 acolor; varying vec3 vC;
             uniform float hscale;
             void main(){ vec4 mv=modelViewMatrix*vec4(position,1.0);
@@ -164,106 +135,334 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean }) {
               gl_PointSize=size*(hscale/-mv.z); gl_Position=projectionMatrix*mv; }`,
           fragmentShader: `uniform sampler2D map; varying vec3 vC;
             void main(){ vec4 t=texture2D(map,gl_PointCoord); gl_FragColor=vec4(vC,1.0)*t; if(gl_FragColor.a<0.02)discard; }`,
-          transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
         });
-        const nodesPts = new THREE.Points(ng, nmat); scene.add(nodesPts);
+        const lineMaterial = new THREE.LineBasicMaterial({
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.22,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
 
-        const hg = new THREE.BufferGeometry(); hg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
-        const hlLines = new THREE.LineSegments(hg, new THREE.LineBasicMaterial({ color: 0xfff2c8, transparent: true, opacity: 0.75 }));
-        hlLines.visible = false; scene.add(hlLines);
+        let nodeGeometry = new THREE.BufferGeometry();
+        let lineGeometry = new THREE.BufferGeometry();
+        const nodePoints = new THREE.Points(nodeGeometry, nodeMaterial);
+        const lineSegments = new THREE.LineSegments(lineGeometry, lineMaterial);
+        scene.add(lineSegments);
+        scene.add(nodePoints);
 
-        const cage = new THREE.Mesh(new THREE.IcosahedronGeometry(46, 2), new THREE.MeshBasicMaterial({ color: 0xe7b84e, wireframe: true, transparent: true, opacity: 0.22 }));
+        const cage = new THREE.Mesh(
+          new THREE.IcosahedronGeometry(46, 2),
+          new THREE.MeshBasicMaterial({ color: 0xe7b84e, wireframe: true, transparent: true, opacity: 0.22 })
+        );
+        const core = new THREE.Mesh(
+          new THREE.SphereGeometry(20, 32, 32),
+          new THREE.MeshBasicMaterial({ color: 0x2f6d8f, transparent: true, opacity: 0.5 })
+        );
+        cage.visible = core.visible = false;
         scene.add(cage);
-        const core = new THREE.Mesh(new THREE.SphereGeometry(20, 32, 32), new THREE.MeshBasicMaterial({ color: 0x2f6d8f, transparent: true, opacity: 0.5 }));
         scene.add(core);
 
-        let az = 0, elev = 0.22, R = 340, targetR = 340, autoRot = true, dragging = false, lastX = 0, lastY = 0;
-        let mouseX = -1, mouseY = -1, hovered = -1, pickPending = false;
-        let arTimer: any;
+        type GraphNode = {
+          id: string; title: string; meta: string; group: string; degree: number;
+          x: number; y: number; z: number; sx: number; sy: number; sz: number;
+          tx: number; ty: number; tz: number; createdAt: number; moveStartedAt: number; baseSize: number;
+        };
+        type GraphLink = { id: string; source: string; target: string; type: string; bornAt: number };
+        const nodeMap = new Map<string, GraphNode>();
+        const linkMap = new Map<string, GraphLink>();
+        let nodeOrder: GraphNode[] = [];
+        let linkOrder: GraphLink[] = [];
+        let nodePositions = new Float32Array();
+        let nodeSizes = new Float32Array();
+        let nodeColors = new Float32Array();
+        let linePositions = new Float32Array();
+        let lineColors = new Float32Array();
+        const color = new THREE.Color();
 
+        function rebuildBuffers() {
+          nodeOrder = [...nodeMap.values()];
+          linkOrder = [...linkMap.values()];
+          nodePositions = new Float32Array(nodeOrder.length * 3);
+          nodeSizes = new Float32Array(nodeOrder.length);
+          nodeColors = new Float32Array(nodeOrder.length * 3);
+          nodeOrder.forEach((node, index) => {
+            nodePositions.set([node.x, node.y, node.z], index * 3);
+            nodeSizes[index] = node.baseSize;
+            color.set(colorFor(node.group));
+            nodeColors.set([color.r, color.g, color.b], index * 3);
+          });
+
+          linePositions = new Float32Array(linkOrder.length * 6);
+          lineColors = new Float32Array(linkOrder.length * 6);
+          nodeGeometry.dispose();
+          nodeGeometry = new THREE.BufferGeometry();
+          nodeGeometry.setAttribute('position', new THREE.BufferAttribute(nodePositions, 3));
+          nodeGeometry.setAttribute('size', new THREE.BufferAttribute(nodeSizes, 1));
+          nodeGeometry.setAttribute('acolor', new THREE.BufferAttribute(nodeColors, 3));
+          nodePoints.geometry = nodeGeometry;
+
+          lineGeometry.dispose();
+          lineGeometry = new THREE.BufferGeometry();
+          lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+          lineGeometry.setAttribute('color', new THREE.BufferAttribute(lineColors, 3));
+          lineSegments.geometry = lineGeometry;
+          cage.visible = core.visible = nodeOrder.length > 0;
+        }
+
+        const hierarchy: Record<string, number> = {
+          State: 0, PucRule: 1, BenefitProgram: 1, Customer: 1, AuthorityRule: 2,
+          Moratorium: 2, LocalAgency: 2, EligibilityCriterion: 2, AccountRecord: 2
+        };
+
+        function attachNode(link: GraphLink, now: number) {
+          const source = nodeMap.get(link.source);
+          const target = nodeMap.get(link.target);
+          if (!source || !target) return;
+          source.degree += 1;
+          target.degree += 1;
+          source.baseSize = 5 + Math.min(26, source.degree * 2);
+          target.baseSize = 5 + Math.min(26, target.degree * 2);
+          const sourceRank = hierarchy[source.group] ?? 2;
+          const targetRank = hierarchy[target.group] ?? 2;
+          const child = sourceRank > targetRank ? source : target;
+          const parent = child === source ? target : source;
+          const destination = offsetFrom({ x: parent.tx, y: parent.ty, z: parent.tz }, `${link.id}:${child.id}`, 25 + (hash(link.id) % 18));
+          child.sx = child.x;
+          child.sy = child.y;
+          child.sz = child.z;
+          child.tx = destination.x;
+          child.ty = destination.y;
+          child.tz = destination.z;
+          child.moveStartedAt = now;
+        }
+
+        async function syncGraph() {
+          if (syncing || disposed) return;
+          syncing = true;
+          try {
+            const response = await fetch(`/api/graph/visualization${dense ? '?dense=1' : ''}`);
+            if (!response.ok) throw new Error(`uplink ${response.status}`);
+            const body = await response.json();
+            const graph = body.graph;
+            const now = performance.now();
+
+            if (graph.nodes.length === 0 && nodeMap.size > 0) {
+              nodeMap.clear();
+              linkMap.clear();
+              rebuildBuffers();
+            }
+
+            let changed = false;
+            for (const raw of graph.nodes) {
+              if (nodeMap.has(raw.id)) continue;
+              const [title, meta] = nodeTitle(raw);
+              const target = sphericalPosition(raw.id);
+              nodeMap.set(raw.id, {
+                id: raw.id, title, meta, group: raw.primaryLabel, degree: 0,
+                x: target.x * 0.06, y: target.y * 0.06, z: target.z * 0.06,
+                sx: target.x * 0.06, sy: target.y * 0.06, sz: target.z * 0.06,
+                tx: target.x, ty: target.y, tz: target.z,
+                createdAt: now, moveStartedAt: now, baseSize: 5
+              });
+              changed = true;
+            }
+            for (const raw of graph.links) {
+              if (linkMap.has(raw.id) || !nodeMap.has(raw.source) || !nodeMap.has(raw.target)) continue;
+              const link = { id: raw.id, source: raw.source, target: raw.target, type: raw.type, bornAt: now };
+              linkMap.set(raw.id, link);
+              attachNode(link, now);
+              changed = true;
+            }
+            if (changed) rebuildBuffers();
+
+            setCounts({ nodes: nodeMap.size, links: linkMap.size });
+            setGroups([...new Set([...nodeMap.values()].map((node) => node.group))].slice(0, 9));
+            setStatus('ready');
+          } finally {
+            syncing = false;
+          }
+        }
+
+        await syncGraph();
+        pollTimer = window.setInterval(() => syncGraph().catch((error) => {
+          if (!disposed) {
+            setStatus('error');
+            setErrMsg(error.message || 'failed to load');
+          }
+        }), 240);
+
+        let azimuth = 0;
+        let elevation = 0.22;
+        let radius = 340;
+        let targetRadius = 340;
+        let autoRotate = true;
+        let dragging = false;
+        let lastX = 0;
+        let lastY = 0;
+        let pointerX = -1;
+        let pointerY = -1;
+        let pickPending = false;
+        let autoRotateTimer: number | undefined;
+        const vector = new THREE.Vector3();
         const canvas = renderer.domElement;
         canvas.style.cursor = 'grab';
-        const onDown = (e: PointerEvent) => { dragging = true; autoRot = false; lastX = e.clientX; lastY = e.clientY; canvas.style.cursor = 'grabbing'; };
-        const onUp = () => { dragging = false; canvas.style.cursor = 'grab'; clearTimeout(arTimer); arTimer = setTimeout(() => (autoRot = true), 3500); };
-        const onMove = (e: PointerEvent) => {
-          const rect = host.getBoundingClientRect();
-          if (dragging) { az -= (e.clientX - lastX) * 0.005; elev = Math.max(-1.35, Math.min(1.35, elev + (e.clientY - lastY) * 0.005)); lastX = e.clientX; lastY = e.clientY; }
-          mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top; pickPending = true;
+
+        const onPointerDown = (event: PointerEvent) => {
+          dragging = true;
+          autoRotate = false;
+          lastX = event.clientX;
+          lastY = event.clientY;
+          canvas.style.cursor = 'grabbing';
         };
-        const onWheel = (e: WheelEvent) => { e.preventDefault(); targetR = Math.max(120, Math.min(900, targetR + e.deltaY * 0.4)); };
-        canvas.addEventListener('pointerdown', onDown);
-        window.addEventListener('pointerup', onUp);
-        window.addEventListener('pointermove', onMove);
+        const onPointerUp = () => {
+          dragging = false;
+          canvas.style.cursor = 'grab';
+          window.clearTimeout(autoRotateTimer);
+          autoRotateTimer = window.setTimeout(() => (autoRotate = true), 3500);
+        };
+        const onPointerMove = (event: PointerEvent) => {
+          const bounds = host.getBoundingClientRect();
+          if (dragging) {
+            azimuth -= (event.clientX - lastX) * 0.005;
+            elevation = Math.max(-1.35, Math.min(1.35, elevation + (event.clientY - lastY) * 0.005));
+            lastX = event.clientX;
+            lastY = event.clientY;
+          }
+          pointerX = event.clientX - bounds.left;
+          pointerY = event.clientY - bounds.top;
+          pickPending = true;
+        };
+        const onWheel = (event: WheelEvent) => {
+          event.preventDefault();
+          targetRadius = Math.max(120, Math.min(900, targetRadius + event.deltaY * 0.4));
+        };
+        canvas.addEventListener('pointerdown', onPointerDown);
+        window.addEventListener('pointerup', onPointerUp);
+        window.addEventListener('pointermove', onPointerMove);
         canvas.addEventListener('wheel', onWheel, { passive: false });
 
-        const _v = new (THREE as any).Vector3();
-        function pick() {
-          let best = -1, bestD = 20 * 20;
-          for (let i = 0; i < N; i++) {
-            _v.set(px[i * 3], px[i * 3 + 1], px[i * 3 + 2]).project(camera);
-            if (_v.z > 1) continue;
-            const sx = (_v.x * 0.5 + 0.5) * W, sy = (-_v.y * 0.5 + 0.5) * H;
-            const d = (sx - mouseX) * (sx - mouseX) + (sy - mouseY) * (sy - mouseY);
-            if (d < bestD) { bestD = d; best = i; }
+        function updateTooltip() {
+          let bestIndex = -1;
+          let bestDistance = 400;
+          for (let index = 0; index < nodeOrder.length; index += 1) {
+            vector.set(
+              nodePositions[index * 3],
+              nodePositions[index * 3 + 1],
+              nodePositions[index * 3 + 2]
+            ).project(camera);
+            if (vector.z > 1) continue;
+            const x = (vector.x * 0.5 + 0.5) * width;
+            const y = (-vector.y * 0.5 + 0.5) * height;
+            const distance = (x - pointerX) ** 2 + (y - pointerY) ** 2;
+            if (distance < bestDistance) {
+              bestDistance = distance;
+              bestIndex = index;
+            }
           }
-          return best;
-        }
-        function setHover(i: number) {
-          if (i === hovered) return;
-          if (hovered >= 0) sizeAttr[hovered] = baseSize[hovered];
-          hovered = i;
           const tip = tipRef.current;
           if (!tip) return;
-          if (i < 0) { tip.style.opacity = '0'; hlLines.visible = false; }
-          else {
-            sizeAttr[i] = baseSize[i] * 2.1;
-            const n = nodes[i];
-            tip.querySelector('.t')!.textContent = n.title || '(untitled)';
-            tip.querySelector('.m')!.textContent = n.meta || '';
-            tip.style.opacity = '1';
-            const nb = adj[i], hp = new Float32Array(nb.length * 6);
-            for (let k = 0; k < nb.length; k++) { const j = nb[k]; hp.set([px[i * 3], px[i * 3 + 1], px[i * 3 + 2], px[j * 3], px[j * 3 + 1], px[j * 3 + 2]], k * 6); }
-            hlLines.geometry.dispose(); const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(hp, 3));
-            hlLines.geometry = g; hlLines.visible = true;
+          if (bestIndex < 0) {
+            tip.style.opacity = '0';
+            return;
           }
-          ng.attributes.size.needsUpdate = true;
+          const node = nodeOrder[bestIndex];
+          tip.querySelector('.t')!.textContent = node.title || '(untitled)';
+          tip.querySelector('.m')!.textContent = node.meta || '';
+          tip.style.opacity = '1';
+          tip.style.left = `${Math.min(width - 260, pointerX + 14)}px`;
+          tip.style.top = `${pointerY + 12}px`;
         }
 
         function animate() {
           raf = requestAnimationFrame(animate);
-          if (autoRot && !dragging) az += 0.0011;
-          R += (targetR - R) * 0.06;
-          camera.position.set(Math.cos(elev) * Math.sin(az) * R, Math.sin(elev) * R, Math.cos(elev) * Math.cos(az) * R);
+          const now = performance.now();
+          const indexById = new Map(nodeOrder.map((node, index) => [node.id, index]));
+          nodeOrder.forEach((node, index) => {
+            const moveProgress = ease(Math.min(1, (now - node.moveStartedAt) / 1050));
+            const sizeProgress = ease(Math.min(1, (now - node.createdAt) / 1050));
+            node.x = node.sx + (node.tx - node.sx) * moveProgress;
+            node.y = node.sy + (node.ty - node.sy) * moveProgress;
+            node.z = node.sz + (node.tz - node.sz) * moveProgress;
+            nodePositions.set([node.x, node.y, node.z], index * 3);
+            nodeSizes[index] = Math.max(0.1, node.baseSize * sizeProgress);
+          });
+          linkOrder.forEach((link, index) => {
+            const sourceIndex = indexById.get(link.source);
+            const targetIndex = indexById.get(link.target);
+            if (sourceIndex === undefined || targetIndex === undefined) return;
+            linePositions.set([
+              nodePositions[sourceIndex * 3], nodePositions[sourceIndex * 3 + 1], nodePositions[sourceIndex * 3 + 2],
+              nodePositions[targetIndex * 3], nodePositions[targetIndex * 3 + 1], nodePositions[targetIndex * 3 + 2]
+            ], index * 6);
+            const fade = ease(Math.min(1, (now - link.bornAt) / 900));
+            color.set(colorFor(nodeOrder[targetIndex].group));
+            lineColors.set([
+              color.r * fade, color.g * fade, color.b * fade,
+              color.r * fade, color.g * fade, color.b * fade
+            ], index * 6);
+          });
+          if (nodeGeometry.attributes.position) {
+            nodeGeometry.attributes.position.needsUpdate = true;
+            nodeGeometry.attributes.size.needsUpdate = true;
+          }
+          if (lineGeometry.attributes.position) {
+            lineGeometry.attributes.position.needsUpdate = true;
+            lineGeometry.attributes.color.needsUpdate = true;
+          }
+
+          if (autoRotate && !dragging) azimuth += 0.0011;
+          radius += (targetRadius - radius) * 0.06;
+          camera.position.set(
+            Math.cos(elevation) * Math.sin(azimuth) * radius,
+            Math.sin(elevation) * radius,
+            Math.cos(elevation) * Math.cos(azimuth) * radius
+          );
           camera.lookAt(0, 0, 0);
-          cage.rotation.y += 0.0016; cage.rotation.x += 0.0006;
+          cage.rotation.y += 0.0016;
+          cage.rotation.x += 0.0006;
           core.material.opacity = 0.5 + Math.sin(Date.now() / 400) * 0.08;
-          if (pickPending) { pickPending = false; camera.updateMatrixWorld(); setHover(pick());
-            if (tipRef.current) { tipRef.current.style.left = Math.min(W - 260, mouseX + 14) + 'px'; tipRef.current.style.top = (mouseY + 12) + 'px'; } }
+          if (pickPending) {
+            pickPending = false;
+            camera.updateMatrixWorld();
+            updateTooltip();
+          }
           renderer.render(scene, camera);
         }
         animate();
 
         resizeObserver = new ResizeObserver(() => {
-          W = host.clientWidth; H = host.clientHeight;
-          camera.aspect = W / H; camera.updateProjectionMatrix(); renderer.setSize(W, H);
-          nmat.uniforms.hscale.value = H * 0.55;
+          width = host.clientWidth;
+          height = host.clientHeight;
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(width, height);
+          nodeMaterial.uniforms.hscale.value = height * 0.55;
         });
         resizeObserver.observe(host);
 
-        setStatus('ready');
-
         (host as any).__cleanup = () => {
           cancelAnimationFrame(raf);
-          canvas.removeEventListener('pointerdown', onDown);
-          window.removeEventListener('pointerup', onUp);
-          window.removeEventListener('pointermove', onMove);
+          window.clearInterval(pollTimer);
+          window.clearTimeout(autoRotateTimer);
+          canvas.removeEventListener('pointerdown', onPointerDown);
+          window.removeEventListener('pointerup', onPointerUp);
+          window.removeEventListener('pointermove', onPointerMove);
           canvas.removeEventListener('wheel', onWheel);
           resizeObserver?.disconnect();
+          nodeGeometry.dispose();
+          lineGeometry.dispose();
           renderer.dispose();
           if (canvas.parentElement === host) host.removeChild(canvas);
         };
-      } catch (e: any) {
-        if (!disposed) { setStatus('error'); setErrMsg(e.message || 'failed to load'); }
+      } catch (error: any) {
+        if (!disposed) {
+          setStatus('error');
+          setErrMsg(error.message || 'failed to load');
+        }
       }
     })();
 
@@ -279,14 +478,21 @@ export default function ContextMesh3D({ dense = true }: { dense?: boolean }) {
       <div ref={hostRef} className="mesh-canvas-host" />
       <div className="mesh-vignette" />
       <div className="mesh-grain" />
-      {status === 'loading' && <div className="mesh-loading">◍ assembling mesh…</div>}
+      {status === 'loading' && <div className="mesh-loading">◍ connecting graph…</div>}
       {status === 'error' && <div className="mesh-loading mesh-error">mesh uplink failed: {errMsg}</div>}
+      {status === 'ready' && counts.nodes === 0 && (
+        <div className="mesh-empty">
+          <span>0</span>
+          <strong>Context graph is empty</strong>
+          <small>Run discovery agents to create the first node.</small>
+        </div>
+      )}
       {status === 'ready' && (
         <>
           <div className="mesh-counts">MESH <b>{counts.nodes.toLocaleString()}</b> nodes <span>·</span> <b>{counts.links.toLocaleString()}</b> links</div>
           <div className="mesh-legend">
-            {groups.map((g) => (
-              <span key={g}><i style={{ background: colorFor(g) }} />{g}</span>
+            {groups.map((group) => (
+              <span key={group}><i style={{ background: colorFor(group) }} />{group}</span>
             ))}
           </div>
         </>

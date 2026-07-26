@@ -6,6 +6,12 @@ import { getGraphCounts, getGraphVisualization, getLabelCounts, searchPolicyText
 import { resolveBenefitStack, resolveJurisdiction } from './resolve.js';
 import { explainProgram, isContextEngineConfigured, indexPolicyChunks } from './contextEngine.js';
 import { generateFillerMesh } from './meshFiller.js';
+import {
+  discoveryStatus,
+  discoveryVisualization,
+  resetDiscovery,
+  runDiscoveryAgent
+} from './discovery.js';
 
 /**
  * The context engine facade.
@@ -86,16 +92,13 @@ export async function syncGraph() {
 }
 
 export async function visualization(options = {}) {
-  const backend = await probeBackend();
-  const base = backend.backend !== 'neo4j'
-    ? memoryVisualization(await loadDataset(), options)
-    : await withGraphSession(READ, (session) => getGraphVisualization(session, options)).catch(async () =>
-        memoryVisualization(await loadDataset(), options)
-      );
+  const base = discoveryVisualization();
 
   if (!options.dense) return base;
   return mergeFillerMesh(base, options.state || null);
 }
+
+export { discoveryStatus, resetDiscovery, runDiscoveryAgent };
 
 /** Merges the visualization-only synthetic density filler in, scoped to a state filter if present. */
 function mergeFillerMesh(base, stateFilter) {

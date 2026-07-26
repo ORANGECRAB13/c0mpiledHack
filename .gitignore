@@ -22,5 +22,6 @@ guild-agents/*/guild.json
 *.log
 .DS_Store
 
-# energy-erp build output
+# frontend build outputs
 energy-erp/dist
+energy-erp-dist

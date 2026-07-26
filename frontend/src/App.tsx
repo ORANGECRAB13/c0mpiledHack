@@ -1,18 +1,18 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Activity, ArrowRight, BadgeCheck, BookOpen, BrainCircuit, Check, CheckCircle2, Clock3,
-  Database, FileCheck2, FileText, Headphones, Landmark, Link2, Mail, Mic2, Pause,
+  Database, FileCheck2, FileText, Headphones, Landmark, Link2, Mail, Mic2, Network, Pause,
   PhoneCall, Play, Radio, ReceiptText, RotateCcw, SearchCheck, ShieldCheck, Sparkles, UserRound,
   WalletCards, Waves, X
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { api, CaseView, Customer } from './api';
+import { api, CaseView, Customer, DiscoveryStatus } from './api';
 import ContextMesh3D from './ContextMesh3D';
 import { runPhase1, runPhase2 } from './scripted';
 import { startVoiceCall, stopVoiceCall } from './voice';
 import { startVoiceCallWebRTC, stopVoiceCallWebRTC, sendResumeContext } from './voice-webrtc';
 
-type Stage = 'ready' | 'detecting' | 'calling' | 'hold' | 'complete';
+type Stage = 'onboarding' | 'ready' | 'detecting' | 'calling' | 'hold' | 'complete';
 const money = (n: any) => (n === null || n === undefined ? '—' : `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: Number.isInteger(Number(n)) ? 0 : 2, maximumFractionDigits: Number.isInteger(Number(n)) ? 0 : 2 })}`);
 
 const BrandMark = ({ violet }: { violet?: boolean }) => (
@@ -43,8 +43,10 @@ const detectNodes = [
 ];
 
 export default function App() {
-  const [stage, setStage] = useState<Stage>('ready');
+  const [stage, setStage] = useState<Stage>('onboarding');
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [discovery, setDiscovery] = useState<DiscoveryStatus | null>(null);
+  const [discoveryRunning, setDiscoveryRunning] = useState(false);
   const [backend, setBackend] = useState('…');
   const [voiceProvider, setVoiceProvider] = useState('azure');
   const [kase, setKase] = useState<CaseView | null>(null);
@@ -69,6 +71,7 @@ export default function App() {
   const caseIdRef = useRef<string | null>(null);
   const busyRef = useRef(false);
   const completedRef = useRef(false);
+  const erpFrameRef = useRef<HTMLIFrameElement | null>(null);
 
   // Hold modal is reactive — it appears whenever the case is genuinely awaiting
   // a credit officer, independent of which slide the presenter is on.
@@ -77,10 +80,15 @@ export default function App() {
   useEffect(() => {
     api.health().then((h) => { setBackend(h.engine.backend); setVoiceProvider(h.providers?.voice?.provider || 'azure'); }).catch(() => setBackend('offline'));
     api.customers().then((c) => setCustomers(c.customers)).catch(() => {});
+    api.resetDiscovery().then((d) => {
+      setDiscovery(d.discovery);
+      notifyErp(null, 0, 'empty');
+    }).catch(() => {});
   }, []);
 
   const joanne = customers.find((c) => c.id === 'CUS-77241');
   const stack = kase?.stack;
+  const activeDiscoveryAgent = discovery?.agents.find((agent) => agent.id === discovery.currentAgent);
 
   async function refresh() {
     const id = caseIdRef.current;
@@ -131,6 +139,66 @@ export default function App() {
     await refresh();
     await new Promise((r) => setTimeout(r, pauseMs));
   };
+
+  function notifyErp(agentId: string | null, progress = 0, status = 'running') {
+    erpFrameRef.current?.contentWindow?.postMessage({
+      type: 'vocare:discovery',
+      agentId,
+      progress,
+      status
+    }, window.location.origin);
+  }
+
+  async function runDiscovery() {
+    if (busyRef.current || !discovery) return;
+    busyRef.current = true;
+    setDiscoveryRunning(true);
+    setError('');
+    try {
+      let current = discovery;
+      if (current.status === 'complete') {
+        const resetResult = await api.resetDiscovery();
+        current = resetResult.discovery;
+        setDiscovery(current);
+        notifyErp(null, 0, 'empty');
+      }
+      const batchSizes: Record<string, number> = {
+        regulatory: 9,
+        customer: 400,
+        benefits: 16,
+        relationships: 3
+      };
+      for (const queuedAgent of current.agents) {
+        let activeAgent = current.agents.find((item) => item.id === queuedAgent.id)!;
+        while (activeAgent.status !== 'complete') {
+          notifyErp(activeAgent.id, activeAgent.progress || 0, 'running');
+          setDiscovery((value) => value ? {
+            ...value,
+            status: 'running',
+            currentAgent: activeAgent.id,
+            agents: value.agents.map((item) =>
+              item.id === activeAgent.id ? { ...item, status: 'running' } : item
+            )
+          } : value);
+          const [result] = await Promise.all([
+            api.runDiscoveryAgent(activeAgent.id, batchSizes[activeAgent.id] || 20),
+            new Promise((resolve) => setTimeout(resolve, 950))
+          ]);
+          current = result.discovery;
+          activeAgent = current.agents.find((item) => item.id === queuedAgent.id)!;
+          setDiscovery(current);
+          notifyErp(activeAgent.id, activeAgent.progress, activeAgent.status);
+        }
+        await new Promise((resolve) => setTimeout(resolve, 450));
+      }
+      notifyErp(null, 100, 'complete');
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setDiscoveryRunning(false);
+      busyRef.current = false;
+    }
+  }
 
   async function start() {
     if (busyRef.current || !joanne) return;
@@ -245,10 +313,16 @@ export default function App() {
     if (liveRtcRef.current) stopVoiceCallWebRTC().catch(() => {}); else stopVoiceCall();
     liveRtcRef.current = false; resumedApprovalRef.current = null;
     caseIdRef.current = null;
-    setKase(null); setStage('ready'); setSourcesLoaded(0); setGap(null); setAudit(null);
+    setKase(null); setStage('onboarding'); setSourcesLoaded(0); setGap(null); setAudit(null);
     setDocOpen(false); setActiveSource(null); setLive(false); setApprovalErr(''); setError('');
     setDetectReady(false); setCallComplete(false); completedRef.current = false;
-    api.reset().catch(() => {});
+    setDiscoveryRunning(false);
+    Promise.all([api.reset(), api.resetDiscovery()])
+      .then(([, result]) => {
+        setDiscovery(result.discovery);
+        notifyErp(null, 0, 'empty');
+      })
+      .catch(() => {});
   }
 
   // ── slide-style navigation ──────────────────────────────────────────
@@ -264,17 +338,20 @@ export default function App() {
     ['benefits_resolved', 'customer_accepted', 'executing', 'complete'].includes(kase?.stage || '');
 
   const canAdvance =
+    (stage === 'onboarding' && discovery?.status === 'complete') ||
     (stage === 'ready' && !!joanne) ||
     (stage === 'detecting' && detectReady) ||
     (stage === 'calling' && callProgressed);
   const advanceHint =
-    stage === 'ready' ? 'Start the workflow'
+    stage === 'onboarding' ? (discovery?.status === 'complete' ? 'Continue to detect' : 'Build the graph first')
+    : stage === 'ready' ? 'Start the workflow'
     : stage === 'detecting' ? (detectReady ? 'Begin the call' : 'Resolving context…')
     : stage === 'calling' ? (callProgressed ? 'See the outcome' : onHold ? 'Approve to continue' : 'Run the call, then advance')
     : '';
 
   async function goNext() {
     if (busyRef.current) return;
+    if (stage === 'onboarding' && discovery?.status === 'complete') { setStage('ready'); return; }
     if (stage === 'ready') { await start(); return; }
     if (stage === 'detecting' && detectReady) {
       setStage('calling'); // switch the slide immediately; wire the call behind it
@@ -293,7 +370,7 @@ export default function App() {
   }
 
   function goBack() {
-    const order: Stage[] = ['ready', 'detecting', 'calling', 'complete'];
+    const order: Stage[] = ['onboarding', 'ready', 'detecting', 'calling', 'complete'];
     const i = order.indexOf(stage === 'hold' ? 'calling' : stage);
     if (i > 0) setStage(order[i - 1]);
   }
@@ -317,7 +394,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const flowActive = { ready: -1, detecting: 1, calling: 2, hold: 2, complete: 3 }[stage];
+  const flowActive = { onboarding: 0, ready: 1, detecting: 2, calling: 3, hold: 3, complete: 4 }[stage];
 
   return (
     <main className="vocare-app">
@@ -326,10 +403,10 @@ export default function App() {
       <header className="topbar">
         <div className="brand"><BrandMark /><span>vocare</span></div>
         <div className="flow-nav">
-          {['Detect', 'Assemble', 'Engage', 'Execute'].map((s, i) => (
+          {['Onboard', 'Detect', 'Assemble', 'Engage', 'Execute'].map((s, i) => (
             <div className={i <= flowActive ? 'active' : ''} key={s}>
               <span>{i < flowActive ? <Check size={10} /> : i + 1}</span><em>{s}</em>
-              {i < 3 && <i />}
+              {i < 4 && <i />}
             </div>
           ))}
         </div>
@@ -345,6 +422,51 @@ export default function App() {
       {/* Stages render without an outer AnimatePresence: each fades in on mount and
           unmounts instantly, so a re-render during a transition can never deadlock. */}
       <>
+        {stage === 'onboarding' && (
+          <motion.section key="onboarding" className="screen onboarding-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }}>
+            <div className="erp-stage">
+              <div className="erp-frame-head">
+                <div><Database size={13} /><span>CALIFORNIA GRID ERP</span></div>
+                <em>SYNTHETIC DEMO</em>
+              </div>
+              <iframe
+                ref={erpFrameRef}
+                className="erp-frame"
+                src="/erp/"
+                title="California Grid ERP synthetic demo"
+                loading="eager"
+                onLoad={() => notifyErp(discovery?.currentAgent || null, discovery?.currentAgent
+                  ? discovery.agents.find((agent) => agent.id === discovery.currentAgent)?.progress || 0
+                  : 0, discovery?.status || 'empty')}
+              />
+            </div>
+
+            <div className="onboarding-graph">
+              <div className="graph-stage-head">
+                <div>
+                  <span>LIVE CONTEXT GRAPH</span>
+                  <strong>
+                    {discovery?.status === 'complete'
+                      ? 'Population complete'
+                      : activeDiscoveryAgent
+                        ? `${activeDiscoveryAgent.name} · ${activeDiscoveryAgent.progress}%`
+                        : 'Waiting for discovery'}
+                  </strong>
+                </div>
+                <div className="graph-head-actions">
+                  <em className={discovery?.status || 'empty'}><i /> {discovery?.status || 'empty'}</em>
+                  <button className="graph-discovery-button" onClick={runDiscovery} disabled={!discovery || discoveryRunning}>
+                    {discoveryRunning ? <i className="discovery-spinner" /> : <Network size={12} />}
+                    {discoveryRunning ? 'Discovering' : discovery?.status === 'complete' ? 'Rebuild' : 'Run discovery'}
+                  </button>
+                </div>
+              </div>
+              <ContextMesh3D dense={false} refreshKey={discovery?.version ?? 0} />
+              <div className="graph-provenance"><FileCheck2 size={12} /> Every node retains its source file and discovery-agent lineage.</div>
+            </div>
+          </motion.section>
+        )}
+
         {stage === 'ready' && (
           <motion.section key="ready" className="screen ready-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.22 }}>
             <div className="ready-main">
@@ -384,7 +506,7 @@ export default function App() {
         {stage === 'detecting' && (
           <motion.section key="detecting" className="screen detect-screen-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
             <div className="context-map-full">
-              <ContextMesh3D />
+              <ContextMesh3D refreshKey={discovery?.version ?? 0} />
             </div>
           </motion.section>
         )}
@@ -652,7 +774,7 @@ export default function App() {
       {/* slide-style navigation — Next / Back, or → / Space / ← */}
       {stage !== 'complete' && (
         <div className="slide-nav">
-          <button className="nav-back" onClick={goBack} disabled={stage === 'ready'} aria-label="Back">‹</button>
+          <button className="nav-back" onClick={goBack} disabled={stage === 'onboarding'} aria-label="Back">‹</button>
           <span className="nav-hint">{advanceHint}</span>
           <button className="nav-next" onClick={goNext} disabled={!canAdvance}>
             Next <ArrowRight size={15} />
