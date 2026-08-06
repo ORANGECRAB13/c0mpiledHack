@@ -5,12 +5,18 @@ import ManagementSystem from './pages/ManagementSystem.jsx';
 import RequiresAttention from './pages/RequiresAttention.jsx';
 import Assistant from './pages/Assistant.jsx';
 import Routines from './pages/Routines.jsx';
+import OpsQueue from './pages/OpsQueue.jsx';
+import CaseWorkspace from './pages/CaseWorkspace.jsx';
+import Monitoring from './pages/Monitoring.jsx';
+import AuditHistory from './pages/AuditHistory.jsx';
+import PolicyLibrary from './pages/PolicyLibrary.jsx';
+import Analytics from './pages/Analytics.jsx';
 
 // Five screens, three sidebar variants (per the reference):
 // frameworks/attention/assistant → expanded workspace sidebar
 // mgmt → collapsed icon rail · routines → project sidebar
 export default function App() {
-  const [page, setPage] = useState('frameworks');
+  const [page, setPage] = useState('queue');
   const go = setPage;
 
   return (
@@ -25,6 +31,12 @@ export default function App() {
         {page === 'attention' && <RequiresAttention />}
         {page === 'assistant' && <Assistant />}
         {page === 'routines' && <Routines />}
+        {page === 'queue' && <OpsQueue openCase={() => go('case')} />}
+        {page === 'case' && <CaseWorkspace back={() => go('queue')} />}
+        {page === 'monitoring' && <Monitoring />}
+        {page === 'audit' && <AuditHistory />}
+        {page === 'policies' && <PolicyLibrary goMgmt={() => go('mgmt')} />}
+        {page === 'analytics' && <Analytics />}
       </div>
 
       {/* temporary page switcher for the assistant screen (reachable via sidebar later) */}

@@ -25,6 +25,14 @@ export function Sidebar({ page, go }) {
         <button className="sb-item"><Icon name="sun" size={16} /> Today</button>
         <button className="sb-item" onClick={() => go('routines')}><Icon name="grid" size={16} /> Projects <span className="chev"><Icon name="chevR" size={13} /></span></button>
         <button className="sb-item"><Icon name="org" size={16} /> Organization <span className="chev"><Icon name="chevR" size={13} /></span></button>
+        <button className="sb-item"><Icon name="zap" size={16} /> Operations <span className="chev"><Icon name="chevD" size={13} /></span></button>
+        <div className="sb-sub">
+          <button className={`sb-item ${['queue','case'].includes(page) ? 'on' : ''}`} onClick={() => go('queue')}>Operational Queue</button>
+          <button className={`sb-item ${page === 'monitoring' ? 'on' : ''}`} onClick={() => go('monitoring')}>Monitoring</button>
+          <button className={`sb-item ${page === 'audit' ? 'on' : ''}`} onClick={() => go('audit')}>Audit History</button>
+          <button className={`sb-item ${page === 'policies' ? 'on' : ''}`} onClick={() => go('policies')}>Policy Library</button>
+          <button className={`sb-item ${page === 'analytics' ? 'on' : ''}`} onClick={() => go('analytics')}>Analytics</button>
+        </div>
         <button className={`sb-item ${['frameworks','attention','mgmt'].includes(page) ? '' : ''}`}><Icon name="shield" size={16} /> Compliance <span className="chev"><Icon name="chevD" size={13} /></span></button>
         <div className="sb-sub">
           <button className={`sb-item ${page === 'frameworks' ? 'on' : ''}`} onClick={() => go('frameworks')}>Frameworks</button>
