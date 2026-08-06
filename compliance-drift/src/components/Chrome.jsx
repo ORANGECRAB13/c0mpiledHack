@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import AskOverlay from './AskOverlay.jsx';
+import { SUGGESTIONS } from '../data/askdocs.js';
 import { Icon, Mark } from '../icons.jsx';
 
 /* ── expanded workspace sidebar (Frameworks / Requires attention / etc.) ── */
@@ -170,14 +172,27 @@ export function Crumbs({ items }) {
 }
 
 export function AskBar() {
+  const [q, setQ] = useState('');
+  const [open, setOpen] = useState(null); // the submitted query
+  const submit = (text) => {
+    const query = (text ?? q).trim() || SUGGESTIONS[0];
+    setOpen(query);
+    setQ('');
+  };
   return (
     <>
       <div className="askbar">
         <span className="alogo"><Mark size={22} /></span>
-        <input placeholder="Ask your documents, draft reports, automate — type @ for a project or file…" />
-        <button className="mic"><Icon name="mic" size={18} /></button>
+        <input
+          placeholder="Ask your documents, draft reports, automate — type @ for a project or file…"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && submit()}
+        />
+        <button className="mic" onClick={() => submit(SUGGESTIONS[0])}><Icon name="mic" size={18} /></button>
       </div>
       <div className="askhandle" />
+      {open && <AskOverlay query={open} onClose={() => setOpen(null)} />}
     </>
   );
 }
