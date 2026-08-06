@@ -1,29 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon, Mark } from '../icons.jsx';
-import { DOC_LIB, SCRIPTS } from '../data/askdocs.js';
+import { DOC_META, SCRIPTS } from '../data/askdocs.js';
+import PdfViewer from './PdfViewer.jsx';
 
 // The ask-your-documents agent: streams an answer with citations while the
-// viewer opens the cited document, scrolls to the exact clause, sweeps a
-// highlight over it and pops the reasoning bubble beside it.
+// viewer opens the real cited PDF, scrolls to the page, highlights the
+// quoted text on the text layer and pops the reasoning bubble beside it.
 export default function AskOverlay({ query, onClose }) {
   const script = pickScript(query);
   const [shownWords, setShownWords] = useState(0);
-  const [activeCite, setActiveCite] = useState(null); // citation object
-  const [docId, setDocId] = useState(null);
-  const [hl, setHl] = useState(null);       // clause id currently highlighted
-  const [bubble, setBubble] = useState(null); // clause id with visible bubble
+  const [activeCite, setActiveCite] = useState(null);
+  const [target, setTarget] = useState(null); // passed to PdfViewer
+  const [numPages, setNumPages] = useState(null);
   const [scanning, setScanning] = useState(true);
-  const viewerRef = useRef(null);
   const timers = useRef([]);
+  const seq = useRef(0);
   const later = (fn, ms) => timers.current.push(setTimeout(fn, ms));
 
   const words = flatWords(script.answer);
 
-  // stream the answer, then walk citation 1 automatically
   useEffect(() => {
     let i = 0;
     const id = setInterval(() => {
-      i += 3; // words per tick
+      i += 3;
       setShownWords(i);
       if (i >= words.length) {
         clearInterval(id);
@@ -35,24 +34,13 @@ export default function AskOverlay({ query, onClose }) {
   }, []);
 
   const jumpTo = (cite) => {
+    seq.current += 1;
     setActiveCite(cite);
-    setHl(null);
-    setBubble(null);
-    const sameDoc = docId === cite.doc;
-    setDocId(cite.doc);
-    // let the doc render/swap, then scroll, then highlight, then bubble
-    later(() => {
-      const el = document.getElementById(`clause-${cite.clause}`);
-      const box = viewerRef.current;
-      if (el && box) {
-        box.scrollTo({ top: el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2, behavior: 'smooth' });
-      }
-      later(() => setHl(cite.clause), sameDoc ? 450 : 700);
-      later(() => setBubble(cite.clause), sameDoc ? 1000 : 1300);
-    }, sameDoc ? 60 : 320);
+    setNumPages(null);
+    setTarget({ ...cite, key: seq.current });
   };
 
-  const doc = docId ? DOC_LIB[docId] : null;
+  const doc = activeCite ? DOC_META[activeCite.doc] : null;
 
   return (
     <div className="askveil">
@@ -85,15 +73,11 @@ export default function AskOverlay({ query, onClose }) {
             <div className="ask-cites">
               <div className="ask-cites-h">Sources — click to inspect</div>
               {script.citations.map((c) => (
-                <button
-                  key={c.n}
-                  className={`ask-src ${activeCite?.n === c.n ? 'on' : ''}`}
-                  onClick={() => jumpTo(c)}
-                >
+                <button key={c.n} className={`ask-src ${activeCite?.n === c.n ? 'on' : ''}`} onClick={() => jumpTo(c)}>
                   <span className="cn">{c.n}</span>
                   <span>
-                    <div className="dn">{DOC_LIB[c.doc].title}</div>
-                    <div className="dp">p. {c.page} · {DOC_LIB[c.doc].file}</div>
+                    <div className="dn">{DOC_META[c.doc].title}</div>
+                    <div className="dp">p. {c.page} · {DOC_META[c.doc].file}</div>
                   </span>
                   <Icon name="chevR" size={13} style={{ marginLeft: 'auto', color: 'var(--t4)' }} />
                 </button>
@@ -102,7 +86,7 @@ export default function AskOverlay({ query, onClose }) {
           )}
         </div>
 
-        {/* ── right: document viewer ── */}
+        {/* ── right: real PDF viewer ── */}
         <div className="ask-viewer">
           {!doc ? (
             <div className="viewer-empty">
@@ -112,46 +96,18 @@ export default function AskOverlay({ query, onClose }) {
           ) : (
             <>
               <div className="viewer-h">
-                <span className="pdficon" style={{ width: 32, height: 32, fontSize: 8 }}>
-                  {doc.file.endsWith('.pdf') ? 'PDF' : 'DOCX'}
-                </span>
+                <span className="pdficon" style={{ width: 32, height: 32, fontSize: 8 }}>PDF</span>
                 <span>
                   <div className="t">{doc.title}</div>
                   <div className="s">{doc.file}</div>
                 </span>
-                <span className="pg">p. {activeCite?.page ?? 1} / {doc.pages}</span>
+                <span className="pg">p. {activeCite.page}{numPages ? ` / ${numPages}` : ''}</span>
               </div>
-              <div className="viewer-scroll" ref={viewerRef} key={docId}>
-                <div className="viewer-page">
-                  {doc.body.map((sec, si) => sec.title ? (
-                    <div key={si}>
-                      <div className="vp-title">{sec.h}</div>
-                      <div className="vp-meta">{sec.meta}</div>
-                    </div>
-                  ) : (
-                    <div key={si} className="vp-sec">
-                      <div className="vp-h">{sec.h}</div>
-                      {sec.paras.map((p, pi) => (
-                        <div
-                          key={pi}
-                          id={p.id ? `clause-${p.id}` : undefined}
-                          className={`vp-p ${hl === p.id ? 'lit' : ''}`}
-                        >
-                          {p.t}
-                          {bubble === p.id && activeCite && (
-                            <div className="whybubble">
-                              <div className="wb-h"><span className="cn">{activeCite.n}</span> Why this matters</div>
-                              <div className="wb-b">{activeCite.reason}</div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                  {/* filler so short docs can centre-scroll */}
-                  <div style={{ height: 260 }} />
-                </div>
-              </div>
+              <PdfViewer
+                url={`/docs/${doc.file}`}
+                target={target}
+                onMeta={({ numPages: n }) => setNumPages(n)}
+              />
             </>
           )}
         </div>

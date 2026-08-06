@@ -1,92 +1,24 @@
-// Document library + scripted answers for the ask-your-documents agent.
-// Each doc renders as styled "PDF" pages; clauses carry ids the agent
-// scrolls to, highlights, and annotates.
+// Ask-agent corpus: real PDF files served from /docs, cited by page and
+// quote. The viewer scrolls the actual PDF and highlights the quoted text.
 
-export const DOC_LIB = {
-  'aer-2026': {
-    title: 'AER (Retail Law) Instrument 2026',
-    file: 'AER-Retail-Law-Instrument-2026.pdf',
-    pages: 14,
-    body: [
-      { h: 'AER (Retail Law) Instrument 2026', meta: 'National Energy Retail Law · Minimum disconnection amount · Commonwealth of Australia', title: true },
-      { h: '1 · Authority', paras: [{ t: '1.1 This instrument is made under section 111 of the National Energy Retail Law as applied in participating jurisdictions.' }] },
-      { h: '2 · Definitions', paras: [
-        { t: '2.1 In this instrument, "arrears" means amounts payable by a customer to a retailer for the sale and supply of energy that remain unpaid after the pay-by date.' },
-        { t: '2.2 "De-energisation" has the meaning given by the National Energy Retail Rules.' },
-      ]},
-      { h: '3 · Application', paras: [
-        { t: '3.1 This instrument applies to retailers under the National Energy Retail Law in participating jurisdictions.' },
-        { t: '3.2 It supersedes the amount specified in the 2024 instrument from the commencement date.' },
-      ]},
-      { h: '4 · Minimum disconnection amount', paras: [
-        { id: 'aer-s111-floor', t: '4.1 A retailer must not arrange de-energisation of premises for a customer whose arrears are below the minimum disconnection amount.' },
-        { id: 'aer-s111-amount', t: '4.2 The minimum disconnection amount is $500 (GST inclusive).' },
-      ]},
-      { h: '5 · Commencement', paras: [
-        { id: 'aer-commence', t: '5.1 This instrument commences on 1 July 2026.' },
-        { t: '5.2 Decisions made before commencement are assessed under the instrument in force at the time.' },
-      ]},
-    ],
-  },
-  'hardship-policy': {
-    title: 'Customer Hardship Policy Rev 4',
-    file: '01. Customer Hardship Policy Rev 4.docx',
-    pages: 18,
-    body: [
-      { h: 'Customer Hardship Policy', meta: 'Aurora Retail Energy · Rev 4 · AER approved 21 June 2026', title: true },
-      { h: '3 · Identifying hardship', paras: [
-        { t: '3.1 We proactively identify residential customers showing early signs of payment difficulty before disconnection is contemplated.' },
-        { id: 'hp-indicators', t: '3.2 Minimum indicators include one or more missed or partial payments occurring within a single billing cycle, a failed direct debit, or information suggesting a change in the customer\'s financial circumstances.' },
-      ]},
-      { h: '4 · Protections while engaged', paras: [
-        { id: 'hp-no-disco', t: '4.3 A customer who has entered our hardship program, or who is being assessed for entry, must not be disconnected while they remain in contact and are meeting the terms of any arrangement.' },
-        { t: '4.4 Debt collection activity and default listing are suspended for customers in the program.' },
-      ]},
-      { h: '5 · Assistance we must offer', paras: [
-        { id: 'hp-better-offer', t: '5.1 Eligible customers must be advised if a lower-cost plan is available for their consumption profile, and moved to it on request at no charge.' },
-        { t: '5.2 Payment arrangements must reflect the customer\'s capacity to pay.' },
-      ]},
-    ],
-  },
-  'fdv-policy': {
-    title: 'Family and Domestic Violence Policy Rev 2',
-    file: '06. Family and Domestic Violence Policy Rev 2.docx',
-    pages: 9,
-    body: [
-      { h: 'Family and Domestic Violence Policy', meta: 'Aurora Retail Energy · Rev 2 · Effective 30 June 2026', title: true },
-      { h: '2 · Safe engagement', paras: [
-        { id: 'fdv-safe', t: '2.1 Where an account carries a sensitive customer marker, all contact must follow the customer\'s recorded safe contact preferences, and account information must never be disclosed to another party regardless of their claimed relationship to the customer.' },
-        { t: '2.2 Affected customers must not be required to provide evidence of their circumstances more than once.' },
-      ]},
-      { h: '3 · Debt and disconnection', paras: [
-        { id: 'fdv-debt', t: '3.1 Disconnection must not be used as a means of recovering debt from a customer affected by family violence, and any de-energisation process in flight must be halted when a marker is identified.' },
-      ]},
-    ],
-  },
-  'wi-4': {
-    title: 'Credit & Collections Work Instruction v11',
-    file: 'WI-4. Credit and Collections Work Instruction v11.docx',
-    pages: 22,
-    body: [
-      { h: 'Credit & Collections Work Instruction', meta: 'Aurora Retail Energy · v11 · Last revised 25 May 2026', title: true },
-      { h: '4 · Disconnection eligibility screening', paras: [
-        { t: '4.1 Before referring an account for de-energisation, the agent must complete the eligibility screen in full.' },
-        { id: 'wi-42', t: '4.2 Do not refer an account for disconnection where the outstanding balance is below $300, the account holds a life support flag, or a payment plan is active.' },
-        { t: '4.3 Screening outcomes are recorded in the breach register feed.' },
-      ]},
-    ],
-  },
+export const DOC_META = {
+  'aer-2026': { title: 'AER (Retail Law) Instrument 2026', file: 'AER-Retail-Law-Instrument-2026.pdf' },
+  'nerr': { title: 'National Energy Retail Rules v51', file: 'NERR-v51.pdf' },
+  'hardship-policy': { title: 'Customer Hardship Policy Rev 4', file: 'Customer-Hardship-Policy-Rev4.pdf' },
+  'fdv-policy': { title: 'Family and Domestic Violence Policy Rev 2', file: 'FDV-Policy-Rev2.pdf' },
+  'wi-4': { title: 'Credit & Collections Work Instruction v11', file: 'WI-4-Credit-Collections-v11.pdf' },
+  'best-offer': { title: 'Best Offer Policy v2.1', file: 'Best-Offer-Policy-v2.pdf' },
+  'billing-std': { title: 'Billing Accuracy Standard v3.0', file: 'Billing-Accuracy-Standard-v3.pdf' },
 };
 
-// scripted Q&A — matched loosely on keywords, default first
 export const SCRIPTS = [
   {
-    match: ['disconnect', 'amelia', '312', 'arrears'],
+    match: ['amelia', 'hart', '312', 'disconnect her'],
     question: 'Can we disconnect Amelia Hart over her $312 arrears?',
     citations: [
-      { n: 1, doc: 'aer-2026', clause: 'aer-s111-amount', page: 5, reason: 'Her $312 arrears sit below the $500 minimum disconnection amount — disconnection is prohibited outright.' },
-      { n: 2, doc: 'hardship-policy', clause: 'hp-no-disco', page: 7, reason: 'She is under payment-difficulty assessment, which blocks disconnection while she stays in contact.' },
-      { n: 3, doc: 'fdv-policy', clause: 'fdv-debt', page: 5, reason: 'Her account carries a sensitive marker — disconnection cannot be used for debt recovery at all.' },
+      { n: 1, doc: 'aer-2026', page: 2, quote: 'The minimum disconnection amount is $500 (GST inclusive).', reason: 'Her $312 arrears sit below the $500 minimum disconnection amount — disconnection is prohibited outright.' },
+      { n: 2, doc: 'hardship-policy', page: 2, quote: 'A customer who has entered our hardship program, or who is being assessed for entry, must not be disconnected while they remain in contact and are meeting the terms of any arrangement.', reason: 'She is under payment-difficulty assessment, which blocks disconnection while she stays in contact.' },
+      { n: 3, doc: 'fdv-policy', page: 2, quote: 'Disconnection must not be used as a means of recovering debt from a customer affected by family violence, and any de-energisation process in flight must be halted when a marker is identified.', reason: 'Her account carries a sensitive marker — disconnection cannot be used for debt recovery at all.' },
     ],
     answer: [
       ['No — disconnection is prohibited on three independent grounds.', 'b'],
@@ -96,11 +28,11 @@ export const SCRIPTS = [
     ],
   },
   {
-    match: ['wi', 'work instruction', 'aligned', 'threshold', 'up to date', 'stale'],
+    match: ['wi-4', 'wi 4', 'work instruction', 'aligned', 'stale', 'threshold', 'up to date'],
     question: 'Is WI-4 aligned with the current disconnection threshold?',
     citations: [
-      { n: 1, doc: 'wi-4', clause: 'wi-42', page: 6, reason: 'WI-4 §4.2 still instructs agents to screen against $300 — the superseded amount.' },
-      { n: 2, doc: 'aer-2026', clause: 'aer-s111-amount', page: 5, reason: 'The instrument in force since 1 July 2026 sets the floor at $500.' },
+      { n: 1, doc: 'wi-4', page: 2, quote: 'Do not refer an account for disconnection where the outstanding balance is below $300, the account holds a life support flag, or a payment plan is active.', reason: 'WI-4 §4.2 still instructs agents to screen against $300 — the superseded amount.' },
+      { n: 2, doc: 'aer-2026', page: 2, quote: 'The minimum disconnection amount is $500 (GST inclusive).', reason: 'The instrument in force since 1 July 2026 sets the floor at $500.' },
     ],
     answer: [
       ['No — WI-4 has drifted from the instrument it implements.', 'b'],
@@ -108,9 +40,64 @@ export const SCRIPTS = [
       ['Accounts between $300 and $500 could currently be referred unlawfully. The register flagged this drift on 4 August; §4.2, letter template EL-018, training module 6 and breach rule R-22 all need the new amount.', 0],
     ],
   },
+  {
+    match: ['okonkwo', 'daniel', 'jia', 'chen', 'grace', 'muller', 'best offer', 'plan switch', 'cheaper'],
+    question: 'Can I approve the plan switch for Daniel Okonkwo?',
+    citations: [
+      { n: 1, doc: 'best-offer', page: 2, quote: 'A customer who requests the best offer must be switched with explicit informed consent, at no charge, effective from their next billing cycle.', reason: 'The switch needs his explicit informed consent on record — that is the only outstanding item.' },
+      { n: 2, doc: 'best-offer', page: 1, quote: 'The comparison uses the customer\'s most recent 12 months of interval data, or a profile estimate where 12 months is unavailable.', reason: 'His comparison used 12 months of interval data, so the $14/month saving is soundly based.' },
+      { n: 3, doc: 'hardship-policy', page: 2, quote: 'Eligible customers must be advised if a lower-cost plan is available for their consumption profile, and moved to it on request at no charge.', reason: 'If he later enters payment difficulty, advising the cheaper plan becomes mandatory — approving now gets ahead of that.' },
+    ],
+    answer: [
+      ['Yes — once consent is recorded.', 'b'],
+      ['The tariff comparison is complete and used his last 12 months of interval data ', 0], ['[2]', 'c2'], [', identifying a $14/month saving. Under the Best Offer Policy the switch must be made with explicit informed consent, at no charge, from his next billing cycle ', 0], ['[1]', 'c1'], ['. ', 0],
+      ['Capture consent on the call or via SMS link, and the switch can be actioned immediately ', 0], ['[3]', 'c3'], ['.', 0],
+    ],
+  },
+  {
+    match: ['priya', 'raman', 'contact before', 'determination', 'complaint'],
+    question: 'Why does Priya Raman need contact before determination?',
+    citations: [
+      { n: 1, doc: 'nerr', page: 111, quote: ['When retailer must not arrange de-energisation', 'where the customer has made a complaint, directly related to the reason for'], reason: 'NERR r 116 blocks de-energisation while a directly related complaint remains unresolved — her billing complaint is still open.' },
+      { n: 2, doc: 'hardship-policy', page: 1, quote: 'Minimum indicators include one or more missed or partial payments occurring within a single billing cycle, a failed direct debit, or information suggesting a change in the customer\'s financial circumstances.', reason: 'Her payment pattern meets the minimum hardship indicators, so an assistance conversation must happen before any determination.' },
+    ],
+    answer: [
+      ['Because two protections are engaged at once.', 'b'],
+      ['She has an unresolved complaint directly related to the arrears, and NERR rule 116 prohibits arranging de-energisation while it stands ', 0], ['[1]', 'c1'], ['. ', 0],
+      ['Her recent payment behaviour also meets our minimum hardship indicators, which requires an assistance discussion before any determination is recorded ', 0], ['[2]', 'c2'], ['. Resolve the complaint and complete the conversation first.', 0],
+    ],
+  },
+  {
+    match: ['webb', 'marcus', 'castellano', 'tom', 'unbilled', 'revenue', 'back-bill', 'backbill'],
+    question: 'How far back can we bill Marcus Webb for the unbilled period?',
+    citations: [
+      { n: 1, doc: 'billing-std', page: 2, quote: 'Where a customer has been undercharged and the undercharging is not the customer\'s fault, recovery is limited to the 9 months preceding the date the error was identified.', reason: 'The meter-config error was ours, so recovery caps at 9 months even though 14 months went unbilled.' },
+      { n: 2, doc: 'billing-std', page: 2, quote: 'Recovered amounts must be offered as an interest-free instalment plan matching the period of the undercharge.', reason: 'The recovered amount must be offered over a matching 9-month interest-free plan.' },
+    ],
+    answer: [
+      ['Nine months — not the full unbilled period.', 'b'],
+      ['The exception spans 14 months, but the undercharging came from our meter configuration error, so the Billing Accuracy Standard caps recovery at the 9 months before the error was identified ', 0], ['[1]', 'c1'], ['. ', 0],
+      ['The recovered amount must also be offered as an interest-free instalment plan over an equivalent period ', 0], ['[2]', 'c2'], ['. Draft the re-bill for $1,088 across 9 months.', 0],
+    ],
+  },
+  {
+    match: ['sofia', 'nguyen', 'exit', 'remove support', 'remains appropriate', 'life support'],
+    question: 'Can we exit Sofia Nguyen from hardship support?',
+    citations: [
+      { n: 1, doc: 'nerr', page: 111, quote: ['adhering to a payment plan under rule 33 or 72', 'where the customer is a hardship customer or residential customer and is'], reason: 'While she was on the plan, r 116(1)(d) protected her from de-energisation — exit removes that protection, so it must be deliberate.' },
+      { n: 2, doc: 'hardship-policy', page: 2, quote: 'Payment arrangements must reflect the customer\'s capacity to pay.', reason: 'Nine months of consistent payments at the agreed level shows the arrangement matched her capacity — the exit criteria are genuinely met.' },
+    ],
+    answer: [
+      ['The evidence supports it — but it is your call, not the system\'s.', 'b'],
+      ['She has paid consistently for nine months and her balance is zero; the arrangement clearly matched her capacity to pay ', 0], ['[2]', 'c2'], ['. ', 0],
+      ['Note that leaving the program ends the specific protection of NERR r 116(1)(d) for customers adhering to a plan ', 0], ['[1]', 'c1'], [', so confirm with her before recording the exit, and schedule a 60-day check-in.', 0],
+    ],
+  },
 ];
 
 export const SUGGESTIONS = [
   'Can we disconnect Amelia Hart over her $312 arrears?',
   'Is WI-4 aligned with the current disconnection threshold?',
+  'Can I approve the plan switch for Daniel Okonkwo?',
+  'How far back can we bill Marcus Webb for the unbilled period?',
 ];
