@@ -248,7 +248,65 @@ export default function App() {
     setLatestDecision(record);
   };
 
+  // Tools the live voice copilot can run against the UI. Each returns a short
+  // string the model can speak from. Approval deliberately has no tool.
+  const executeVoiceTool = (name, args = {}) => {
+    const findCase = (ref) => {
+      const norm = String(ref || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+      return QUEUE.find((item) =>
+        item.id.toLowerCase() === norm.replace(' ', '-') ||
+        norm.includes(item.id.toLowerCase()) ||
+        item.customer.toLowerCase().includes(norm) ||
+        norm.split(' ').some((token) => token.length >= 4 && item.customer.toLowerCase().includes(token)));
+    };
+
+    switch (name) {
+      case 'navigate': {
+        const result = runProductCommand(`open ${args.target || ''}`);
+        return result.handled ? `Opened ${args.target}.` : `No page called "${args.target}" — valid pages: home, customers, operational reviews, continuous monitoring, decision audit, management system, compliance assistant, connected systems, outcomes.`;
+      }
+      case 'open_case': {
+        const target = findCase(args.customer);
+        if (!target) return `No case found for "${args.customer}".`;
+        openCase(target.id, `Opened ${target.customer} · ${target.id}.`);
+        const caseData = CASES[target.id];
+        return `Opened ${target.customer} (${target.id}) — ${target.workflow}, ${target.status}. ${caseData?.snapshot?.[0]?.[1] ? `Balance: ${caseData.snapshot[0][1]}.` : ''}`;
+      }
+      case 'filter_queue': {
+        setQueueFilters((current) => ({
+          ...current,
+          priority: args.priority || 'All',
+          workflow: args.workflow || 'All',
+        }));
+        setPage('queue');
+        announceAction('Filtered the decision queue by voice.', 'filter');
+        return `Queue filtered to ${args.priority || 'all'} priority, ${args.workflow || 'all workflows'}.`;
+      }
+      case 'ask_compliance': {
+        const target = args.customer ? findCase(args.customer) : null;
+        if (target) {
+          setSelectedCaseId(target.id);
+          setPage('case');
+        }
+        setAskRequest({ id: Date.now(), query: args.question });
+        return `The compliance agent is answering on screen with citations${target ? ` on ${target.customer}'s case` : ''}. Tell the officer the answer is coming up.`;
+      }
+      case 'start_reassessment': {
+        const account = MONITORING.find((item) =>
+          item.customer.toLowerCase().includes(String(args.customer || '').toLowerCase()));
+        if (!account) return `No monitored account matches "${args.customer}".`;
+        recordMonitoringDecision(account, 'Human reassessment opened');
+        if (account.caseId) openCase(account.caseId);
+        else { setCustomersQuery(account.customer); go('customers'); }
+        return `Reassessment recorded for ${account.customer}; their profile is open.`;
+      }
+      default:
+        return `Unknown tool ${name}.`;
+    }
+  };
+
   const assistantValue = {
+    executeVoiceTool,
     page,
     queueFilters,
     setQueueFilters,

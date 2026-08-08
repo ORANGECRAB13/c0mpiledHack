@@ -29,7 +29,14 @@ const sessions = new Map();
 
 export function attachVoiceBridge(server) {
   const provider = (process.env.VOICE_PROVIDER || 'azure').toLowerCase();
-  const wss = new WebSocketServer({ server, path: '/api/voice/stream' });
+  // noServer + manual routing so this bridge and the officer copilot
+  // (officer.js) can share one HTTP server without 400ing each other's paths.
+  const wss = new WebSocketServer({ noServer: true });
+  server.on('upgrade', (req, socket, head) => {
+    const { pathname } = new URL(req.url, 'http://localhost');
+    if (pathname !== '/api/voice/stream') return;
+    wss.handleUpgrade(req, socket, head, (ws) => wss.emit('connection', ws, req));
+  });
 
   wss.on('connection', async (client, req) => {
     const caseId = new URL(req.url, 'http://localhost').searchParams.get('caseId');

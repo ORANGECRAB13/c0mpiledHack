@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import AskOverlay from './AskOverlay.jsx';
 import { Icon, Mark } from '../icons.jsx';
 import { useProductAssistant } from '../product/AssistantContext.jsx';
+import { startLiveVoice, stopLiveVoice, sendToolResult, isLive } from '../voice/liveVoice.js';
 
 /* ── expanded workspace sidebar (Frameworks / Requires attention / etc.) ── */
 export function Sidebar({ page, go }) {
@@ -166,7 +167,39 @@ export function AskBar() {
   const recorderRef = useRef(null);
   const recordingChunksRef = useRef([]);
   const recordingTimerRef = useRef(null);
-  const { runProductCommand, assistantNotice, dismissNotice, askRequest, clearAskRequest } = useProductAssistant();
+  const [live, setLive] = useState(() => isLive());
+  const [liveLine, setLiveLine] = useState('');
+  const { runProductCommand, assistantNotice, dismissNotice, askRequest, clearAskRequest, executeVoiceTool } = useProductAssistant();
+  const executeVoiceToolRef = useRef(executeVoiceTool);
+  executeVoiceToolRef.current = executeVoiceTool;
+
+  const toggleLive = async () => {
+    if (isLive()) {
+      stopLiveVoice();
+      setLive(false);
+      setLiveLine('');
+      return;
+    }
+    try {
+      await startLiveVoice((event) => {
+        if (event.type === 'connected') { setLive(true); setLiveLine('Live — just talk.'); }
+        else if (event.type === 'transcript') setLiveLine(`${event.speaker === 'agent' ? 'Vocare' : 'You'}: ${event.text}`);
+        else if (event.type === 'tool') {
+          // Execute against the running UI and report back so the model can
+          // confirm verbally. The ref keeps the newest app state in scope.
+          let output;
+          try { output = executeVoiceToolRef.current(event.name, event.args); }
+          catch (error) { output = `Tool failed: ${error.message}`; }
+          sendToolResult(event.call_id, output);
+        }
+        else if (event.type === 'error') { setLiveLine(event.message); }
+        else if (event.type === 'closed') { setLive(false); }
+      });
+    } catch (error) {
+      setLive(false);
+      setLiveLine(error?.name === 'NotAllowedError' ? 'Microphone access was not allowed.' : 'Could not start live voice.');
+    }
+  };
 
   // A compound command ("open X and analyze …") navigates first, then leaves
   // the analysis half here: open the agent chat on whatever page we landed on.
@@ -283,7 +316,14 @@ export function AskBar() {
           aria-label={voiceState === 'listening' ? 'Stop listening' : 'Use voice command'}
           title={voiceState === 'listening' ? 'Stop listening' : 'Use voice command'}
         ><Icon name={voiceState === 'listening' ? 'x' : 'mic'} size={18} /></button>
+        <button
+          className={`live-toggle ${live ? 'on' : ''}`}
+          onClick={toggleLive}
+          aria-label={live ? 'End live voice session' : 'Start live voice session'}
+          title={live ? 'End live voice session' : 'Talk to the workspace copilot live'}
+        >{live ? <><span className="live-dot" />Live</> : 'Go live'}</button>
         {voiceMessage && <span className={`voice-status ${voiceState}`}>{voiceMessage}</span>}
+        {live && liveLine && <span className="voice-status live-line">{liveLine}</span>}
       </div>
       <div className="askhandle" />
       {open && <AskOverlay query={open} onClose={() => setOpen(null)} />}

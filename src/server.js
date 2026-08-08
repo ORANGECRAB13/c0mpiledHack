@@ -550,3 +550,5 @@ const server = app.listen(PORT, () => {
 });
 
 attachVoiceBridge(server);
+const { attachOfficerVoice } = await import('./voice/officer.js');
+attachOfficerVoice(server);

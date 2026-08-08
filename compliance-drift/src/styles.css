@@ -787,6 +787,17 @@ h1.display {
 }
 .xbtn.ask-close:hover { background: #FFF; color: var(--t1); }
 
+/* ── live officer voice ── */
+.live-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 13px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  border: 1px solid var(--line); background: var(--inset); color: var(--t2); cursor: pointer;
+}
+.live-toggle.on { background: #D64545; border-color: #D64545; color: #FFF; }
+.live-dot { width: 7px; height: 7px; border-radius: 999px; background: #FFF; animation: livepulse 1.4s ease-in-out infinite; }
+@keyframes livepulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+.voice-status.live-line { color: var(--t2); }
+
 /* Guided operational-decision demo */
 .demo-guide {
   position: sticky; top: 0; z-index: 30;

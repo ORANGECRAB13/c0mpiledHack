@@ -6,6 +6,7 @@ export default defineConfig({
   server: {
     port: 5188,
     // The compliance assistant runs on the main Vocare backend.
-    proxy: { '/api': 'http://localhost:5182' }
+    // ws:true so the live officer-voice WebSocket (/api/voice/officer) proxies too.
+    proxy: { '/api': { target: 'http://localhost:5182', ws: true, changeOrigin: true } }
   }
 });
