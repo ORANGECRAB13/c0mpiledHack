@@ -129,7 +129,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ═══ MAIN ═══ */
 .main { flex: 1; overflow-y: auto; position: relative; }
-.page { padding: 22px 40px 120px; max-width: 1420px; }
+.page { padding: 22px 40px 120px; max-width: 1420px; margin-inline: auto; width: 100%; box-sizing: border-box; }
 
 .crumbs {
   display: flex; align-items: center; gap: 7px;
@@ -618,6 +618,7 @@ h1.display {
 .schip.wait  { background: #EFEFF1; color: var(--t2); }
 .schip.issue { background: #FBE7E4; color: var(--red); }
 .schip.mon   { background: #EAF0FB; color: #3B6FE0; }
+.schip.amber { background: #FCF1E1; color: #B97A1B; }
 
 /* ── case workspace ── */
 .casegrid { display: grid; grid-template-columns: 300px 1fr 320px; gap: 16px; margin-top: 20px; align-items: start; }
@@ -774,7 +775,17 @@ h1.display {
   display: grid; grid-template-columns: 420px 1fr;
   box-shadow: 0 40px 100px rgba(0,0,0,0.35);
   animation: settleup .35s var(--ease);
+  position: relative;
 }
+/* Close lives at the panel's top-right, beside the viewer's page pill */
+.xbtn.ask-close {
+  position: absolute; top: 9px; right: 12px; z-index: 5;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--inset); color: var(--t2);
+  cursor: pointer;
+}
+.xbtn.ask-close:hover { background: #FFF; color: var(--t1); }
 
 /* Guided operational-decision demo */
 .demo-guide {
@@ -962,7 +973,7 @@ h1.display {
 /* viewer */
 .ask-viewer { background: #F0F0F2; display: flex; flex-direction: column; overflow: hidden; }
 .viewer-empty { flex: 1; display: grid; place-content: center; justify-items: center; gap: 10px; font-size: 13px; color: var(--t3); }
-.viewer-h { display: flex; align-items: center; gap: 11px; background: #FFF; border-bottom: 1px solid var(--line); padding: 11px 18px; }
+.viewer-h { display: flex; align-items: center; gap: 11px; background: #FFF; border-bottom: 1px solid var(--line); padding: 11px 52px 11px 18px; }
 .viewer-h .t { font-size: 13.5px; font-weight: 650; }
 .viewer-h .s { font-size: 11px; color: var(--t3); margin-top: 1px; }
 .viewer-h .pg { margin-left: auto; font-size: 11.5px; font-weight: 600; color: var(--t2); border: 1px solid var(--line); background: var(--inset); border-radius: 999px; padding: 4px 11px; font-variant-numeric: tabular-nums; }
@@ -1036,7 +1047,18 @@ h1.display {
 }
 
 /* Streamlined product surfaces */
-.product-page { max-width: 1260px; }
+.product-page { max-width: 1420px; }
+
+/* ── connected systems ── */
+.systems-graph { margin-top: 18px; border: 1px solid var(--line, #E7E7EA); border-radius: 14px; background: var(--bg1, #fff); }
+.systems-graph svg { display: block; width: 100%; height: auto; }
+.sysnode.placeholder circle { stroke-dasharray: 4 4; opacity: .75; }
+.systems-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-top: 16px; }
+.syscard { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line, #E7E7EA); border-radius: 12px; background: var(--bg1, #fff); }
+.syscard .sysbadge { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid; font-size: 12px; font-weight: 800; flex: none; }
+.syscard .sysid { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.syscard .sysid b { font-size: 13.5px; }
+.syscard .sysid small { font-size: 11.5px; color: var(--t3); }
 .product-heading { align-items: center; }
 .product-heading .h1sub { margin-top: 7px; }
 .queue-summary { display: flex; align-items: center; margin-top: 24px; background: #FFF; border: 1px solid var(--line); border-radius: 12px; }

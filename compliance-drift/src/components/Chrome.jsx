@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AskOverlay from './AskOverlay.jsx';
 import { Icon, Mark } from '../icons.jsx';
 import { useProductAssistant } from '../product/AssistantContext.jsx';
@@ -36,6 +36,7 @@ export function Sidebar({ page, go }) {
         <div className="sb-h">Knowledge</div>
         <button className={`sb-item ${page === 'mgmt' ? 'on' : ''}`} onClick={() => go('mgmt')}><Icon name="layers" size={16} /> Management system</button>
         <button className={`sb-item ${page === 'assistant' ? 'on' : ''}`} onClick={() => go('assistant')}><Icon name="search" size={16} /> Compliance assistant</button>
+        <button className={`sb-item ${page === 'systems' ? 'on' : ''}`} onClick={() => go('systems')}><Icon name="plug" size={16} /> Connected systems</button>
       </div>
 
       <div className="sb-sec">
@@ -165,7 +166,15 @@ export function AskBar() {
   const recorderRef = useRef(null);
   const recordingChunksRef = useRef([]);
   const recordingTimerRef = useRef(null);
-  const { runProductCommand, assistantNotice, dismissNotice } = useProductAssistant();
+  const { runProductCommand, assistantNotice, dismissNotice, askRequest, clearAskRequest } = useProductAssistant();
+
+  // A compound command ("open X and analyze …") navigates first, then leaves
+  // the analysis half here: open the agent chat on whatever page we landed on.
+  useEffect(() => {
+    if (!askRequest) return;
+    setOpen(askRequest.query);
+    clearAskRequest();
+  }, [askRequest]);
 
   const execute = (text) => {
     const query = String(text ?? q).trim();

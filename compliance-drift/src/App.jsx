@@ -10,6 +10,7 @@ import AuditHistory from './pages/AuditHistory.jsx';
 import Analytics from './pages/Analytics.jsx';
 import Home from './pages/Home.jsx';
 import Customers from './pages/Customers.jsx';
+import Systems from './pages/Systems.jsx';
 import { CASES, MONITORING, QUEUE } from './data/ops.js';
 
 const DECISIONS_KEY = 'vocare:case-decisions';
@@ -47,12 +48,14 @@ export default function App() {
   const [queueFilters, setQueueFilters] = useState({ priority: 'All', workflow: 'All', status: 'All', team: 'All', query: '' });
   const [assistantNotice, setAssistantNotice] = useState(null);
   const [evidenceRequest, setEvidenceRequest] = useState(null);
+  const [askRequest, setAskRequest] = useState(null);
   const [selectedCaseId, setSelectedCaseId] = useState(QUEUE[0].id);
   const [decisions, setDecisions] = useState(loadDecisions);
   const [monitoringDecisions, setMonitoringDecisions] = useState(() => {
     try { return JSON.parse(localStorage.getItem(MONITORING_KEY) || '{}'); } catch { return {}; }
   });
   const [monitoringFocus, setMonitoringFocus] = useState(null);
+  const [customersQuery, setCustomersQuery] = useState('');
   const [latestDecision, setLatestDecision] = useState(null);
   const go = setPage;
   const selectedCase = CASES[selectedCaseId] || CASES[QUEUE[0].id];
@@ -130,6 +133,19 @@ export default function App() {
       return { handled: true };
     }
 
+    // Compound commands: "open Amelia Hart's case and analyze whether we can
+    // disconnect her based on regulation" — navigate to the case, then hand the
+    // analysis half to the compliance agent in the same (persistent) chat.
+    const wantsAnalysis = /analy[sz]e|assess|evaluate|cross[- ]?referen|regulation|complian|disconnect|eligib|can we|should we|whether|is it (?:legal|allowed|permitted)/.test(command);
+    if (commandCase && wantsAnalysis) {
+      const target = CASES[commandCase.id];
+      setSelectedCaseId(target.id);
+      setPage('case');
+      setAskRequest({ id: Date.now(), query: text });
+      announceAction(`Opened ${target.customer} · ${target.id} and asked the compliance agent to analyse it against the regulations.`, 'analysis');
+      return { handled: true };
+    }
+
     if (commandCase && /(?:open|show|find|review|go to)/.test(command)) {
       openCase(commandCase.id, `Opened ${commandCase.customer} · ${commandCase.id}.`);
       return { handled: true };
@@ -166,8 +182,11 @@ export default function App() {
       { test: /outcomes|analytics|reporting/, page: 'analytics', message: 'Opened Outcomes.' },
       { test: /compliance assistant|document assistant|assistant page/, page: 'assistant', message: 'Opened Compliance assistant.' },
       { test: /operational reviews|decision queue|operational queue|work queue|open cases/, page: 'queue', message: 'Opened Operational reviews.' },
+      { test: /connected systems|integrations|systems page|crm|billing systems|system map/, page: 'systems', message: 'Opened Connected systems.' },
     ];
-    const route = routes.find((candidate) => candidate.test.test(command) && /open|show|go|take|navigate|view/.test(command));
+    // A navigation verb makes intent explicit, but a spoken instruction that
+    // simply names a page ("continuous monitoring please") should still land there.
+    const route = routes.find((candidate) => candidate.test.test(command));
     if (route) {
       navigate(route.page, route.message);
       return { handled: true };
@@ -236,6 +255,8 @@ export default function App() {
     runProductCommand,
     assistantNotice,
     dismissNotice: () => setAssistantNotice(null),
+    askRequest,
+    clearAskRequest: () => setAskRequest(null),
   };
 
   return (
@@ -253,7 +274,8 @@ export default function App() {
             decisions={decisions}
           />
         )}
-        {page === 'customers' && <Customers openCase={(caseId) => openCase(caseId)} decisions={decisions} />}
+        {page === 'customers' && <Customers key={customersQuery} openCase={(caseId) => openCase(caseId)} decisions={decisions} initialQuery={customersQuery} />}
+        {page === 'systems' && <Systems />}
         {page === 'mgmt' && <ManagementSystem />}
         {page === 'assistant' && <Assistant />}
         {page === 'queue' && <OpsQueue openCase={(caseId) => openCase(caseId)} decisions={decisions} filters={queueFilters} setFilters={setQueueFilters} />}
@@ -276,6 +298,7 @@ export default function App() {
             decisions={monitoringDecisions}
             onDecision={recordMonitoringDecision}
             openCase={(caseId) => openCase(caseId)}
+            openCustomer={(name) => { setCustomersQuery(name); go('customers'); }}
             focusId={monitoringFocus}
           />
         )}

@@ -15,8 +15,9 @@ function Spark({ data, color }) {
 
 const STATUS = { Stable: 'ready', 'At risk': 'issue', 'On track': 'ready', Watch: 'wait' };
 
-export default function Monitoring({ decisions = {}, onDecision, openCase, focusId }) {
+export default function Monitoring({ decisions = {}, onDecision, openCase, openCustomer, focusId }) {
   const [selected, setSelected] = useState(null);
+  const openProfile = (m) => (m.caseId ? openCase(m.caseId) : openCustomer?.(m.customer));
   useEffect(() => {
     if (focusId) setSelected(focusId);
   }, [focusId]);
@@ -68,7 +69,7 @@ export default function Monitoring({ decisions = {}, onDecision, openCase, focus
                 ) : (
                   <div className="monitor-decision-actions">
                     <button className="btn-ghost" onClick={() => onDecision(m, 'Support retained · monitoring continues')}>Keep current support</button>
-                    <button className="btn-orange" onClick={() => onDecision(m, 'Human reassessment opened')}>Start reassessment</button>
+                    <button className="btn-orange" onClick={() => { onDecision(m, 'Human reassessment opened'); openProfile(m); }}>Start reassessment</button>
                   </div>
                 )}
               </div>

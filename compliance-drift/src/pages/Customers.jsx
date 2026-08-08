@@ -3,8 +3,17 @@ import { Icon } from '../icons.jsx';
 import { AskBar, Crumbs } from '../components/Chrome.jsx';
 import { QUEUE } from '../data/ops.js';
 
-export default function Customers({ openCase, decisions }) {
-  const [query, setQuery] = useState('');
+const STATUS_TONE = {
+  'Ready for review': 'ready',
+  'Evidence assembling': 'mon',
+  'Exception found': 'issue',
+  'Data issue': 'amber',
+  'Monitoring': 'mon',
+  'Investigation open': 'wait',
+};
+
+export default function Customers({ openCase, decisions, initialQuery = '' }) {
+  const [query, setQuery] = useState(initialQuery);
   const matches = QUEUE.filter((item) => `${item.customer} ${item.id} ${item.state} ${item.team}`.toLowerCase().includes(query.toLowerCase()));
 
   return (
@@ -27,7 +36,7 @@ export default function Customers({ openCase, decisions }) {
             <span className="customer-avatar">{item.customer.split(' ').slice(0, 2).map((part) => part[0]).join('')}</span>
             <span className="customer-identity"><b>{item.customer}</b><small>{item.id} · {item.state} · {item.team}</small></span>
             <span className="customer-work"><b>{item.workflow}</b><small>{item.action}</small></span>
-            <span className={`schip ${decisions[item.id]?.approved ? 'ready' : 'wait'}`}>{decisions[item.id]?.approved ? 'Completed' : item.status}</span>
+            <span className={`schip ${decisions[item.id]?.approved ? 'ready' : (STATUS_TONE[item.status] || 'wait')}`}>{decisions[item.id]?.approved ? 'Completed' : item.status}</span>
             <Icon name="chevR" size={14} />
           </button>
         ))}

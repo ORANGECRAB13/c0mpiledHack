@@ -106,6 +106,7 @@ export default function AskOverlay({ query, onClose, fresh = false }) {
   return (
     <div className="askveil">
       <div className="askpanel">
+        <button className="xbtn ask-close" onClick={onClose} aria-label="Close"><Icon name="x" size={15} /></button>
         {/* ── left: agent conversation ── */}
         <div className="ask-chat">
           <div className="ask-chat-h">
@@ -120,7 +121,6 @@ export default function AskOverlay({ query, onClose, fresh = false }) {
                     ? <><Icon name="check" size={12} /> {last.citations?.length || 0} sources cited · {last.model || 'live model'}</>
                   : null}
             </span>
-            <button className="xbtn" onClick={onClose}><Icon name="x" size={15} /></button>
           </div>
 
           <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }} ref={scroller}>
