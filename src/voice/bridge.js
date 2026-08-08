@@ -55,6 +55,9 @@ class VoiceSession {
     this.upstream = null;
     this.held = false;
     this.closed = false;
+    // Whether Azure currently has a response in flight. `response.cancel` errors
+    // if there is nothing to cancel, so barge-in checks this first.
+    this.responseActive = false;
   }
 
   toClient(message) {
@@ -79,7 +82,10 @@ class VoiceSession {
       this.client.close();
       return;
     }
-    this.context = { stack: state.stack };
+    // The hardship assessment is what triggered this call in the first place, so
+    // the agent needs it to open honestly — an unprompted outbound call has to
+    // say what prompted it before it starts asking about someone's income.
+    this.context = { stack: state.stack, hardship: state.hardship };
 
     this.upstream = new WebSocket(cfg.url, { headers: { 'api-key': cfg.apiKey } });
     this.upstream.on('open', () => this.guardedConfigure());
@@ -117,7 +123,13 @@ class VoiceSession {
         input_audio_transcription: { model: 'whisper-1' },
         turn_detection: { type: 'server_vad', threshold: 0.5, silence_duration_ms: 600 },
         tools: TOOLS,
-        tool_choice: 'auto'
+        tool_choice: 'auto',
+        // Backstop against the model drifting into paragraphs. NOTE: on the
+        // realtime API this counts AUDIO output tokens, not text — roughly
+        // 50/second of speech — so it is nothing like a word count. 120 cut the
+        // agent off mid-word ("this is Voc"). ~400 allows about eight seconds,
+        // which is a long two sentences, and hard-stops a monologue.
+        max_response_output_tokens: 400
       }
     });
 
@@ -165,6 +177,29 @@ class VoiceSession {
 
   dispatchAzureEvent(event) {
     switch (event.type) {
+      // ── barge-in ────────────────────────────────────────────────────
+      // Server VAD fires this the moment the customer starts talking. If the
+      // agent is mid-sentence we cancel the response upstream AND tell the
+      // browser to drop the audio it has already buffered — cancelling only the
+      // former still leaves several seconds of speech queued in the client,
+      // which is what makes an interruption feel ignored.
+      case 'input_audio_buffer.speech_started':
+        if (this.responseActive) {
+          this.toAzure({ type: 'response.cancel' });
+          this.responseActive = false;
+        }
+        this.toClient({ type: 'interrupted' });
+        break;
+
+      case 'response.created':
+        this.responseActive = true;
+        break;
+
+      case 'response.done':
+      case 'response.cancelled':
+        this.responseActive = false;
+        break;
+
       case 'response.audio.delta':
         this.toClient({ type: 'audio', audio: event.delta });
         break;
@@ -189,9 +224,15 @@ class VoiceSession {
         );
         break;
 
-      case 'error':
-        this.toClient({ type: 'error', message: event.error?.message || 'Realtime error' });
+      case 'error': {
+        const message = event.error?.message || 'Realtime error';
+        // Barge-in races the end of a turn: we see speech_started and cancel,
+        // but the response had already finished upstream. Harmless, and not
+        // something to put in front of an operator mid-call.
+        if (/no active response/i.test(message)) break;
+        this.toClient({ type: 'error', message });
         break;
+      }
 
       default:
         break;

@@ -10,7 +10,7 @@ export function Sidebar({ page, go }) {
       <div className="sb-top">
         <div className="sb-logo">
           <Mark size={26} />
-          <span className="word">Alloovium</span>
+          <span className="word">Compliance</span>
         </div>
         <span className="bell"><Icon name="bell" size={17} /><span className="badge">50</span></span>
         <button className="collapse"><Icon name="chevL" size={15} /></button>
@@ -77,7 +77,7 @@ export function ProjectSidebar({ page, go }) {
       <div className="sb-top">
         <div className="sb-logo">
           <Mark size={24} />
-          <span className="word" style={{ fontSize: 15 }}>Alloovium</span>
+          <span className="word" style={{ fontSize: 15 }}>Compliance</span>
         </div>
         <span className="bell"><Icon name="bell" size={16} /><span className="badge">45</span></span>
         <button className="collapse"><Icon name="chevL" size={14} /></button>

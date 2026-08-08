@@ -26,9 +26,9 @@ export default function App() {
       {!['mgmt', 'routines'].includes(page) && <Sidebar page={page} go={go} />}
 
       <div className="main">
-        {page === 'frameworks' && <Frameworks />}
+        {page === 'frameworks' && <Frameworks go={go} />}
         {page === 'mgmt' && <ManagementSystem />}
-        {page === 'attention' && <RequiresAttention />}
+        {page === 'attention' && <RequiresAttention go={go} />}
         {page === 'assistant' && <Assistant />}
         {page === 'routines' && <Routines />}
         {page === 'queue' && <OpsQueue openCase={() => go('case')} />}

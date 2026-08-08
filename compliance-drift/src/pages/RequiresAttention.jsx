@@ -2,17 +2,20 @@ import React, { useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { Crumbs, AskBar } from '../components/Chrome.jsx';
 
+// Each issue links to the page in the platform where it is worked:
+// drifted documents → Policy Library · case work → Operational Queue ·
+// re-bills and evidence → Audit History · plan performance → Monitoring.
 const ISSUES = [
-  'Rules check found an issue in "Site Instruction: SW Stormwater Trench Rock Face Protection, Dewatering and Excavation Hold Point"',
-  'Rules check found an issue in "Formal Variation Claim VO-102: Latent Rock Encountered in SW Stormwater Trench"',
-  'Rules check found an issue in "Delay Notification Letter: Storm Event on 23 July 2026"',
-  'Rules check found an issue in "New Starter Day-One Briefing Notice"',
-  'Rules check found an issue in "New Joiner Welcome Briefing Notice"',
-  'Rules check found an issue in "New Starter Day-One Briefing Notice"',
-  'Rules check found an issue in "Subcontractor Insurance Certificate: Halevorn Construction"',
+  { t: 'Rules check found drift in "Credit & Collections Work Instruction v11" — §4.2 still screens at $300 against the AER\'s $500 minimum', sub: 'Policy drift · flagged 4 Aug', page: 'policies', where: 'Policy Library' },
+  { t: 'Amelia Hart (C-10482) — payment difficulty review ready, sensitive marker requires FDV handling', sub: 'Case work · High priority', page: 'queue', where: 'Operational Queue' },
+  { t: 'Tom Castellano (C-10489) — 11-month unbilled period; 9-month back-billing cap applies before re-bill', sub: 'Revenue assurance · High priority', page: 'queue', where: 'Operational Queue' },
+  { t: 'Letter template EL-018 still cites the superseded $300 disconnection amount', sub: 'Policy drift · flagged 4 Aug', page: 'policies', where: 'Policy Library' },
+  { t: 'Liam Forsyth (AU-49673) — payment plan missed twice consecutively; re-engage before default listing window', sub: 'Plan performance · At risk', page: 'monitoring', where: 'Monitoring' },
+  { t: 'Decision DEC-2026-08829 re-bill awaiting evidence bundle checksum', sub: 'Evidence · Audit trail', page: 'audit', where: 'Audit History' },
+  { t: 'Training module 6 not yet updated for the AER (Retail Law) Instrument 2026 amounts', sub: 'Policy drift · flagged 4 Aug', page: 'policies', where: 'Policy Library' },
 ];
 
-export default function RequiresAttention() {
+export default function RequiresAttention({ go }) {
   const [tab, setTab] = useState('my');
   return (
     <div className="page">
@@ -47,12 +50,12 @@ export default function RequiresAttention() {
       <div className="groupsub">Yours, with no deadline pressure yet.</div>
 
       <div className="issuelist">
-        {ISSUES.map((t, i) => (
-          <div className="issuerow" key={i}>
+        {ISSUES.map((it, i) => (
+          <div className="issuerow" key={i} onClick={() => go(it.page)} role="button">
             <span className="rdot" />
             <span>
-              <div className="tt">{t}</div>
-              <div className="st">Rule conflict · Northgate Tower</div>
+              <div className="tt">{it.t}</div>
+              <div className="st">{it.sub} · opens {it.where}</div>
             </span>
             <span className="chev"><Icon name="chevR" size={15} /></span>
           </div>

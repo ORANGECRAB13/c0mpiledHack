@@ -11,7 +11,7 @@ function Bars({ data, color, labels }) {
         return <rect key={i} x={i * 40 + 8} y={104 - h} width="24" height={h} rx="4" fill={color} />;
       })}
       {labels.map((l, i) => (
-        <text key={l} x={i * 40 + 20} y={117} fontSize="8.5" fill="#ABA79F" textAnchor="middle" fontFamily="Inter">{l}</text>
+        <text key={l} x={i * 40 + 20} y={117} fontSize="8.5" fill="#ACACB2" textAnchor="middle" fontFamily="Inter">{l}</text>
       ))}
     </svg>
   );
@@ -40,12 +40,12 @@ export default function Analytics() {
         <div className="chartcard">
           <div className="secheading" style={{ margin: '0 0 6px' }}>Manual review workload</div>
           <div style={{ fontSize: 12.5, color: 'var(--t3)', marginBottom: 10 }}>Open cases requiring a human, weekly</div>
-          <Bars data={ANALYTICS.workload} color="#E8A182" labels={WEEKS} />
+          <Bars data={ANALYTICS.workload} color="#1F1F23" labels={WEEKS} />
         </div>
         <div className="chartcard">
           <div className="secheading" style={{ margin: '0 0 6px' }}>Hardship detection lead time</div>
           <div style={{ fontSize: 12.5, color: 'var(--t3)', marginBottom: 10 }}>Days before first missed bill, weekly median</div>
-          <Bars data={ANALYTICS.detection} color="#8FBF9F" labels={WEEKS} />
+          <Bars data={ANALYTICS.detection} color="#3D5AFE" labels={WEEKS} />
         </div>
       </div>
 

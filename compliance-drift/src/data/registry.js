@@ -4,15 +4,15 @@
 // but versions/values are staged for the demo scenario.
 
 export const ACCENTS = {
-  green: '#8FE0B8',   // engine / cleared
-  mint: '#7FE0B8',    // verify
+  green: '#6A6A72',   // engine / cleared
+  mint: '#4E4E56',    // verify
   deepGreen: '#3AA76D',
-  periwinkle: '#8AA6FF', // fetch / source watchers
-  softBlue: '#9AAEF5',   // reconcile
-  lavender: '#B79BFF',   // unify / policy graph
-  cyan: '#6FD3E0',       // reason
-  amber: '#F5B979',      // govern / pending review
-  coral: '#F0736B',      // warning / drift
+  periwinkle: '#3D5AFE', // fetch / source watchers
+  softBlue: '#6B7CFF',   // reconcile
+  lavender: '#6E6E76',   // unify / policy graph
+  cyan: '#9A9AA2',       // reason
+  amber: '#C4C4CA',      // govern / pending review
+  coral: '#D64545',      // warning / drift
   red: '#C0453F',        // failure / stale
 };
 

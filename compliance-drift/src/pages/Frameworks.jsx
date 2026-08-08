@@ -12,7 +12,7 @@ const LEGEND = [
   ['OK', '#3F9C5C', 0],
   ['Started', '#E5A833', 34],
   ['Missing evidence', '#D64545', 41],
-  ['Not assessed', '#C9C5BD', 7],
+  ['Not assessed', '#C4C4CA', 7],
 ];
 
 // heatmap squares: g=grey, r=red, y=amber
@@ -22,14 +22,14 @@ const CATS = [
   { icon: 'layers', name: 'Planning', cells: 'rryyyyyr', foot: '0/8 OK', miss: '3 missing evidence' },
 ];
 
-const CELL = { g: '#DFDCD5', r: '#D64545', y: '#E5A833' };
+const CELL = { g: '#DCDCE0', r: '#D64545', y: '#E5A833' };
 
 function Donut() {
   const R = 34, C = 2 * Math.PI * R;
   const segs = [
     ['#E5A833', 34 / 82],
     ['#D64545', 41 / 82],
-    ['#C9C5BD', 7 / 82],
+    ['#C4C4CA', 7 / 82],
   ];
   let off = 0;
   return (
@@ -45,12 +45,12 @@ function Donut() {
         off += f;
         return el;
       })}
-      <text x="48" y="53" textAnchor="middle" fontSize="20" fontWeight="600" fill="#1C1B18" fontFamily="Inter">82</text>
+      <text x="48" y="53" textAnchor="middle" fontSize="20" fontWeight="600" fill="#0E0E10" fontFamily="Inter">82</text>
     </svg>
   );
 }
 
-export default function Frameworks() {
+export default function Frameworks({ go }) {
   const [tab, setTab] = useState('Overview');
   const [banner, setBanner] = useState(true);
   return (
@@ -61,7 +61,7 @@ export default function Frameworks() {
           <h1 className="display">Frameworks</h1>
           <div className="h1sub">Where you stand, and what changed — decisions in one place.</div>
         </div>
-        <button className="btn-ghost"><Icon name="shield" size={15} /> Standards <span style={{ color: 'var(--t4)' }}>(3)</span> <Icon name="chevD" size={13} /></button>
+        <button className="btn-ghost" onClick={() => go('mgmt')}><Icon name="shield" size={15} /> Standards <span style={{ color: 'var(--t4)' }}>(3)</span> <Icon name="chevD" size={13} /></button>
       </div>
 
       {banner && (
@@ -98,7 +98,7 @@ export default function Frameworks() {
       <div className="secheading">Standards</div>
       <div className="cardgrid3">
         <div className="fcard">
-          <div className="fc-h">Standards progress <button className="viewall">View all <Icon name="chevR" size={12} /></button></div>
+          <div className="fc-h">Standards progress <button className="viewall" onClick={() => go('policies')}>View all <Icon name="chevR" size={12} /></button></div>
           {STANDARDS.map(([nm, pct]) => (
             <div className="stdrow" key={nm}>
               <span className="ic"><Icon name="check" size={14} /></span>
@@ -114,14 +114,14 @@ export default function Frameworks() {
           <div className="fc-h">0% of rules have owners</div>
           <div className="ownerline">
             <span><span className="dot" style={{ background: '#D64545' }} />0 owned</span>
-            <span><span className="dot" style={{ background: '#C9C5BD' }} />0 unowned</span>
+            <span><span className="dot" style={{ background: '#C4C4CA' }} />0 unowned</span>
           </div>
           <div className="thinbar" />
-          <div className="hint">Assign owners from any rule's details.</div>
+          <div className="hint">Assign owners from any rule's details. <button className="viewall" onClick={() => go('policies')}>Open rules <Icon name="chevR" size={12} /></button></div>
         </div>
 
         <div className="fcard">
-          <div className="fc-h">41% of clauses have evidence</div>
+          <div className="fc-h">41% of clauses have evidence <button className="viewall" onClick={() => go('audit')}>Evidence log <Icon name="chevR" size={12} /></button></div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ flex: 1 }}>
               {LEGEND.map(([nm, col, n]) => (
@@ -141,7 +141,7 @@ export default function Frameworks() {
           <div className="fcard catcard" key={c.name}>
             <div className="fc-h">
               <span className="lft"><span className="cat-ic"><Icon name={c.icon} size={13} /></span> {c.name}</span>
-              <button className="viewall"><Icon name="chevR" size={14} /></button>
+              <button className="viewall" onClick={() => go('attention')} aria-label={`Open ${c.name} issues`}><Icon name="chevR" size={14} /></button>
             </div>
             <div className="heat">
               {c.cells.split('').map((ch, i) => <i key={i} style={{ background: CELL[ch] }} />)}

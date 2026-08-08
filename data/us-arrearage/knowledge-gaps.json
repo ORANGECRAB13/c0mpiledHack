@@ -1,5 +1,80 @@
 {
   "_synthetic": true,
   "_purpose": "Starts empty. The agent writes an entry here when it hits a program it does not know about; a human ratifies it, and the next call can use it.",
-  "gaps": []
+  "gaps": [
+    {
+      "id": "GAP-1785042991944",
+      "status": "ratified",
+      "createdAt": "2026-07-26T05:16:31.944Z",
+      "caseId": "C-20481",
+      "state": "IL",
+      "programMentioned": "Township GA",
+      "customerQuote": "q",
+      "program": {
+        "id": "TOWNSHIP-GA-IL",
+        "kind": "GRANT",
+        "state": "IL",
+        "name": "T",
+        "sourceId": "T-2026",
+        "citation": "c",
+        "criteria": [],
+        "tiers": [
+          {
+            "id": "t",
+            "kind": "regular",
+            "name": "n",
+            "maxBenefit": 400,
+            "text": "x"
+          }
+        ]
+      },
+      "proposedBy": "vocare-voice-agent",
+      "ratifiedBy": "Alex Morgan",
+      "authority": "L2 credit officer",
+      "ratifiedAt": "2026-07-26T08:05:50.274Z"
+    },
+    {
+      "id": "GAP-1785043305797",
+      "status": "open",
+      "createdAt": "2026-07-26T05:21:45.797Z",
+      "caseId": "C-20481",
+      "state": "IL",
+      "programMentioned": "Township General Assistance energy supplement",
+      "customerQuote": "My neighbour got something from the township office, not the state.",
+      "program": {
+        "id": "TOWNSHIP-GA-IL",
+        "kind": "GRANT",
+        "state": "IL",
+        "name": "Illinois Township General Assistance energy supplement",
+        "sourceId": "TOWNSHIP-GA-IL-2026",
+        "citation": "Illinois Township Code — General Assistance emergency energy aid",
+        "administeredBy": "Township supervisor",
+        "intakeVia": {
+          "agencyId": "AGENCY-IL-TOWNSHIP",
+          "name": "Township supervisor office",
+          "channel": "township_general_assistance"
+        },
+        "effectiveFrom": "2025-10-01",
+        "criteria": [
+          {
+            "id": "IL-TGA-INCOME",
+            "kind": "income_percent_fpl",
+            "comparator": "lte",
+            "value": 200,
+            "text": "Household income at or below 200% FPL."
+          }
+        ],
+        "tiers": [
+          {
+            "id": "TGA-REGULAR",
+            "kind": "regular",
+            "name": "Emergency energy supplement",
+            "maxBenefit": 400,
+            "text": "One-time township aid."
+          }
+        ]
+      },
+      "proposedBy": "vocare-voice-agent"
+    }
+  ]
 }

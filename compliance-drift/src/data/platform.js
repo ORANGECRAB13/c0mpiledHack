@@ -21,9 +21,9 @@ export const CASE_STATE = [
 ];
 
 export const QUEUE = [
-  { initials: 'ES', name: 'ESC ERCoP v4', sub: 'VIC · commences 2026-09-01', dot: '#8AA6FF' },
-  { initials: 'AG', name: 'AER guideline merge', sub: 'clause re-map · Sep 2026', dot: '#F5B979' },
-  { initials: 'NE', name: 'NERR v52 watch', sub: 'AEMC · monitoring', dot: '#8FE0B8' },
+  { initials: 'ES', name: 'ESC ERCoP v4', sub: 'VIC · commences 2026-09-01', dot: '#3D5AFE' },
+  { initials: 'AG', name: 'AER guideline merge', sub: 'clause re-map · Sep 2026', dot: '#C4C4CA' },
+  { initials: 'NE', name: 'NERR v52 watch', sub: 'AEMC · monitoring', dot: '#6A6A72' },
 ];
 
 // six agents, run in order; each contributes timeline events
@@ -32,8 +32,8 @@ export const AGENTS = [
     id: 'watcher',
     name: 'Watcher Agent',
     sub: 'Instrument registers',
-    color: '#8AA6FF',
-    grad: ['#8AA6FF', '#9AAEF5'],
+    color: '#3D5AFE',
+    grad: ['#3D5AFE', '#6B7CFF'],
     icon: 'pulse',
     events: [
       { t: '09:24:12', text: 'Polling aer.gov.au registers — etag changed', state: 'dim' },
@@ -44,8 +44,8 @@ export const AGENTS = [
     id: 'extract',
     name: 'Extraction Agent',
     sub: 'Draft register rows',
-    color: '#6FD3E0',
-    grad: ['#6FD3E0', '#8FD4DE'],
+    color: '#9A9AA2',
+    grad: ['#9A9AA2', '#B4B4BC'],
     icon: 'layers',
     events: [
       { t: '09:24:16', text: 'Parsing s 111 — min. disconnection amount', state: 'dim' },
@@ -56,8 +56,8 @@ export const AGENTS = [
     id: 'diff',
     name: 'Diff Agent',
     sub: 'Obligation register',
-    color: '#B79BFF',
-    grad: ['#B79BFF', '#C9B2FF'],
+    color: '#6E6E76',
+    grad: ['#6E6E76', '#8A8A92'],
     icon: 'diff',
     events: [
       { t: '09:24:20', text: 'OBL-014 diff: $300 → $500', state: 'flag' },
@@ -68,8 +68,8 @@ export const AGENTS = [
     id: 'mapping',
     name: 'Mapping Agent',
     sub: 'Internal artifacts',
-    color: '#F5B979',
-    grad: ['#F5B979', '#F5CA9B'],
+    color: '#C4C4CA',
+    grad: ['#C4C4CA', '#D6D6DC'],
     icon: 'map',
     events: [
       { t: '09:24:23', text: '4 downstream artifacts flagged', state: 'flag' },
@@ -80,8 +80,8 @@ export const AGENTS = [
     id: 'compliance',
     name: 'Compliance Agent',
     sub: 'Eligibility graph',
-    color: '#7FE0B8',
-    grad: ['#7FE0B8', '#8FE0B8'],
+    color: '#4E4E56',
+    grad: ['#4E4E56', '#6A6A72'],
     icon: 'shield',
     events: [
       { t: '09:24:26', text: 'disconnect_floor → pending review', state: 'flag' },
@@ -92,8 +92,8 @@ export const AGENTS = [
     id: 'outreach',
     name: 'Propagation Agent',
     sub: 'Owners & registers',
-    color: '#F0736B',
-    grad: ['#F0736B', '#F59B95'],
+    color: '#D64545',
+    grad: ['#D64545', '#E88A84'],
     icon: 'send',
     events: [
       { t: '09:24:29', text: 'Change notices → 4 artifact owners', state: 'dim' },
@@ -165,12 +165,12 @@ export const MAP_STATS = [
 // nodes around the engine: regulatory sources (left) and internal
 // systems (right); label + role
 export const MAP_NODES = [
-  { id: 'aemc', label: 'AEMC NERR', role: 'Watcher agent', chip: 'Watch', x: 168, y: 300, dot: '#8AA6FF' },
-  { id: 'aer', label: 'AER registers', role: 'Extraction agent', chip: 'Extract', x: 152, y: 408, dot: '#9AAEF5' },
-  { id: 'esc', label: 'ESC ERCoP', role: 'Watcher agent', chip: 'History', x: 168, y: 512, dot: '#6FD3E0' },
-  { id: 'register', label: 'Obligation register', role: 'Diff agent', chip: 'Diff', x: 838, y: 300, dot: '#B79BFF' },
-  { id: 'policy', label: 'Policy repo', role: 'Mapping agent', chip: 'Propagate', x: 852, y: 408, dot: '#F5B979' },
-  { id: 'graph', label: 'Eligibility graph', role: 'Compliance agent', chip: 'Verify', x: 838, y: 512, dot: '#7FE0B8' },
+  { id: 'aemc', label: 'AEMC NERR', role: 'Watcher agent', chip: 'Watch', x: 168, y: 300, dot: '#3D5AFE' },
+  { id: 'aer', label: 'AER registers', role: 'Extraction agent', chip: 'Extract', x: 152, y: 408, dot: '#6B7CFF' },
+  { id: 'esc', label: 'ESC ERCoP', role: 'Watcher agent', chip: 'History', x: 168, y: 512, dot: '#9A9AA2' },
+  { id: 'register', label: 'Obligation register', role: 'Diff agent', chip: 'Diff', x: 838, y: 300, dot: '#6E6E76' },
+  { id: 'policy', label: 'Policy repo', role: 'Mapping agent', chip: 'Propagate', x: 852, y: 408, dot: '#C4C4CA' },
+  { id: 'graph', label: 'Eligibility graph', role: 'Compliance agent', chip: 'Verify', x: 838, y: 512, dot: '#4E4E56' },
 ];
 
 // ── walkthrough slides ───────────────────────────────────────────────
@@ -189,25 +189,25 @@ export const SLIDES = [
   },
   {
     kind: 'step', n: 1, title: 'Source Watch',
-    icon: 'pulse', color: ['#8AA6FF', '#9AAEF5'],
+    icon: 'pulse', color: ['#3D5AFE', '#6B7CFF'],
     engineSub: 'Watching the instrument registers',
     inside: ['Poll landing pages, not PDFs', 'Detect version bumps & effective dates', 'Diff NERR by clause hash'],
   },
   {
     kind: 'step', n: 2, title: 'Obligation Extraction',
-    icon: 'layers', color: ['#6FD3E0', '#8FD4DE'],
+    icon: 'layers', color: ['#9A9AA2', '#B4B4BC'],
     engineSub: 'Drafting structured register rows',
     inside: ['Instrument · clause · jurisdiction · version', 'Trigger, action, penalty tier', 'LLM drafts — never decides'],
   },
   {
     kind: 'step', n: 3, title: 'Human Verification',
-    icon: 'shield', color: ['#B79BFF', '#C9B2FF'],
+    icon: 'shield', color: ['#6E6E76', '#8A8A92'],
     engineSub: 'A named person approves every row',
     inside: ['Verified-by and when, recorded', 'Row immutable once approved', 'Engine reads approved rows only'],
   },
   {
     kind: 'step', n: 4, title: 'Change Propagation',
-    icon: 'send', color: ['#F5B979', '#F5CA9B'],
+    icon: 'send', color: ['#C4C4CA', '#D6D6DC'],
     engineSub: 'Everything mapped downstream lights up',
     inside: ['Register diffs with severity', 'Work instructions, letters, training, controls', 'Graph nodes flag pending review'],
   },
@@ -215,14 +215,14 @@ export const SLIDES = [
     kind: 'outcome',
     micro: 'the outcome',
     title: 'Compliance drift, caught the day it happens.',
-    stats: [['~4 min', 'vs months', '#8AA6FF'], ['0', 'stale artifacts', '#F5B979'], ['100%', 'decisions versioned', '#7FE0B8']],
+    stats: [['~4 min', 'vs months', '#3D5AFE'], ['0', 'stale artifacts', '#C4C4CA'], ['100%', 'decisions versioned', '#4E4E56']],
     cards: [
-      ['Proactive, not reactive', 'Version bumps surface within a poll cycle — not on a discovery call.', 'pulse', ['#8AA6FF', '#9AAEF5']],
-      ['One obligation register', 'A database of verified rows — not an index of chunks.', 'layers', ['#6FD3E0', '#8FD4DE']],
-      ['Deterministic by design', 'No model output reaches a customer decision — a person approved every row.', 'shield', ['#B79BFF', '#C9B2FF']],
-      ['Propagation, automatic', 'Every mapped artifact and graph node flags the moment its source moves.', 'send', ['#F5B979', '#F5CA9B']],
-      ['Provenance built in', 'Every eligibility node cites its clause, with an instrument version.', 'map', ['#7FE0B8', '#8FE0B8']],
-      ['History stays valid', 'Decisions are versioned, never overwritten — both outcomes correct for their date.', 'check', ['#8FE0B8', '#6FD3E0']],
+      ['Proactive, not reactive', 'Version bumps surface within a poll cycle — not on a discovery call.', 'pulse', ['#3D5AFE', '#6B7CFF']],
+      ['One obligation register', 'A database of verified rows — not an index of chunks.', 'layers', ['#9A9AA2', '#B4B4BC']],
+      ['Deterministic by design', 'No model output reaches a customer decision — a person approved every row.', 'shield', ['#6E6E76', '#8A8A92']],
+      ['Propagation, automatic', 'Every mapped artifact and graph node flags the moment its source moves.', 'send', ['#C4C4CA', '#D6D6DC']],
+      ['Provenance built in', 'Every eligibility node cites its clause, with an instrument version.', 'map', ['#4E4E56', '#6A6A72']],
+      ['History stays valid', 'Decisions are versioned, never overwritten — both outcomes correct for their date.', 'check', ['#6A6A72', '#9A9AA2']],
     ],
   },
 ];

@@ -1,0 +1,25 @@
+# Secrets never enter the image — they arrive as container env vars.
+.env
+.env.local
+.env.*.local
+
+node_modules
+frontend/node_modules
+guild-agents/*/node_modules
+energy-erp/node_modules
+
+# Rebuilt inside the image, so the local artifact must not shadow it.
+frontend-dist
+energy-erp/dist
+guild-agents/*/dist
+
+.git
+.gitignore
+local_data
+scripts
+guild-agents
+energy-erp
+*.md
+.claude
+Dockerfile
+.dockerignore

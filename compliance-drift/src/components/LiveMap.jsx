@@ -66,7 +66,7 @@ export default function LiveMap({ paused }) {
                 </circle>
                 {/* chip label riding mid-path */}
                 <g transform={`translate(${(n.x + CX) / 2}, ${(n.y + CY) / 2})`}>
-                  <rect x="-22" y="-7" width="44" height="14" rx="7" fill="#14120B" stroke={n.dot} strokeOpacity="0.7" strokeWidth="0.6" />
+                  <rect x="-22" y="-7" width="44" height="14" rx="7" fill="#08080A" stroke={n.dot} strokeOpacity="0.7" strokeWidth="0.6" />
                   <text textAnchor="middle" y="2.5" fontSize="7" fontWeight="700" fill={n.dot} fontFamily="inherit">{n.chip}</text>
                 </g>
               </g>
@@ -86,7 +86,7 @@ export default function LiveMap({ paused }) {
         ))}
 
         <div className="enginecore">
-          <div className="core"><Icon name="pauseSq" size={30} color="#171713" /></div>
+          <div className="core"><Icon name="pauseSq" size={30} color="#0A0A0C" /></div>
           <div className="lb">Context Engine</div>
           <div className="st">ONLINE</div>
         </div>

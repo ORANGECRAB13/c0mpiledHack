@@ -93,7 +93,7 @@ export default function Routines() {
 
       <div className="routgrid">
         {ROUTINES.map((r) => (
-          <div className="routcard" key={r.name} style={r.open ? { borderColor: 'var(--line2)', boxShadow: '0 6px 20px rgba(30,25,15,0.06)' } : {}}>
+          <div className="routcard" key={r.name} style={r.open ? { borderColor: 'var(--line2)', boxShadow: '0 6px 20px rgba(0,0,0,0.06)' } : {}}>
             <div className="rc-h"><span className="cbx" /> {r.name}</div>
             <div className="rc-d">{r.desc}</div>
             <div className="rc-f">

@@ -180,7 +180,7 @@ export default function Console({ paused }) {
                 <span className="k" style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                   <span style={{
                     width: 8, height: 8, borderRadius: 999,
-                    background: on ? '#34B37A' : '#D6D2C6',
+                    background: on ? '#34B37A' : '#D4D4D8',
                     boxShadow: on ? '0 0 6px rgba(52,179,122,.5)' : 'none',
                   }} />
                   <b style={{ color: 'var(--t1)', fontWeight: 700 }}>{s.name}</b>

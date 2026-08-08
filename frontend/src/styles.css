@@ -369,6 +369,13 @@ h1, h2, h3, p { margin: 0; }
 .officer-input .amt input { width: 100%; border: 0; background: transparent; color: var(--text); font: 600 16px var(--mono); }
 .officer-input .amt em { color: var(--muted); font: 500 10px var(--mono); font-style: normal; }
 .officer-input select { margin-top: 7px; width: 100%; padding: 11px 12px; border: 1px solid var(--line-strong); border-radius: 9px; background: rgba(255,255,255,.03); color: var(--text); font-size: 13px; }
+.aer-workflow { margin: 0 18px 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.014); }
+.aer-workflow-title { display: flex; align-items: center; gap: 5px; color: var(--muted); font: 600 8px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.aer-workflow ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+.aer-workflow li { display: flex; align-items: center; gap: 7px; font-size: 10.5px; line-height: 1.35; }
+.aer-workflow li i { flex: none; width: 15px; height: 15px; border-radius: 4px; display: grid; place-items: center; background: rgba(199,243,107,.12); color: var(--lime); }
+.aer-workflow li p { margin: 0; flex: 1; }
+.aer-workflow li code { color: var(--muted); font: 500 8.5px var(--mono); white-space: nowrap; }
 .credit-err { margin: 0 18px 12px; padding: 9px 12px; border-radius: 8px; background: rgba(255,128,104,.1); border: 1px solid rgba(255,128,104,.25); color: #ffb2a4; font-size: 11px; }
 .credit-actions { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-top: 1px solid var(--line); background: rgba(255,255,255,.014); }
 .credit-actions .who { display: flex; align-items: center; gap: 10px; }
@@ -479,6 +486,14 @@ h1, h2, h3, p { margin: 0; }
 }
 .nav-back:hover:not(:disabled) { color: var(--text); background: rgba(255,255,255,.04); }
 .nav-back:disabled { opacity: .3; }
+/* Deliberately quiet — it is a presenter shortcut, not a step in the story. */
+.nav-skip {
+  padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line);
+  background: transparent; color: var(--muted);
+  font: 500 10.5px var(--mono); letter-spacing: .04em; white-space: nowrap;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.nav-skip:hover { color: var(--text); border-color: var(--line-strong); background: rgba(255,255,255,.04); }
 .nav-next {
   display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 18px;
   border: 0; border-radius: 999px; background: var(--lime); color: #10120d; font-size: 13px; font-weight: 680;

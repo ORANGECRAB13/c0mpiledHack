@@ -8,22 +8,22 @@ const STEPS = [
   {
     n: 1, title: 'Proactive Source Watch', tag: 'INSTRUMENT REGISTERS',
     sub: 'Watching the regulatory registers…',
-    color: '#8AA6FF', scene: 'watch',
+    color: '#3D5AFE', scene: 'watch',
   },
   {
     n: 2, title: 'Obligation Extraction', tag: 'AER · 2026 INSTRUMENT',
     sub: 'Fragments still unstructured…',
-    color: '#6FD3E0', scene: 'extract',
+    color: '#9A9AA2', scene: 'extract',
   },
   {
     n: 3, title: 'Human Verification', tag: 'OBLIGATION REGISTER',
     sub: 'Running the register checks…',
-    color: '#B79BFF', scene: 'verify',
+    color: '#6E6E76', scene: 'verify',
   },
   {
     n: 4, title: 'Change Propagation', tag: 'POLICY REPO · GRAPH',
     sub: 'Diffing everything downstream…',
-    color: '#F5B979', scene: 'propagate',
+    color: '#C4C4CA', scene: 'propagate',
   },
 ];
 
@@ -110,14 +110,14 @@ function ProblemSlide() {
       <div className="sc-sub">Your documents quietly go stale…</div>
       <div className="problemgrid">
         <svg viewBox="0 0 380 200" width="100%">
-          <line x1="20" y1="172" x2="360" y2="172" stroke="#ECE9E1" />
+          <line x1="20" y1="172" x2="360" y2="172" stroke="#E8E8EB" />
           <path d="M20 144 H210 V64 H360" fill="none" stroke="#C94F44" strokeWidth="2" />
-          <path d="M20 144 H360" fill="none" stroke="#B7B3A7" strokeWidth="2" strokeDasharray="4 5" />
+          <path d="M20 144 H360" fill="none" stroke="#B2B2B8" strokeWidth="2" strokeDasharray="4 5" />
           <circle cx="210" cy="64" r="3.5" fill="#C94F44" />
           <text x="218" y="54" fontSize="11" fontWeight="800" fill="#C94F44" fontFamily="inherit">$500 · 1 Jul</text>
-          <text x="250" y="138" fontSize="10.5" fontWeight="700" fill="#8A867A" fontFamily="inherit">your documents · $300</text>
-          <text x="20" y="192" fontSize="9.5" fontWeight="600" fill="#B7B3A7" fontFamily="inherit">Day 0 · instrument published</text>
-          <text x="308" y="192" fontSize="9.5" fontWeight="600" fill="#B7B3A7" fontFamily="inherit">Day 90</text>
+          <text x="250" y="138" fontSize="10.5" fontWeight="700" fill="#86868C" fontFamily="inherit">your documents · $300</text>
+          <text x="20" y="192" fontSize="9.5" fontWeight="600" fill="#B2B2B8" fontFamily="inherit">Day 0 · instrument published</text>
+          <text x="308" y="192" fontSize="9.5" fontWeight="600" fill="#B2B2B8" fontFamily="inherit">Day 90</text>
         </svg>
         <div>
           {[
@@ -143,12 +143,12 @@ function ProblemSlide() {
 
 // floating fragment chips, like the triage fragment cloud
 const FRAGMENTS = [
-  ['AEMC · NERR', 'v51 · clause hash stable', '#8AA6FF', 24, 12],
-  ['AER · REGISTERS', 'etag changed ⚠', '#F0736B', 46, 34],
-  ['ESC · ERCOP', 'v4 published · not commenced', '#6FD3E0', 12, 48],
-  ['ENERGY.NSW', '2026-07 · stable', '#7FE0B8', 62, 16],
-  ['QLD.GOV.AU', 'concessions · stable', '#B79BFF', 70, 56],
-  ['AER · GUIDELINES', 'merge notice · Sep 2026', '#F5B979', 36, 68],
+  ['AEMC · NERR', 'v51 · clause hash stable', '#3D5AFE', 24, 12],
+  ['AER · REGISTERS', 'etag changed ⚠', '#D64545', 46, 34],
+  ['ESC · ERCOP', 'v4 published · not commenced', '#9A9AA2', 12, 48],
+  ['ENERGY.NSW', '2026-07 · stable', '#4E4E56', 62, 16],
+  ['QLD.GOV.AU', 'concessions · stable', '#6E6E76', 70, 56],
+  ['AER · GUIDELINES', 'merge notice · Sep 2026', '#C4C4CA', 36, 68],
 ];
 
 function SceneWatch() {
@@ -169,13 +169,13 @@ function SceneExtract() {
   return (
     <div className="extractgrid">
       <div className="plancard">
-        <div className="pc-h"><i style={{ background: '#8AA6FF' }} /> Draft row · OBL-014</div>
+        <div className="pc-h"><i style={{ background: '#3D5AFE' }} /> Draft row · OBL-014</div>
         {['instrument · AER (Retail Law) 2026', 'clause · s 111', 'value · $500 (was $300)', 'effective · 2026-07-01'].map((f) => (
           <div className="pc-f" key={f}>{f}</div>
         ))}
       </div>
       <div className="plancard">
-        <div className="pc-h"><i style={{ background: '#6FD3E0' }} /> Draft row · OBL-041</div>
+        <div className="pc-h"><i style={{ background: '#9A9AA2' }} /> Draft row · OBL-041</div>
         {['instrument · ESC ERCoP v4', 'clause · cl 129', 'trigger · arrears > $55', 'effective · 2026-09-01'].map((f) => (
           <div className="pc-f" key={f}>{f}</div>
         ))}
@@ -204,7 +204,7 @@ function SceneVerify() {
   return (
     <div className="verifyscene">
       <div className="checkbig">
-        <span className="n" style={{ color: n === 9 ? '#2C8F5C' : '#B79BFF' }}>{n}</span>
+        <span className="n" style={{ color: n === 9 ? '#2C8F5C' : '#6E6E76' }}>{n}</span>
         <span className="d">/ 9 fields verified</span>
       </div>
       <div className="verifychips">
@@ -256,22 +256,22 @@ function ScenePropagate() {
 /* ── final slide: the outcome ── */
 function OutcomeSlide() {
   const cards = [
-    ['Proactive, not reactive', 'Version bumps surface within a poll cycle — not on a discovery call.', 'pulse', ['#8AA6FF', '#9AAEF5']],
-    ['One obligation register', 'A database of verified rows — not an index of chunks.', 'layers', ['#6FD3E0', '#8FD4DE']],
-    ['Deterministic by design', 'No model output reaches a customer decision — a person approved every row.', 'shield', ['#B79BFF', '#C9B2FF']],
-    ['Propagation, automatic', 'Every mapped artifact and graph node flags the moment its source moves.', 'send', ['#F5B979', '#F5CA9B']],
-    ['Provenance built in', 'Every eligibility node cites its clause, with an instrument version.', 'map', ['#7FE0B8', '#8FE0B8']],
-    ['History stays valid', 'Decisions are versioned, never overwritten — both outcomes correct for their date.', 'check', ['#8FE0B8', '#6FD3E0']],
+    ['Proactive, not reactive', 'Version bumps surface within a poll cycle — not on a discovery call.', 'pulse', ['#3D5AFE', '#6B7CFF']],
+    ['One obligation register', 'A database of verified rows — not an index of chunks.', 'layers', ['#9A9AA2', '#B4B4BC']],
+    ['Deterministic by design', 'No model output reaches a customer decision — a person approved every row.', 'shield', ['#6E6E76', '#8A8A92']],
+    ['Propagation, automatic', 'Every mapped artifact and graph node flags the moment its source moves.', 'send', ['#C4C4CA', '#D6D6DC']],
+    ['Provenance built in', 'Every eligibility node cites its clause, with an instrument version.', 'map', ['#4E4E56', '#6A6A72']],
+    ['History stays valid', 'Decisions are versioned, never overwritten — both outcomes correct for their date.', 'check', ['#6A6A72', '#9A9AA2']],
   ];
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 30 }}>
         <div>
-          <div className="sc-micro" style={{ color: '#A6A296' }}>THE OUTCOME</div>
+          <div className="sc-micro" style={{ color: '#A0A0A6' }}>THE OUTCOME</div>
           <div className="sc-title" style={{ maxWidth: 430, fontSize: 26 }}>Compliance drift, caught the day it happens.</div>
         </div>
         <div className="outstats" style={{ paddingTop: 24 }}>
-          {[['~4 min', 'vs months', '#8AA6FF'], ['0', 'stale artifacts', '#F5B979'], ['100%', 'decisions versioned', '#7FE0B8']].map(([n, c, col]) => (
+          {[['~4 min', 'vs months', '#3D5AFE'], ['0', 'stale artifacts', '#C4C4CA'], ['100%', 'decisions versioned', '#4E4E56']].map(([n, c, col]) => (
             <div className="outstat" key={c}>
               <div className="n" style={{ color: col }}>{n}</div>
               <div className="c">{c}</div>

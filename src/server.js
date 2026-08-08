@@ -32,6 +32,7 @@ const authorityAgent = await import('./agents/authority.js');
 const ratificationAgent = await import('./agents/ratification.js');
 const reflectionAgent = await import('./agents/reflection.js');
 const { agentModelStatus } = await import('./agents/azure.js');
+const { askAssistant, assistantStatus } = await import('./assistant/index.js');
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -343,6 +344,20 @@ app.post('/api/knowledge/gaps/:gapId/ratify', wrap(async (req, res) =>
 // hosted third-party runtime calls them any more. The legacy /api/guild/*
 // surface below is retained as a thin alias so the published OpenAPI contract
 // and any in-flight integration keep working.
+
+// ── Compliance assistant (ask-your-documents) ──────────────────────────
+// Grounded chat over the internal policy corpus. Foundry tier when the keys
+// are present; the status route lets the UI degrade honestly when they're not.
+app.get('/api/assistant/status', wrap(async (_req, res) => ok(res, assistantStatus())));
+
+app.post('/api/assistant/ask', wrap(async (req, res) => {
+  try {
+    ok(res, await askAssistant(req.body?.question, req.body?.history || []));
+  } catch (e) {
+    if (e.code === 'not_configured') return res.status(503).json({ error: e.message, code: e.code });
+    throw e;
+  }
+}));
 
 app.get('/api/agents/status', wrap(async (_req, res) =>
   ok(res, {

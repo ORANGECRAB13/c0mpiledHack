@@ -1,14 +1,17 @@
 // Ask-agent corpus: real PDF files served from /docs, cited by page and
 // quote. The viewer scrolls the actual PDF and highlights the quoted text.
 
+// `scope` marks whether a document is a general AER/NERL instrument that
+// applies in every NERL state (NSW, QLD, SA, ACT, TAS) or a state-specific
+// obligation (VIC runs its own retail code — the Best Offer duty is VIC-only).
 export const DOC_META = {
-  'aer-2026': { title: 'AER (Retail Law) Instrument 2026', file: 'AER-Retail-Law-Instrument-2026.pdf' },
-  'nerr': { title: 'National Energy Retail Rules v51', file: 'NERR-v51.pdf' },
-  'hardship-policy': { title: 'Customer Hardship Policy Rev 4', file: 'Customer-Hardship-Policy-Rev4.pdf' },
-  'fdv-policy': { title: 'Family and Domestic Violence Policy Rev 2', file: 'FDV-Policy-Rev2.pdf' },
-  'wi-4': { title: 'Credit & Collections Work Instruction v11', file: 'WI-4-Credit-Collections-v11.pdf' },
-  'best-offer': { title: 'Best Offer Policy v2.1', file: 'Best-Offer-Policy-v2.pdf' },
-  'billing-std': { title: 'Billing Accuracy Standard v3.0', file: 'Billing-Accuracy-Standard-v3.pdf' },
+  'aer-2026': { title: 'AER (Retail Law) Instrument 2026', file: 'AER-Retail-Law-Instrument-2026.pdf', scope: 'General · AER — all NERL states' },
+  'nerr': { title: 'National Energy Retail Rules v51', file: 'NERR-v51.pdf', scope: 'General · AER — all NERL states' },
+  'hardship-policy': { title: 'Customer Hardship Policy Rev 4', file: 'Customer-Hardship-Policy-Rev4.pdf', scope: 'General · AER-approved, all states' },
+  'fdv-policy': { title: 'Family and Domestic Violence Policy Rev 2', file: 'FDV-Policy-Rev2.pdf', scope: 'General · all states' },
+  'wi-4': { title: 'Credit & Collections Work Instruction v11', file: 'WI-4-Credit-Collections-v11.pdf', scope: 'General · state overlays apply' },
+  'best-offer': { title: 'Best Offer Policy v2.1', file: 'Best-Offer-Policy-v2.pdf', scope: 'VIC only · Energy Retail Code' },
+  'billing-std': { title: 'Billing Accuracy Standard v3.0', file: 'Billing-Accuracy-Standard-v3.pdf', scope: 'General · NERR-derived' },
 };
 
 export const SCRIPTS = [

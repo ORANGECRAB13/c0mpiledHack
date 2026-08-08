@@ -11,18 +11,18 @@ export const WORKLOAD = [
 ];
 
 export const QUEUE = [
-  { id: 'C-10482', customer: 'Amelia Hart', workflow: 'Payment Difficulty Review', priority: 'High', status: 'Ready for review', action: 'Assess support eligibility', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship', hot: true },
-  { id: 'C-10496', customer: 'Daniel Okonkwo', workflow: 'Best Offer Review', priority: 'Medium', status: 'Evidence assembling', action: 'Confirm tariff comparison', policy: 'Best Offer Notice v2.1', team: 'Retention' },
-  { id: 'C-10471', customer: 'Priya Raman', workflow: 'Payment Difficulty Review', priority: 'High', status: 'Ready for review', action: 'Contact before determination', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship' },
-  { id: 'C-10455', customer: 'Marcus Webb', workflow: 'Revenue Assurance', priority: 'Medium', status: 'Exception found', action: 'Verify meter read history', policy: 'Billing Accuracy Standard v3.0', team: 'Billing Ops' },
-  { id: 'C-10502', customer: 'Unknown occupant — 14 Merri Pde', workflow: 'Unknown Consumer', priority: 'Medium', status: 'Investigation open', action: 'Confirm occupancy', policy: 'Move-in Deemed Supply v1.8', team: 'Onboarding' },
-  { id: 'C-10444', customer: 'Sofia Nguyen', workflow: 'Payment Difficulty Review', priority: 'Low', status: 'Monitoring', action: 'Reassess support level', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship' },
-  { id: 'C-10510', customer: 'Northbrook Cafe Pty Ltd', workflow: 'Onboarding Validation', priority: 'Medium', status: 'Data issue', action: 'Resolve ABN mismatch', policy: 'SME Onboarding Standard v2.4', team: 'Onboarding' },
-  { id: 'C-10437', customer: 'Grace Muller', workflow: 'Best Offer Review', priority: 'Low', status: 'Ready for review', action: 'Approve plan switch', policy: 'Best Offer Notice v2.1', team: 'Retention' },
-  { id: 'C-10489', customer: 'Tom Castellano', workflow: 'Revenue Assurance', priority: 'High', status: 'Exception found', action: 'Review unbilled period', policy: 'Billing Accuracy Standard v3.0', team: 'Billing Ops' },
-  { id: 'C-10521', customer: 'Leila Haddad', workflow: 'Payment Difficulty Review', priority: 'Medium', status: 'Evidence assembling', action: 'Await CRM sync', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship' },
-  { id: 'C-10466', customer: 'Ravi Patel', workflow: 'Onboarding Validation', priority: 'Low', status: 'Data issue', action: 'Confirm concession card', policy: 'Concession Verification v3.1', team: 'Onboarding' },
-  { id: 'C-10515', customer: 'Jia Chen', workflow: 'Best Offer Review', priority: 'Medium', status: 'Ready for review', action: 'Confirm consent to switch', policy: 'Best Offer Notice v2.1', team: 'Retention' },
+  { id: 'C-10482', state: 'VIC', customer: 'Amelia Hart', workflow: 'Payment Difficulty Review', priority: 'High', status: 'Ready for review', action: 'Assess support eligibility', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship', hot: true },
+  { id: 'C-10496', state: 'VIC', customer: 'Daniel Okonkwo', workflow: 'Best Offer Review', priority: 'Medium', status: 'Evidence assembling', action: 'Confirm tariff comparison', policy: 'Best Offer Notice v2.1', team: 'Retention' },
+  { id: 'C-10471', state: 'NSW', customer: 'Priya Raman', workflow: 'Payment Difficulty Review', priority: 'High', status: 'Ready for review', action: 'Contact before determination', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship' },
+  { id: 'C-10455', state: 'NSW', customer: 'Marcus Webb', workflow: 'Revenue Assurance', priority: 'Medium', status: 'Exception found', action: 'Verify meter read history', policy: 'Billing Accuracy Standard v3.0', team: 'Billing Ops' },
+  { id: 'C-10502', state: 'VIC', customer: 'Unknown occupant — 14 Merri Pde', workflow: 'Unknown Consumer', priority: 'Medium', status: 'Investigation open', action: 'Confirm occupancy', policy: 'Move-in Deemed Supply v1.8', team: 'Onboarding' },
+  { id: 'C-10444', state: 'VIC', customer: 'Sofia Nguyen', workflow: 'Payment Difficulty Review', priority: 'Low', status: 'Monitoring', action: 'Reassess support level', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship' },
+  { id: 'C-10510', state: 'QLD', customer: 'Northbrook Cafe Pty Ltd', workflow: 'Onboarding Validation', priority: 'Medium', status: 'Data issue', action: 'Resolve ABN mismatch', policy: 'SME Onboarding Standard v2.4', team: 'Onboarding' },
+  { id: 'C-10437', state: 'VIC', customer: 'Grace Muller', workflow: 'Best Offer Review', priority: 'Low', status: 'Ready for review', action: 'Approve plan switch', policy: 'Best Offer Notice v2.1', team: 'Retention' },
+  { id: 'C-10489', state: 'SA', customer: 'Tom Castellano', workflow: 'Revenue Assurance', priority: 'High', status: 'Exception found', action: 'Review unbilled period', policy: 'Billing Accuracy Standard v3.0', team: 'Billing Ops' },
+  { id: 'C-10521', state: 'NSW', customer: 'Leila Haddad', workflow: 'Payment Difficulty Review', priority: 'Medium', status: 'Evidence assembling', action: 'Await CRM sync', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship' },
+  { id: 'C-10466', state: 'QLD', customer: 'Ravi Patel', workflow: 'Onboarding Validation', priority: 'Low', status: 'Data issue', action: 'Confirm concession card', policy: 'Concession Verification v3.1', team: 'Onboarding' },
+  { id: 'C-10515', state: 'VIC', customer: 'Jia Chen', workflow: 'Best Offer Review', priority: 'Medium', status: 'Ready for review', action: 'Confirm consent to switch', policy: 'Best Offer Notice v2.1', team: 'Retention' },
 ];
 
 export const CASE = {

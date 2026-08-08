@@ -9,7 +9,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { api, CaseView, Customer, DiscoveryStatus } from './api';
 import ContextMesh3D, { MeshCinema } from './ContextMesh3D';
 import { runPhase1, runPhase2 } from './scripted';
-import { startVoiceCall, stopVoiceCall } from './voice';
+import { startVoiceCall, stopVoiceCall, setBargeIn } from './voice';
 import { startVoiceCallWebRTC, stopVoiceCallWebRTC, sendResumeContext } from './voice-webrtc';
 
 type Stage = 'onboarding' | 'ready' | 'detecting' | 'calling' | 'hold' | 'complete';
@@ -41,6 +41,20 @@ const detectNodes = [
   { label: 'Delegated authority', icon: BookOpen, key: 'sop' },
   { label: 'Benefit programs', icon: SearchCheck, key: 'prog' }
 ];
+
+// ── AER credit-officer workflow (NERR v51) ────────────────────────────
+// The operational steps a credit officer follows when processing a hardship
+// payment, per the AER Customer Hardship Policy Guideline and NERR Part 3.
+// Rendered at the human-authority gate so the approval happens inside the
+// regulated sequence, not beside it.
+const AER_WORKFLOW = [
+  { rule: 'NERR r71', label: 'Hardship identified — policy notice given', detail: 'Customer informed of the hardship policy as soon as practicable; free copy on request.' },
+  { rule: 'NERR r33(3)', label: 'Rebates & concessions disclosed', detail: 'Government energy rebate, concession and relief schemes explained.' },
+  { rule: 'NERR r72', label: 'Capacity-to-pay plan built', detail: 'Instalments set from capacity to pay, arrears, and expected 12-month usage.' },
+  { rule: 'NERR r74', label: 'Centrepay offered', detail: 'Centrepay allowed on request; contract reviewed at no charge if unsupported.' },
+  { rule: 'NERR r76 / r40', label: 'No late fees or deposits', detail: 'Late-payment fees waived; no security deposit taken from a hardship customer.' },
+  { rule: 'NERR r111(2) / r116', label: 'Disconnection safeguards held', detail: 'No disconnection while adhering to a plan; two-plan rule and protected periods apply.' }
+] as const;
 
 // ── Detect sequence ───────────────────────────────────────────────────
 // Four hops, deliberately. Each hop is one question the engine has to answer,
@@ -166,6 +180,7 @@ function buildDetectScript(stack: any, hardship: any): Beat[] {
       activeMoratorium
         ? `Disconnection protection ACTIVE — ${activeMoratorium.reason}`
         : 'No disconnection moratorium active today',
+      'Plan basis: capacity to pay · arrears · 12-month usage (NERR r72)',
       `Agent may settle at or above ${money(stack.boundaries.authorityFloor)} without a human`,
       stack.totals.benefitsUnlocked
         ? `${money(stack.totals.benefitsUnlocked)} in benefits resolves on the current record`
@@ -200,6 +215,10 @@ export default function App() {
   const [audit, setAudit] = useState<any>(null);
   const [error, setError] = useState('');
   const [live, setLive] = useState(false);
+  // Barge-in is off by default: on laptop speakers the agent's own voice reaches
+  // the mic, trips server VAD and makes the call interrupt itself. Safe on
+  // headphones, where there is no acoustic path back.
+  const [barge, setBarge] = useState(false);
   // Which live-call implementation is running: WebRTC (ElevenLabs) has no
   // server-side session to auto-resume, so a few call sites need to know.
   const liveRtcRef = useRef(false);
@@ -577,6 +596,45 @@ export default function App() {
     }
   }
 
+  /**
+   * Jump straight to Engage.
+   *
+   * Skips the graph build and the Detect flythrough and lands on a live,
+   * fully-resolved case. The call itself never depended on discovery — that
+   * graph is for visualisation; the benefit stack resolves from the dataset —
+   * so nothing downstream is missing, the presenter just doesn't watch it happen.
+   */
+  async function skipToEngage() {
+    if (busyRef.current) return;
+    busyRef.current = true;
+    setError('');
+    try {
+      // Abandon any Detect sequence still playing, or its beats keep firing
+      // against a mesh that is no longer on screen.
+      detectRunRef.current += 1;
+      cinemaRef.current?.reset();
+      setReportOpen(false);
+      setBeats([]);
+      setBeatIndex(-1);
+      setAudit(null);
+      setCallComplete(false);
+      completedRef.current = false;
+
+      await api.reset();
+      const { case: c } = await api.startCase(joanne?.id || 'CUS-77241');
+      caseIdRef.current = c.caseId;
+      setKase(c);
+      setDetectReady(true);
+      setStage('calling');
+      await api.beginCall(c.caseId, 'scripted');
+      await refresh();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      busyRef.current = false;
+    }
+  }
+
   function goBack() {
     const order: Stage[] = ['onboarding', 'ready', 'detecting', 'calling', 'complete'];
     const i = order.indexOf(stage === 'hold' ? 'calling' : stage);
@@ -688,9 +746,11 @@ export default function App() {
               <div className="eyebrow"><Activity size={12} /> US multi-state utility · autonomous hardship intake</div>
               <h1>From missed hardship signal<br /><span>to a governed, statute-cited outcome.</span></h1>
               <p>
-                Vocare calls a customer in arrears, resolves their state's shutoff rules and benefit
+                Vocare calls a customer in arrears, resolves their shutoff rules and benefit
                 eligibility deterministically, and turns a collections call into a benefits-enrolment
-                call — escalating to a human only when the rules require it.
+                call — escalating to a credit officer only when the rules require it. The officer's
+                approval runs inside the regulated hardship sequence: policy notice, capacity-to-pay
+                plan, Centrepay, fee waivers, and disconnection safeguards.
               </p>
               <button className="start-button" onClick={start} disabled={!joanne}>
                 <span className="start-icon"><Play size={15} fill="currentColor" /></span>
@@ -805,6 +865,14 @@ export default function App() {
               </div>
               <div className="call-controls">
                 <Waves size={18} />
+                <button
+                  className={`mic-btn ${barge ? 'live' : ''}`}
+                  title={barge
+                    ? 'Barge-in ON — you can interrupt the agent. Use headphones, or it will interrupt itself.'
+                    : 'Barge-in OFF — mic is muted while the agent speaks. Safe on laptop speakers.'}
+                  onClick={() => { const v = !barge; setBarge(v); setBargeIn(v); }}>
+                  <Headphones size={13} /> {barge ? 'Barge-in on' : 'Barge-in off'}
+                </button>
                 <button className={`mic-btn ${live ? 'live' : ''}`} onClick={toggleLive}>
                   <Mic2 size={14} /> {live ? 'End live call' : 'Live mic call'}
                 </button>
@@ -917,6 +985,18 @@ export default function App() {
                         <strong>{money(kase!.approval.ceiling)}<small>/mo</small></strong>
                         <p>6% of income — the agent may not exceed this.</p>
                       </div>
+                    </div>
+                    <div className="aer-workflow">
+                      <span className="aer-workflow-title"><BookOpen size={11} /> Credit-officer hardship workflow · AER guideline</span>
+                      <ol>
+                        {AER_WORKFLOW.map((s) => (
+                          <li key={s.rule} title={s.detail}>
+                            <i><Check size={9} /></i>
+                            <p>{s.label}</p>
+                            <code>{s.rule}</code>
+                          </li>
+                        ))}
+                      </ol>
                     </div>
                     {approvalErr && <div className="credit-err">{approvalErr}</div>}
                     <div className="officer-input">
@@ -1058,6 +1138,13 @@ export default function App() {
         <div className="slide-nav">
           <button className="nav-back" onClick={goBack} disabled={stage === 'onboarding'} aria-label="Back">‹</button>
           <span className="nav-hint">{advanceHint}</span>
+          {/* Presenter escape hatch: land on a live call without sitting through
+              the graph build and the flythrough. */}
+          {stage !== 'calling' && stage !== 'hold' && (
+            <button className="nav-skip" onClick={skipToEngage} title="Skip the build and the flythrough — go straight to a live call">
+              Skip to Engage
+            </button>
+          )}
           <button className="nav-next" onClick={goNext} disabled={!canAdvance}>
             Next <ArrowRight size={15} />
           </button>

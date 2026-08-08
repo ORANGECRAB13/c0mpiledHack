@@ -61,12 +61,15 @@ export function Icon({ name, size = 17, ...rest }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" {...P} {...rest}>{d[name] || d.doc}</svg>;
 }
 
-// Alloovium flame-ish mark
+// product mark
 export function Mark({ size = 26 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path d="M12 2.5c1 3.5 5.5 5 5.5 10a5.5 5.5 0 0 1-11 0c0-2 .8-3.5 2-5 .3 1.2 1 2 2 2.5-.4-2.6.3-5.5 1.5-7.5Z" fill="#E8622C" />
-      <path d="M4 20.5h16" stroke="#E8622C" strokeWidth="2" strokeLinecap="round" />
-    </svg>
+    <img
+      src="/vocare-mark.svg"
+      width={size}
+      height={size}
+      alt=""
+      style={{ display: 'block', borderRadius: size * 0.22, flexShrink: 0 }}
+    />
   );
 }

@@ -87,11 +87,11 @@
       "kind": "process_friction",
       "state": "IL",
       "insight": "The workflow logged multiple consecutive context.source_resolved events, indicating redundant data retrieval steps.",
-      "guidance": "Consolidate source resolution into a single step before the call begins to reduce latency and avoid unnecessary system calls.",
-      "confidence": 0.5,
-      "observations": 1,
+      "guidance": "Review the orchestration logic to collapse or eliminate duplicate source resolution steps, reducing latency and potential points of failure in the call handling pipeline.",
+      "confidence": 0.7399999999999999,
+      "observations": 3,
       "createdAt": "2026-07-26T02:52:32.728Z",
-      "lastSeenAt": "2026-07-26T02:52:32.728Z",
+      "lastSeenAt": "2026-07-26T08:34:28.859Z",
       "sourceCaseIds": [
         "C-20481"
       ],
@@ -140,6 +140,262 @@
       "observations": 1,
       "createdAt": "2026-07-26T03:07:53.155Z",
       "lastSeenAt": "2026-07-26T03:07:53.155Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785043357551-c973",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "Opening the call by stating \"I'm not chasing payment — you may qualify for support you haven't been offered\" immediately shifted the conversation from a collection mindset to a assistance mindset.",
+      "guidance": "Begin every hardship call with a similar support‑first framing before mentioning any payment details.",
+      "confidence": 0.78,
+      "observations": 1,
+      "createdAt": "2026-07-26T05:22:37.551Z",
+      "lastSeenAt": "2026-07-26T05:22:37.551Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785043357594-ce97",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "When the customer balked at the $170 monthly cap, the agent paused, said \"let me try to figure something out\" and secured a manager approval for $130, which was higher than the customer's counter‑offer of $120.",
+      "guidance": "If a customer says the proposed payment is too high, acknowledge, place a brief hold, and request a modest upward adjustment from the credit officer before returning with a revised figure.",
+      "confidence": 0.71,
+      "observations": 1,
+      "createdAt": "2026-07-26T05:22:37.594Z",
+      "lastSeenAt": "2026-07-26T05:22:37.594Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785043357603-fefb",
+      "kind": "objection_pattern",
+      "state": "IL",
+      "insight": "Customer repeatedly expressed fear of missing future payments (\"I don't want to agree to something I'll miss again\"). The agent mitigated this by offering a lower, manageable amount and emphasizing that collections were paused and late fees waived.",
+      "guidance": "When the \"I’ll miss it again\" objection appears, immediately pair a reduced payment proposal with concrete reassurance about collection pauses and fee waivers.",
+      "confidence": 0.73,
+      "observations": 1,
+      "createdAt": "2026-07-26T05:22:37.603Z",
+      "lastSeenAt": "2026-07-26T05:22:37.603Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785043357609-2137",
+      "kind": "knowledge_gap_signal",
+      "state": "IL",
+      "insight": "Customer asked about a township‑level program the agent could not describe and had to flag for a specialist.",
+      "guidance": "Add a quick‑reference entry to the knowledge base covering common local (township) assistance programs in Illinois and their relationship to state crisis grants, so agents can answer confidently or triage correctly.",
+      "confidence": 0.65,
+      "observations": 1,
+      "createdAt": "2026-07-26T05:22:37.609Z",
+      "lastSeenAt": "2026-07-26T05:22:37.609Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785051787857-bc1f",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "Framing the payment question as \"What monthly amount can you genuinely hold right now? If it’s lower than that, we’ll work to get the lowest sustainable number approved\" prompted the customer to volunteer a realistic $190 figure within the allowable range.",
+      "guidance": "Use this low‑ball framing early when discussing sustainable monthly payments to encourage customers to name a feasible amount, then verify it against the floor/ceiling before proceeding.",
+      "confidence": 0.78,
+      "observations": 1,
+      "createdAt": "2026-07-26T07:43:07.857Z",
+      "lastSeenAt": "2026-07-26T07:43:07.857Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785051787919-af5d",
+      "kind": "process_friction",
+      "state": "IL",
+      "insight": "When the customer responded with a non‑numeric, slang answer to the income question (\"Sexy K\"), the agent did not seek clarification and moved on, risking inaccurate data entry.",
+      "guidance": "If a customer gives an unclear or non‑numeric income response, pause and ask for a numeric estimate or clarification before proceeding with eligibility calculations.",
+      "confidence": 0.65,
+      "observations": 1,
+      "createdAt": "2026-07-26T07:43:07.919Z",
+      "lastSeenAt": "2026-07-26T07:43:07.919Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785051787927-b4ea",
+      "kind": "knowledge_gap_signal",
+      "state": "IL",
+      "insight": "The transcript shows the system did not provide a scripted fallback for handling slang or non‑numeric answers to income queries.",
+      "guidance": "Verify that the playbook includes a prompt for clarifying non‑numeric income responses and that the knowledge base offers example re‑asks.",
+      "confidence": 0.6,
+      "observations": 1,
+      "createdAt": "2026-07-26T07:43:07.927Z",
+      "lastSeenAt": "2026-07-26T07:43:07.927Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785052371240-9133",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "After stating the sustainable payment cap ($150), the agent said they would check for the \"lowest sustainable amount\" with a credit officer and then offered a reduced amount ($130).",
+      "guidance": "When a customer seems hesitant, first present the standard cap, then frame a lower figure as the \"lowest sustainable amount\" after a quick internal check. This signals flexibility and authority, increasing likelihood of acceptance.",
+      "confidence": 0.73,
+      "observations": 1,
+      "createdAt": "2026-07-26T07:52:51.240Z",
+      "lastSeenAt": "2026-07-26T07:52:51.240Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785052371255-06e8",
+      "kind": "objection_pattern",
+      "state": "IL",
+      "insight": "Customer expressed uncertainty with \"I think even late.\" The agent responded by explicitly inviting the customer to voice concerns: \"If that amount feels too tight, say so.\"",
+      "guidance": "When a customer shows hesitation, immediately ask them to share any concerns before requesting a yes/no confirmation. This reduces resistance and clarifies consent.",
+      "confidence": 0.68,
+      "observations": 1,
+      "createdAt": "2026-07-26T07:52:51.255Z",
+      "lastSeenAt": "2026-07-26T07:52:51.255Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785052371265-0183",
+      "kind": "process_friction",
+      "state": "IL",
+      "insight": "The call required a hold while the agent consulted a credit officer, resulting in multiple transcript events and a longer hold period.",
+      "guidance": "Streamline the internal approval step by pre‑loading the credit officer’s range for similar cases, or use a scripted brief hold message that sets expectations for a 30‑second wait to maintain customer trust.",
+      "confidence": 0.55,
+      "observations": 1,
+      "createdAt": "2026-07-26T07:52:51.265Z",
+      "lastSeenAt": "2026-07-26T07:52:51.265Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785053147604-cc11",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "When a customer immediately pushes for a payment amount lower than the approved sustainable amount (e.g., $90 vs $100), offering to connect them to a credit officer for a lower‑amount review moves the conversation forward.",
+      "guidance": "Agent should say, \"I hear you’d prefer $90. I’ll place you with a credit officer who can review a lower amount right now,\" and initiate the transfer without further back‑and‑forth on the $100 figure.",
+      "confidence": 0.73,
+      "observations": 1,
+      "createdAt": "2026-07-26T08:05:47.604Z",
+      "lastSeenAt": "2026-07-26T08:05:47.604Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785053147613-71ec",
+      "kind": "objection_pattern",
+      "state": "IL",
+      "insight": "Customers often state a specific lower figure as a firm limit after the agent proposes a higher sustainable payment.",
+      "guidance": "Acknowledge the figure, confirm that the agent cannot set it without a review, and promptly transition to escalation, avoiding attempts to renegotiate the amount on the spot.",
+      "confidence": 0.66,
+      "observations": 1,
+      "createdAt": "2026-07-26T08:05:47.613Z",
+      "lastSeenAt": "2026-07-26T08:05:47.613Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785053147621-4924",
+      "kind": "process_friction",
+      "state": "IL",
+      "insight": "The handoff to a credit officer was initiated after the agent already told the customer the lower amount couldn’t be set, creating a duplicate confirmation step and a brief pause.",
+      "guidance": "Obtain explicit consent for the transfer before stating the limitation, then immediately trigger the handoff to reduce hold time and maintain trust.",
+      "confidence": 0.58,
+      "observations": 1,
+      "createdAt": "2026-07-26T08:05:47.621Z",
+      "lastSeenAt": "2026-07-26T08:05:47.621Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785053147628-b3f3",
+      "kind": "knowledge_gap_signal",
+      "state": "IL",
+      "insight": "Agent referenced \"full benefit package still applies\" without explaining what the package includes, indicating the knowledge base lacks a concise benefit‑explanation script.",
+      "guidance": "Add a short, standardized explanation of the benefit package components (e.g., payment assistance, fee waivers) for agents to share when mentioning the package.",
+      "confidence": 0.51,
+      "observations": 1,
+      "createdAt": "2026-07-26T08:05:47.628Z",
+      "lastSeenAt": "2026-07-26T08:05:47.628Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785053993609-8047",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "After stating the maximum sustainable payment ($300), the agent asked \"What can you manage right now?\" which prompted the customer to propose a lower amount ($190). The agent then immediately checked and approved that lower amount, securing agreement.",
+      "guidance": "When presenting the recommended payment, follow with an open question about the customer's current capacity. If they suggest a lower figure, quickly verify eligibility and approve it on the spot to maintain momentum and trust.",
+      "confidence": 0.73,
+      "observations": 1,
+      "createdAt": "2026-07-26T08:19:53.609Z",
+      "lastSeenAt": "2026-07-26T08:19:53.609Z",
+      "sourceCaseIds": [
+        "C-20481"
+      ],
+      "proposedBy": "reflection-agent",
+      "synthetic": true
+    },
+    {
+      "id": "LRN-1785054868844-5673",
+      "kind": "negotiation_tactic",
+      "state": "IL",
+      "insight": "Agent anchored the payment suggestion at the affordability ceiling ($250) before asking the customer what they could manage, allowing the customer to propose a lower amount ($200) which was then approved.",
+      "guidance": "Continue to start with the maximum affordable amount per the ceiling, then invite the customer to state what they can realistically pay, and be prepared to approve a slightly lower figure to secure agreement.",
+      "confidence": 0.72,
+      "observations": 1,
+      "createdAt": "2026-07-26T08:34:28.844Z",
+      "lastSeenAt": "2026-07-26T08:34:28.844Z",
       "sourceCaseIds": [
         "C-20481"
       ],

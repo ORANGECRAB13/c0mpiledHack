@@ -89,7 +89,7 @@ export default function Retrospective() {
                   <div className="nm">{f.name}</div>
                   <div className="dt"><span className="mono" style={{ color: '#4A66C9' }}>{f.id}</span> · {f.detail}</div>
                 </span>
-                <Icon name="doc" size={16} color="#B7B3A7" />
+                <Icon name="doc" size={16} color="#B2B2B8" />
               </div>
             ))}
             <div style={{ marginTop: 12, fontSize: 12, fontWeight: 600, color: 'var(--t3)' }}>
