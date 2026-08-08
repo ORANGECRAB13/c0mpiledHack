@@ -10,7 +10,16 @@ export function loadChat(person = CURRENT_OFFICER) {
   try {
     const raw = localStorage.getItem(key(person));
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    const cleaned = [];
+    for (const message of parsed) {
+      if (message?.mode === 'demo') {
+        if (cleaned.at(-1)?.role === 'user') cleaned.pop();
+        continue;
+      }
+      cleaned.push(message);
+    }
+    return cleaned;
   } catch {
     return [];
   }

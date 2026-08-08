@@ -4,6 +4,7 @@
 // layers=quality, doc=customer comms, zap=operations.
 
 export const DOC_TABS = [
+  { id: 'Regulatory corpus', n: 9, desc: 'The source PDFs available to compliance answers and decision evidence.' },
   { id: 'Policies', n: 10, desc: 'Approved company policy documents that define commitments and rules.' },
   { id: 'Plans', n: 1, desc: 'Management plans that set out how obligations are met over time.' },
   { id: 'Procedures', n: 6, desc: 'Step-by-step controlled documents for regulated activities.' },
@@ -15,6 +16,17 @@ export const DOC_TABS = [
 ];
 
 export const DOCS = {
+  'Regulatory corpus': [
+    ['AER-Retail-Law-Instrument-2026.pdf', ['shield'], 'System ingest', '8 August 2026'],
+    ['Best-Offer-Policy-v2.pdf', ['shield', 'doc'], 'System ingest', '8 August 2026'],
+    ['Billing-Accuracy-Standard-v3.pdf', ['shield', 'layers'], 'System ingest', '8 August 2026'],
+    ['Customer-Hardship-Policy-Rev4.pdf', ['shield', 'doc'], 'System ingest', '8 August 2026'],
+    ['Energy Retail Code of Practice (version 6)_2.pdf', ['shield'], 'System ingest', '8 August 2026'],
+    ['FDV-Policy-Rev2.pdf', ['shield', 'doc'], 'System ingest', '8 August 2026'],
+    ['GL - Guideline-Payment Difficulty Framework - 1 October 2026 - 20261001_0.pdf', ['shield', 'layers'], 'System ingest', '8 August 2026'],
+    ['NERR-v51.pdf', ['shield'], 'System ingest', '8 August 2026'],
+    ['WI-4-Credit-Collections-v11.pdf', ['shield', 'zap'], 'System ingest', '8 August 2026'],
+  ],
   Policies: [
     ['01. Customer Hardship Policy Rev 4.docx', ['shield', 'doc'], 'M. Okafor', '21 July 2026'],
     ['02. Credit and Collections Policy Rev 6.docx', ['shield'], null, '14 July 2026'],

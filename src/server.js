@@ -33,6 +33,7 @@ const ratificationAgent = await import('./agents/ratification.js');
 const reflectionAgent = await import('./agents/reflection.js');
 const { agentModelStatus } = await import('./agents/azure.js');
 const { askAssistant, assistantStatus } = await import('./assistant/index.js');
+const { elevenLabsSttStatus, transcribeOfficerCommand } = await import('./stt/elevenlabs.js');
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -70,6 +71,7 @@ app.get('/api/health', wrap(async (_req, res) => {
     providers: {
       contextEngine: { configured: true, backend: engine.backend, fallbackReason: engine.fallbackReason },
       voice: { provider: (process.env.VOICE_PROVIDER || 'azure').toLowerCase() },
+      transcription: { provider: 'elevenlabs', ...elevenLabsSttStatus() },
       azureRealtime: { configured: realtimeConfig().configured },
       azureOpenAI: { configured: Boolean(process.env['AZURE-OPENAI-API-KEY']) },
       semantic: { engine: 'neo4j', configured: Boolean(process.env.NEO4J_URI) },
@@ -349,6 +351,21 @@ app.post('/api/knowledge/gaps/:gapId/ratify', wrap(async (req, res) =>
 // Grounded chat over the internal policy corpus. Foundry tier when the keys
 // are present; the status route lets the UI degrade honestly when they're not.
 app.get('/api/assistant/status', wrap(async (_req, res) => ok(res, assistantStatus())));
+
+app.get('/api/assistant/transcription-status', wrap(async (_req, res) => ok(res, elevenLabsSttStatus())));
+
+app.post(
+  '/api/assistant/transcribe',
+  express.raw({ type: ['audio/*', 'application/octet-stream'], limit: '25mb' }),
+  wrap(async (req, res) => {
+    try {
+      ok(res, await transcribeOfficerCommand(req.body, req.headers['content-type'] || 'audio/webm'));
+    } catch (error) {
+      if (error.code === 'not_configured') return res.status(503).json({ ok: false, error: error.message, code: error.code });
+      throw error;
+    }
+  })
+);
 
 app.post('/api/assistant/ask', wrap(async (req, res) => {
   try {

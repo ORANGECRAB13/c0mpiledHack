@@ -1,154 +1,188 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { AskBar } from '../components/Chrome.jsx';
-import { CASE } from '../data/ops.js';
+import AskOverlay from '../components/AskOverlay.jsx';
 
-export default function CaseWorkspace({ back }) {
-  const [openSrc, setOpenSrc] = useState(null);
+export default function CaseWorkspace({
+  caseData,
+  back,
+  sourceVerified,
+  approved,
+  onVerifySource,
+  onApprove,
+  decisionRecord,
+  viewAudit,
+  evidenceRequest,
+  onEvidenceRequestHandled,
+}) {
+  const [showSources, setShowSources] = useState(false);
+  const [showAllInputs, setShowAllInputs] = useState(false);
   const [modal, setModal] = useState(false);
-  const [approved, setApproved] = useState(false);
-  const c = CASE;
+  const [proofOpen, setProofOpen] = useState(false);
+  const [proofQuery, setProofQuery] = useState(caseData.sourceQuery);
+  const customer = caseData;
+
+  const inspectSource = () => {
+    setProofQuery(customer.sourceQuery);
+    onVerifySource();
+    setProofOpen(true);
+  };
+
+  useEffect(() => {
+    setShowSources(false);
+    setShowAllInputs(false);
+    setModal(false);
+    setProofOpen(false);
+    setProofQuery(customer.sourceQuery);
+  }, [customer.id]);
+
+  useEffect(() => {
+    if (!evidenceRequest) return;
+    if (evidenceRequest.caseId && evidenceRequest.caseId !== customer.id) return;
+    setProofQuery(evidenceRequest.query || customer.sourceQuery);
+    onVerifySource();
+    setProofOpen(true);
+    onEvidenceRequestHandled?.();
+  }, [evidenceRequest?.id]);
 
   return (
-    <div className="page">
+    <div className="page product-page">
       <div className="crumbs">
-        <a onClick={back}><Icon name="home" size={14} /> Home</a>
+        <a onClick={back}><Icon name="back" size={14} /> Decision queue</a>
         <span className="sep"><Icon name="chevR" size={11} /></span>
-        <a onClick={back}>Operational Queue</a>
-        <span className="sep"><Icon name="chevR" size={11} /></span>
-        <span className="here">{c.id} · {c.customer}</span>
+        <span className="here">{customer.id}</span>
       </div>
 
-      <div className="h1row">
+      <div className="h1row product-heading">
         <div>
-          <h1 className="display" style={{ fontSize: 36 }}>{c.customer}</h1>
-          <div className="h1sub">{c.meta} · {c.workflow} · Payment Difficulty Framework v4.2</div>
+          <h1 className="display" style={{ fontSize: 36 }}>{customer.customer}</h1>
+          <div className="h1sub">{customer.id} · {customer.workflow} · {customer.stateLabel}</div>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button className="btn-ghost"><Icon name="clock" size={14} /> Snooze</button>
-          <button className="btn-orange" onClick={() => setModal(true)} disabled={approved}>
-            <Icon name="check" size={14} /> {approved ? 'Approved' : 'Approve recommendation'}
+        <div className="case-actions">
+          <button className="btn-ghost" onClick={inspectSource}>
+            <Icon name="doc" size={14} /> {sourceVerified ? 'Evidence verified' : 'Verify evidence'}
+          </button>
+          <button className="btn-orange" onClick={() => setModal(true)} disabled={approved || !sourceVerified} title={!sourceVerified ? 'Verify the evidence before approval' : ''}>
+            <Icon name="check" size={14} /> {approved ? 'Approved' : 'Approve'}
           </button>
         </div>
       </div>
 
       {approved && (
-        <div className="okbanner">
+        <div className="okbanner compact-banner">
           <Icon name="check" size={16} />
-          Decision DEC-2026-08847 recorded — hardship workflow updated, best-offer review initiated, follow-up scheduled 3 Nov 2026. Approving officer: Priya N.
+          <span>Decision recorded as {decisionRecord?.id}.</span>
+          <button onClick={viewAudit}>View record <Icon name="chevR" size={12} /></button>
         </div>
       )}
 
-      <div className="casegrid">
-        {/* ── left: snapshot + events ── */}
-        <div>
-          <div className="cpanel">
-            <div className="ph">Customer snapshot</div>
-            {c.snapshot.map(([k, v, hot]) => (
-              <div className="snaprow" key={k}>
-                <span className="k">{k}</span>
-                <span className={`v ${hot ? 'hot' : ''}`}>{v}</span>
-              </div>
-            ))}
-          </div>
-          <div className="cpanel">
-            <div className="ph">Recent events</div>
-            {c.events.map(([d, t]) => (
-              <div className="evrow" key={t}><span className="d">{d}</span><span>{t}</span></div>
-            ))}
-          </div>
-          <div className="cpanel">
-            <div className="ph">Context sources <span style={{ color: 'var(--green)', letterSpacing: 0 }}>9 of 9 connected</span></div>
-            {c.sources.map(([nm, detail], i) => (
-              <div className="srcrow" key={nm}>
-                <button className="srcbtn" onClick={() => setOpenSrc(openSrc === i ? null : i)}>
-                  <span className="tick"><Icon name="check" size={14} /></span>
-                  {nm}
-                  <span className={`chev ${openSrc === i ? 'open' : ''}`}><Icon name="chevR" size={13} /></span>
-                </button>
-                {openSrc === i && <div className="srcdetail">{detail}</div>}
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="product-workspace">
+        <div className="decision-column">
+          <section className="recommendation-card">
+            <div className="recommendation-topline">
+              <span className="decision-label">Recommendation</span>
+              <span className="schip wait">Human review required</span>
+            </div>
+            <h2>{customer.recommendation}</h2>
+            <p>{customer.recommendationSummary}</p>
+            <div className="recommendation-next"><span>Next action</span>{customer.action}</div>
+            <div className="recommendation-meta">
+              <span><b>{customer.confidence}</b> decision confidence</span>
+              <span><b>{customer.sources.length}</b> evidence sources</span>
+              <span><b>{customer.policyVersion}</b> policy version</span>
+            </div>
+          </section>
 
-        {/* ── middle: context + rules + actions ── */}
-        <div>
-          <div className="cpanel">
-            <div className="ph">Operational context — what changed</div>
-            {c.context.map((l) => <div className="ctxline" key={l}>{l}</div>)}
-          </div>
-          <div className="cpanel">
-            <div className="ph">Rule evaluation — Payment Difficulty Framework v4.2</div>
-            {c.rules.map(([nm, verdict, tone, why]) => (
-              <div className="rule" key={nm}>
-                <div className="top">
-                  <span className="nm">{nm}</span>
+          <section className="cpanel product-panel">
+            <div className="ph">Decision checks <span className="engine-chip">{customer.rules.length} checks</span></div>
+            {customer.rules.map(([name, verdict, tone, reason]) => (
+              <details className="decision-check" key={name}>
+                <summary>
+                  <span className="nm">{name}</span>
                   <span className={`vchip ${tone}`}>{verdict}</span>
-                </div>
-                <div className="why"><b>Reason:</b> {why}</div>
-              </div>
+                </summary>
+                <p>{reason}</p>
+              </details>
             ))}
-          </div>
-          <div className="cpanel">
-            <div className="ph">Recommended actions</div>
-            {c.actions.map(([a, on]) => (
-              <div className="actrow" key={a}>
-                <span className={`box ${on ? 'on' : ''}`}>{on && <Icon name="check" size={10} />}</span>
-                {a}
+          </section>
+
+          {customer.switchTrace && (
+            <section className="cpanel product-panel switch-trace">
+              <div className="ph">Why this customer is being switched <span className="engine-chip">From 1 October</span></div>
+              <div className="switch-path">
+                <div><span>Current plan</span><b>{customer.switchTrace.from}</b></div>
+                <Icon name="chevR" size={16} />
+                <div><span>Best available plan</span><b>{customer.switchTrace.to}</b><small>{customer.switchTrace.saving}</small></div>
               </div>
-            ))}
-          </div>
+              <details className="switch-details">
+                <summary>View switch reason and controls</summary>
+                <div className="switch-trigger"><span>Trigger</span><b>{customer.switchTrace.trigger}</b></div>
+                <div className="switch-foot"><span>Opt-out</span><b>{customer.switchTrace.optOut}</b><span>Execution</span><b>{customer.switchTrace.effective}</b></div>
+              </details>
+            </section>
+          )}
         </div>
 
-        {/* ── right: readiness + missing ── */}
-        <div>
-          <div className="cpanel">
-            <div className="ph">Recommendation</div>
-            {c.readiness.map(([k, v]) => (
-              <div className="readyrow" key={k}>
-                <span className="k">{k}</span>
-                <span className="v" style={v === 'Required' ? { color: '#3B6FE0' } : v === 'High' ? { color: 'var(--green)' } : {}}>{v}</span>
+        <aside className="context-column">
+          <section className="cpanel product-panel decision-inputs">
+            <div className="ph">{customer.workflow === 'Hardship & Best Offer' ? 'Eligibility inputs' : 'Reconciliation inputs'}</div>
+            {customer.decisionInputs.slice(0, showAllInputs ? customer.decisionInputs.length : 4).map(([label, value, source, status]) => (
+              <div className="decision-input-row" key={`${label}-${source}`}>
+                <div><span>{label}</span><b>{value}</b><small>{source}</small></div>
+                <em className={`input-state ${status.toLowerCase()}`}>{status}</em>
               </div>
             ))}
-            <div className="readynote">
-              Review for Payment Difficulty Support, switch to best available offer (saves $18/month) and
-              prepare a $45/week arrangement. Nothing proceeds without your approval.
+            {customer.decisionInputs.length > 4 && (
+              <button className="text-button input-toggle" onClick={() => setShowAllInputs((value) => !value)}>
+                {showAllInputs ? 'Show fewer inputs' : `View ${customer.decisionInputs.length - 4} more inputs`}
+              </button>
+            )}
+          </section>
+
+          <section className="cpanel product-panel evidence-panel">
+            <div className="ph">Evidence <span className="connected-state"><i /> {customer.sources.length} connected</span></div>
+            <p>Connected records used for this recommendation.</p>
+            <div className="evidence-actions">
+              <button className="text-button" onClick={() => setShowSources((value) => !value)}>{showSources ? 'Hide sources' : 'View sources'}</button>
+              <button className="text-button primary" onClick={inspectSource}>Check policy evidence</button>
             </div>
-          </div>
-          <div className="cpanel">
-            <div className="ph">Missing information</div>
-            {c.missing.map((m) => <div className="missrow" key={m}>{m}</div>)}
-            <div className="readynote" style={{ marginTop: 10 }}>
-              Uncertainty is recorded with the decision — these gaps appear in the audit record and drive the follow-up contact.
-            </div>
-          </div>
-        </div>
+            {showSources && (
+              <div className="source-list">
+                {customer.sources.map(([name]) => <span key={name}><Icon name="check" size={11} /> {name}</span>)}
+              </div>
+            )}
+          </section>
+
+          <section className="cpanel product-panel">
+            <div className="ph">Before you approve <span className="engine-chip">{customer.missing.length}</span></div>
+            {customer.missing.map((item) => <div className="missrow" key={item}>{item}</div>)}
+          </section>
+        </aside>
       </div>
 
       {modal && (
         <div className="modalveil" onClick={() => setModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Approve recommendation</h3>
-            <div className="sub">This approval will:</div>
+          <div className="modal" onClick={(event) => event.stopPropagation()}>
+            <h3>Approve decision</h3>
+            <div className="sub">This freezes the decision inputs and records why the action was taken. Any plan switch starts only after your approval.</div>
             <div style={{ marginTop: 10 }}>
-              {c.approvalEffects.map((e) => (
-                <div className="effrow" key={e}><span className="tk">✓</span>{e}</div>
+              {customer.approvalEffects.slice(0, 3).map((effect) => (
+                <div className="effrow" key={effect}><span className="tk">✓</span>{effect}</div>
               ))}
+              {customer.approvalEffects.length > 3 && <div className="approval-more">+ {customer.approvalEffects.length - 3} automated follow-up actions</div>}
             </div>
-            <textarea placeholder="Notes for the decision record (optional)…" />
-            <div className="note">Recorded as approving officer: <b>Priya N.</b> · Policy version PDF v4.2 · 9 evidence sources</div>
+            <textarea placeholder="Add a note (optional)…" />
+            <div className="note">Approving officer: <b>Priya N.</b> · Policy {customer.policyVersion} · {customer.sources.length} evidence sources</div>
             <div className="btns">
               <button className="btn-ghost" onClick={() => setModal(false)}>Cancel</button>
-              <button className="btn-orange" onClick={() => { setModal(false); setApproved(true); }}>
-                Confirm approval
-              </button>
+              <button className="btn-orange" onClick={() => { setModal(false); onApprove(); }}>Approve decision</button>
             </div>
           </div>
         </div>
       )}
 
       <AskBar />
+      {proofOpen && <AskOverlay query={proofQuery} onClose={() => setProofOpen(false)} fresh />}
     </div>
   );
 }

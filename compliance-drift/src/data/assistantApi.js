@@ -1,7 +1,7 @@
 // Client for the real compliance assistant on the Vocare backend.
 // Dev: vite proxies /api to the Node server (see vite.config.js).
-// The overlay and Assistant page fall back to the canned demo scripts when the
-// backend is unreachable or no model keys are configured yet.
+// The overlay and Assistant page surface backend failures honestly; no canned
+// response is substituted for a model answer.
 
 export async function assistantStatus() {
   const r = await fetch('/api/assistant/status');
@@ -25,9 +25,8 @@ export async function askLive(question, history = []) {
 }
 
 /**
- * Shape a live answer like the canned scripts so AskOverlay renders both
- * identically: answer word-array with inline citation markers appended, and
- * citations in the {n, doc, page, quote, reason} form the viewer expects.
+ * Shape a live model answer for AskOverlay: an answer word-array with inline
+ * citation markers and citations in the viewer's expected form.
  */
 export function toScript(question, live) {
   const citations = (live.citations || []).map((c, i) => ({

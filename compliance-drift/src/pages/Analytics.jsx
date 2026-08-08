@@ -22,9 +22,9 @@ const WEEKS = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7'];
 export default function Analytics() {
   return (
     <div className="page">
-      <Crumbs items={['Operations', 'Analytics']} />
-      <h1 className="display">Analytics</h1>
-      <div className="h1sub">The numbers operations leaders manage to — investigation effort, turnaround and detection lead time.</div>
+      <Crumbs items={['Operations', 'Outcomes']} />
+      <h1 className="display">Workflow outcomes</h1>
+      <div className="h1sub">Results for data reconciliation, hardship and best-offer action, and continuous monitoring.</div>
 
       <div className="anagrid">
         {ANALYTICS.kpis.map(([k, v, s, tone]) => (
@@ -38,13 +38,13 @@ export default function Analytics() {
 
       <div className="chartrow">
         <div className="chartcard">
-          <div className="secheading" style={{ margin: '0 0 6px' }}>Manual review workload</div>
-          <div style={{ fontSize: 12.5, color: 'var(--t3)', marginBottom: 10 }}>Open cases requiring a human, weekly</div>
+          <div className="secheading" style={{ margin: '0 0 6px' }}>Unresolved data conflicts</div>
+          <div style={{ fontSize: 12.5, color: 'var(--t3)', marginBottom: 10 }}>Customer records awaiting reconciliation, weekly</div>
           <Bars data={ANALYTICS.workload} color="#1F1F23" labels={WEEKS} />
         </div>
         <div className="chartcard">
-          <div className="secheading" style={{ margin: '0 0 6px' }}>Hardship detection lead time</div>
-          <div style={{ fontSize: 12.5, color: 'var(--t3)', marginBottom: 10 }}>Days before first missed bill, weekly median</div>
+          <div className="secheading" style={{ margin: '0 0 6px' }}>Silent customers identified</div>
+          <div style={{ fontSize: 12.5, color: 'var(--t3)', marginBottom: 10 }}>Customers detected before proactively requesting support</div>
           <Bars data={ANALYTICS.detection} color="#3D5AFE" labels={WEEKS} />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon, Mark } from '../icons.jsx';
-import { DOC_META, SCRIPTS } from '../data/askdocs.js';
+import { DOC_META } from '../data/askdocs.js';
 import { askLive, toScript } from '../data/assistantApi.js';
 import { loadChat, saveChat, toHistory } from '../data/chatStore.js';
 import PdfViewer from './PdfViewer.jsx';
@@ -11,12 +11,11 @@ import PdfViewer from './PdfViewer.jsx';
 // bottom — no need to close and reopen. History is persisted per officer
 // (chatStore) and shared with the Assistant page.
 //
-// Live-first: questions go to the real model (/api/assistant/ask). If the
-// backend is down or keyless, the canned demo script for the closest question
-// keeps the overlay working — labelled as demo, never passed off as live.
-export default function AskOverlay({ query, onClose }) {
+// Every answer comes from the configured backend model. There is deliberately
+// no canned fallback: failures remain visible instead of looking like answers.
+export default function AskOverlay({ query, onClose, fresh = false }) {
   // messages: {role:'user'|'assistant', text, answer?, citations?, mode?}
-  const [messages, setMessages] = useState(() => loadChat());
+  const [messages, setMessages] = useState(() => fresh ? [] : loadChat());
   const [busy, setBusy] = useState(false);
   const [input, setInput] = useState('');
   const [streamed, setStreamed] = useState(0); // words shown of the LAST assistant msg
@@ -33,22 +32,24 @@ export default function AskOverlay({ query, onClose }) {
     setBusy(true);
     setMessages((ms) => {
       const next = [...ms, { role: 'user', text: q }];
-      saveChat(next);
+      if (!fresh) saveChat(next);
       return next;
     });
     let entry;
     try {
-      const r = await askLive(q, toHistory(loadChat()));
+      const r = await askLive(q, fresh ? [] : toHistory(loadChat()));
       const s = toScript(q, r);
       entry = { role: 'assistant', text: r.answer, answer: s.answer, citations: s.citations, mode: 'live', model: r.model };
-    } catch {
-      const s = pickScript(q);
-      entry = { role: 'assistant', text: flatWords(s.answer).map(([t]) => t).join(''), answer: s.answer, citations: s.citations, mode: 'demo' };
+    } catch (error) {
+      const text = error.code === 'not_configured'
+        ? 'The compliance model is not configured. Add the Azure AI Foundry credentials and restart the backend.'
+        : `The compliance model could not answer: ${error.message}`;
+      entry = { role: 'assistant', text, answer: [[text, 0]], citations: [], mode: 'error', error: true };
     }
     setStreamed(0);
     setMessages((ms) => {
       const next = [...ms, entry];
-      saveChat(next);
+      if (!fresh) saveChat(next);
       return next;
     });
     setBusy(false);
@@ -113,8 +114,10 @@ export default function AskOverlay({ query, onClose }) {
             <span className="crossref">
               {busy
                 ? <><span className="spinner" style={{ width: 11, height: 11 }} /> cross-referencing the corpus…</>
-                : lastIsAnswer
-                  ? <><Icon name="check" size={12} /> {last.citations?.length || 0} sources cited · {last.mode === 'live' ? (last.model || 'live model') : 'demo corpus'}</>
+                : lastIsAnswer && last.error
+                  ? <><Icon name="warn" size={12} /> model request failed</>
+                  : lastIsAnswer
+                    ? <><Icon name="check" size={12} /> {last.citations?.length || 0} sources cited · {last.model || 'live model'}</>
                   : null}
             </span>
             <button className="xbtn" onClick={onClose}><Icon name="x" size={15} /></button>
@@ -199,16 +202,6 @@ export default function AskOverlay({ query, onClose }) {
       </div>
     </div>
   );
-}
-
-function pickScript(q) {
-  const lq = (q || '').toLowerCase();
-  let best = SCRIPTS[0], score = 0;
-  for (const s of SCRIPTS) {
-    const n = s.match.filter((m) => lq.includes(m)).length;
-    if (n > score) { best = s; score = n; }
-  }
-  return best;
 }
 
 function flatWords(answer) {

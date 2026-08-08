@@ -2,34 +2,31 @@
 // Queue → Case → Evidence → Decision → Approval → Audit.
 
 export const WORKLOAD = [
-  { n: 15, label: 'hardship reviews awaiting assessment', wf: 'Payment Difficulty' },
-  { n: 22, label: 'accounts overdue for hardship reassessment', wf: 'Reassessment' },
-  { n: 31, label: 'onboarding data issues', wf: 'Onboarding Validation' },
-  { n: 8, label: 'possible revenue assurance exceptions', wf: 'Revenue Assurance' },
-  { n: 12, label: 'unknown consumer investigations', wf: 'Unknown Consumer' },
-  { n: 5, label: 'policy updates affecting live workflows', wf: 'Policy' },
+  { n: 31, label: 'records requiring reconciliation', wf: 'Data Quality & Reconciliation' },
+  { n: 15, label: 'hardship and best-offer reviews', wf: 'Hardship & Best Offer' },
+  { n: 22, label: 'accounts due for hardship reassessment', wf: 'Continuous Monitoring' },
 ];
 
 export const QUEUE = [
-  { id: 'C-10482', state: 'VIC', customer: 'Amelia Hart', workflow: 'Payment Difficulty Review', priority: 'High', status: 'Ready for review', action: 'Assess support eligibility', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship', hot: true },
-  { id: 'C-10496', state: 'VIC', customer: 'Daniel Okonkwo', workflow: 'Best Offer Review', priority: 'Medium', status: 'Evidence assembling', action: 'Confirm tariff comparison', policy: 'Best Offer Notice v2.1', team: 'Retention' },
-  { id: 'C-10471', state: 'NSW', customer: 'Priya Raman', workflow: 'Payment Difficulty Review', priority: 'High', status: 'Ready for review', action: 'Contact before determination', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship' },
-  { id: 'C-10455', state: 'NSW', customer: 'Marcus Webb', workflow: 'Revenue Assurance', priority: 'Medium', status: 'Exception found', action: 'Verify meter read history', policy: 'Billing Accuracy Standard v3.0', team: 'Billing Ops' },
-  { id: 'C-10502', state: 'VIC', customer: 'Unknown occupant — 14 Merri Pde', workflow: 'Unknown Consumer', priority: 'Medium', status: 'Investigation open', action: 'Confirm occupancy', policy: 'Move-in Deemed Supply v1.8', team: 'Onboarding' },
-  { id: 'C-10444', state: 'VIC', customer: 'Sofia Nguyen', workflow: 'Payment Difficulty Review', priority: 'Low', status: 'Monitoring', action: 'Reassess support level', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship' },
-  { id: 'C-10510', state: 'QLD', customer: 'Northbrook Cafe Pty Ltd', workflow: 'Onboarding Validation', priority: 'Medium', status: 'Data issue', action: 'Resolve ABN mismatch', policy: 'SME Onboarding Standard v2.4', team: 'Onboarding' },
-  { id: 'C-10437', state: 'VIC', customer: 'Grace Muller', workflow: 'Best Offer Review', priority: 'Low', status: 'Ready for review', action: 'Approve plan switch', policy: 'Best Offer Notice v2.1', team: 'Retention' },
-  { id: 'C-10489', state: 'SA', customer: 'Tom Castellano', workflow: 'Revenue Assurance', priority: 'High', status: 'Exception found', action: 'Review unbilled period', policy: 'Billing Accuracy Standard v3.0', team: 'Billing Ops' },
-  { id: 'C-10521', state: 'NSW', customer: 'Leila Haddad', workflow: 'Payment Difficulty Review', priority: 'Medium', status: 'Evidence assembling', action: 'Await CRM sync', policy: 'Payment Difficulty Framework v4.2', team: 'Hardship' },
-  { id: 'C-10466', state: 'QLD', customer: 'Ravi Patel', workflow: 'Onboarding Validation', priority: 'Low', status: 'Data issue', action: 'Confirm concession card', policy: 'Concession Verification v3.1', team: 'Onboarding' },
-  { id: 'C-10515', state: 'VIC', customer: 'Jia Chen', workflow: 'Best Offer Review', priority: 'Medium', status: 'Ready for review', action: 'Confirm consent to switch', policy: 'Best Offer Notice v2.1', team: 'Retention' },
+  { id: 'C-10482', state: 'VIC', customer: 'Amelia Hart', workflow: 'Hardship & Best Offer', priority: 'High', status: 'Ready for review', action: 'Confirm hardship eligibility and best offer', policy: 'Payment Difficulty & Best Offer Standard v4.2', team: 'Customer Support', hot: true },
+  { id: 'C-10496', state: 'VIC', customer: 'Daniel Okonkwo', workflow: 'Data Quality & Reconciliation', priority: 'Medium', status: 'Evidence assembling', action: 'Reconcile CRM, billing and pricing records', policy: 'Customer Data Reconciliation Standard v3.0', team: 'Data Operations' },
+  { id: 'C-10471', state: 'NSW', customer: 'Priya Raman', workflow: 'Hardship & Best Offer', priority: 'High', status: 'Ready for review', action: 'Review silent hardship signals and contact', policy: 'Payment Difficulty & Best Offer Standard v4.2', team: 'Customer Support' },
+  { id: 'C-10455', state: 'NSW', customer: 'Marcus Webb', workflow: 'Data Quality & Reconciliation', priority: 'Medium', status: 'Exception found', action: 'Reconcile meter, billing and account history', policy: 'Customer Data Reconciliation Standard v3.0', team: 'Data Operations' },
+  { id: 'C-10502', state: 'VIC', customer: 'Unknown occupant — 14 Merri Pde', workflow: 'Data Quality & Reconciliation', priority: 'Medium', status: 'Investigation open', action: 'Resolve identity and service-address mismatch', policy: 'Customer Data Reconciliation Standard v3.0', team: 'Data Operations' },
+  { id: 'C-10444', state: 'VIC', customer: 'Sofia Nguyen', workflow: 'Hardship & Best Offer', priority: 'Low', status: 'Monitoring', action: 'Reassess hardship status and current plan', policy: 'Payment Difficulty & Best Offer Standard v4.2', team: 'Customer Support' },
+  { id: 'C-10510', state: 'QLD', customer: 'Northbrook Cafe Pty Ltd', workflow: 'Data Quality & Reconciliation', priority: 'Medium', status: 'Data issue', action: 'Resolve legal-name and ABN mismatch', policy: 'Customer Data Reconciliation Standard v3.0', team: 'Data Operations' },
+  { id: 'C-10437', state: 'VIC', customer: 'Grace Muller', workflow: 'Hardship & Best Offer', priority: 'Low', status: 'Ready for review', action: 'Confirm eligibility and required plan switch', policy: 'Payment Difficulty & Best Offer Standard v4.2', team: 'Customer Support' },
+  { id: 'C-10489', state: 'SA', customer: 'Tom Castellano', workflow: 'Data Quality & Reconciliation', priority: 'High', status: 'Exception found', action: 'Reconcile unbilled usage before customer action', policy: 'Customer Data Reconciliation Standard v3.0', team: 'Data Operations' },
+  { id: 'C-10521', state: 'NSW', customer: 'Leila Haddad', workflow: 'Hardship & Best Offer', priority: 'Medium', status: 'Evidence assembling', action: 'Resolve fragmented eligibility inputs', policy: 'Payment Difficulty & Best Offer Standard v4.2', team: 'Customer Support' },
+  { id: 'C-10466', state: 'QLD', customer: 'Ravi Patel', workflow: 'Data Quality & Reconciliation', priority: 'Low', status: 'Data issue', action: 'Reconcile concession and identity records', policy: 'Customer Data Reconciliation Standard v3.0', team: 'Data Operations' },
+  { id: 'C-10515', state: 'VIC', customer: 'Jia Chen', workflow: 'Hardship & Best Offer', priority: 'Medium', status: 'Ready for review', action: 'Verify opt-out status and execute switch', policy: 'Payment Difficulty & Best Offer Standard v4.2', team: 'Customer Support' },
 ];
 
-export const CASE = {
+const AMELIA_CASE = {
   id: 'C-10482',
   customer: 'Amelia Hart',
   meta: 'AU-48291 · VIC Residential · 4.2 yr tenure',
-  workflow: 'Payment Difficulty Review',
+  workflow: 'Hardship & Best Offer',
   snapshot: [
     ['Balance', '$312.00 arrears', 'hot'],
     ['Current plan', 'Standard Flexi'],
@@ -65,10 +62,10 @@ export const CASE = {
     'Sensitive customer marker detected.',
   ],
   rules: [
-    ['Payment behaviour', 'Satisfied', 'ok', 'Multiple payment failures detected within the assessment window.'],
-    ['Financial stress', 'Likely', 'warn', 'CRM notes indicate reduced work hours.'],
-    ['Concession status', 'Insufficient', 'warn', 'Concession alone is not evidence of hardship.'],
-    ['Human review', 'Required', 'req', 'Customer communication required before final determination.'],
+    ['Minimum disconnection amount', 'Blocked', 'ok', '$312 arrears are below the $500 statutory floor in AER s 111.'],
+    ['Payment-difficulty protection', 'Engaged', 'ok', 'Failed and partial payments plus reduced work hours trigger an assistance assessment.'],
+    ['Sensitive-customer protection', 'Engaged', 'ok', 'The account marker prevents disconnection being used as a debt-recovery step.'],
+    ['Human determination', 'Required', 'req', 'Customer contact and an accountable officer are required before final action.'],
   ],
   readiness: [
     ['Decision readiness', 'High'],
@@ -90,75 +87,230 @@ export const CASE = {
     ['Notify Hardship Team', false],
   ],
   approvalEffects: [
-    'Update hardship workflow',
-    'Initiate best-offer review',
-    'Generate customer communication',
-    'Schedule review in 90 days',
-    'Record evidence bundle',
-    'Record approving officer',
+    'Block any disconnection referral',
+    'Open the payment-difficulty support workflow',
+    'Initiate the best-offer review',
+    'Prepare a $45/week arrangement for discussion',
+    'Schedule the 90-day review',
+    'Freeze evidence, rules, uncertainty and officer in the audit record',
   ],
 };
 
+const WORKFLOW_CASES = {
+  'Data Quality & Reconciliation': {
+    recommendation: 'Resolve the source conflict before customer action',
+    summary: 'Reconcile the inconsistent customer record, confirm the authoritative value and rerun dependent checks before any downstream decision.',
+    protections: 1,
+    rules: [
+      ['Source conflict', 'Found', 'req', 'Customer data differs across connected operational systems.'],
+      ['Authoritative source', 'Required', 'req', 'The officer must identify which source controls each disputed field.'],
+      ['Downstream impact', 'Blocked', 'ok', 'Customer action stays paused until affected decisions are rerun with corrected data.'],
+      ['Human correction', 'Required', 'req', 'An accountable officer must approve the before-and-after record.'],
+    ],
+    actions: ['Identify the conflicting fields', 'Confirm the authoritative record', 'Correct affected source systems', 'Rerun dependent eligibility checks'],
+    effects: ['Freeze before-and-after values', 'Update connected systems', 'Rerun affected decisions', 'Create a reconciliation audit record'],
+    outcome: 'Customer data reconciliation approved',
+  },
+  'Hardship & Best Offer': {
+    recommendation: 'Confirm hardship eligibility and required best offer',
+    summary: 'Combine payment, debt, plan, pricing and opt-out data; contact silent customers; and approve the correct best-offer action from 1 October.',
+    protections: 2,
+    rules: [
+      ['Payment-difficulty signals', 'Detected', 'ok', 'Payment and contact behaviour indicate possible hardship, including customers who have not self-identified.'],
+      ['Eligibility inputs', 'Assembled', 'ok', 'Hardship status, debt age, balance, current plan, pricing and opt-out status are brought together across systems.'],
+      ['Best-offer duty from 1 October', 'Applies', 'ok', 'An eligible hardship customer must be assessed against the best available plan using current pricing.'],
+      ['Opt-out and consent', 'Verify', 'req', 'The latest opt-out or consent state must be confirmed before executing the switch.'],
+      ['Human determination', 'Required', 'req', 'An accountable officer must approve eligibility and the switch with the trigger recorded.'],
+    ],
+    actions: ['Contact the customer about payment difficulty', 'Confirm hardship eligibility', 'Validate the best available plan', 'Verify opt-out or consent and prepare the switch'],
+    effects: ['Record the hardship trigger', 'Freeze the eligibility input snapshot', 'Document the plan comparison', 'Execute the approved switch and create an audit record'],
+    outcome: 'Hardship eligibility and best-offer action approved',
+  },
+};
+
+const CASE_PROFILES = {
+  'C-10496': { balance: '$86.40 credit', plan: 'Home Saver', behaviour: '12 months interval data', contact: 'Email · weekdays', detail: 'Potential saving $14/month', missing: ['Explicit consent not recorded', 'Preferred switch date not confirmed'] },
+  'C-10471': { balance: '$684.20 arrears', plan: 'Everyday Energy', behaviour: '3 missed payments · 62 days', contact: 'Phone · mornings', detail: 'Billing complaint remains open', missing: ['Complaint outcome pending', 'Household expenses not confirmed'] },
+  'C-10455': { balance: '$1,146.80 unbilled', plan: 'Residential Flex', behaviour: '14-month meter exception', contact: 'Email', detail: 'Meter configuration error suspected', missing: ['Actual-read sequence requires confirmation', 'Correction amount not approved'] },
+  'C-10502': { balance: '$428.10 deemed usage', plan: 'Deemed supply', behaviour: 'Consumption since 18 June', contact: 'Premises letter', detail: 'Occupant identity unknown', missing: ['Occupant identity', 'Confirmed move-in date', 'Direct contact not established'] },
+  'C-10444': { balance: '$0.00', plan: 'Assisted Essentials', behaviour: 'Plan maintained · 9 months', contact: 'SMS', detail: 'Support exit review due', missing: ['Customer view on program exit', '60-day check-in preference'] },
+  'C-10510': { balance: '$238.70 current', plan: 'SME Flex', behaviour: 'New account · validation paused', contact: 'Business email', detail: 'ABN and legal name mismatch', missing: ['Authoritative ABN extract', 'Authorised contact confirmation'] },
+  'C-10437': { balance: '$42.10 credit', plan: 'Standard Flexi', behaviour: 'Stable · 12 months', contact: 'Phone · afternoons', detail: 'Potential saving $11/month', missing: ['Verbal consent not captured'] },
+  'C-10489': { balance: '$2,408.55 unbilled', plan: 'Home Time-of-Use', behaviour: '11-month billing gap', contact: 'Phone', detail: 'Estimated-read substitution found', missing: ['Customer-fault assessment', 'Final recovery calculation'] },
+  'C-10521': { balance: '$527.30 arrears', plan: 'Basic Home', behaviour: '2 missed payments · 38 days', contact: 'Arabic interpreter requested', detail: 'CRM synchronisation incomplete', missing: ['Latest CRM notes unavailable', 'Interpreter booking not confirmed'] },
+  'C-10466': { balance: '$119.80 current', plan: 'Residential Saver', behaviour: 'New concession request', contact: 'Email', detail: 'Card number does not validate', missing: ['Current concession-card evidence', 'Consent to recheck eligibility'] },
+  'C-10515': { balance: '$73.20 current', plan: 'Evening Plus', behaviour: 'Stable · 12 months', contact: 'App notification', detail: 'Potential saving $9/month', missing: ['In-app consent pending', 'Effective date not selected'] },
+};
+
+const HARDSHIP_INPUTS = {
+  'C-10482': { debtAge: '45 days', offer: 'Assisted Essentials', saving: '$18/month', optOut: 'No opt-out recorded', contact: 'Silent - last SMS unanswered' },
+  'C-10471': { debtAge: '62 days', offer: 'Essential Saver', saving: '$21/month', optOut: 'No opt-out recorded', contact: 'Silent - outbound contact required' },
+  'C-10444': { debtAge: '0 days', offer: 'Assisted Essentials', saving: 'Current plan remains best', optOut: 'No opt-out recorded', contact: 'Check-in completed 22 July' },
+  'C-10437': { debtAge: '0 days', offer: 'Essential Saver', saving: '$11/month', optOut: 'No opt-out recorded', contact: 'Consent outstanding' },
+  'C-10521': { debtAge: '38 days', offer: 'Home Support', saving: '$16/month', optOut: 'Unknown - CRM sync incomplete', contact: 'Interpreter-assisted contact required' },
+  'C-10515': { debtAge: '0 days', offer: 'Everyday Saver', saving: '$9/month', optOut: 'Pending verification', contact: 'In-app response pending' },
+};
+
+const RECONCILIATION_INPUTS = {
+  'C-10496': [['CRM', 'Plan preference differs from billing', 'Customer master'], ['Billing', 'Home Saver active', 'Billing ledger'], ['Pricing', '$14/month lower offer identified', 'Pricing engine'], ['Communications', 'Switch consent not recorded', 'Consent register']],
+  'C-10455': [['Metering', 'Read sequence contains substitution', 'Meter data platform'], ['Billing', '14-month exception', 'Billing ledger'], ['CRM', 'No customer-fault indication', 'Customer master'], ['Account', 'Configuration requires correction', 'Product catalogue']],
+  'C-10502': [['Identity', 'Occupant is unknown', 'Verified identity record'], ['Service address', '14 Merri Pde', 'Market address register'], ['Billing', '$428.10 deemed usage', 'Billing ledger'], ['Communications', 'Direct contact not established', 'Contact history']],
+  'C-10510': [['CRM', 'Trading name recorded', 'Customer master'], ['Identity', 'Legal name differs', 'ABN register'], ['Billing', 'Activation paused', 'Billing ledger'], ['Communications', 'Authorised contact unconfirmed', 'Contact history']],
+  'C-10489': [['Metering', 'Estimated-read substitution', 'Meter data platform'], ['Billing', '11-month gap', 'Billing ledger'], ['CRM', 'Customer-fault assessment missing', 'Customer master'], ['Pricing', 'Recovery amount not final', 'Billing calculation engine']],
+  'C-10466': [['CRM', 'Concession requested', 'Customer master'], ['Identity', 'Card number does not validate', 'Eligibility service'], ['Billing', 'Benefit not applied', 'Billing ledger'], ['Communications', 'Recheck consent required', 'Consent register']],
+};
+
+function hardshipDecisionInputs(item, profile) {
+  const input = HARDSHIP_INPUTS[item.id];
+  return [
+    ['Hardship status', item.status === 'Monitoring' ? 'Existing arrangement' : 'Assessment required', 'Hardship register', 'Review'],
+    ['Debt exposure', `${profile.balance} · ${input.debtAge}`, 'Billing ledger', 'Verified'],
+    ['Opt-out status', input.optOut, 'Consent register', input.optOut.startsWith('No ') ? 'Verified' : 'Confirm'],
+    ['Customer engagement', input.contact, 'Communications', input.contact.startsWith('Silent') ? 'Attention' : 'Review'],
+    ['Current plan', profile.plan, 'Product catalogue', 'Verified'],
+    ['Best available plan', `${input.offer} - ${input.saving}`, 'Pricing engine', 'Verified'],
+  ];
+}
+
+function reconciliationDecisionInputs(item) {
+  return RECONCILIATION_INPUTS[item.id].map(([system, value, authority]) => [system, value, authority, 'Conflict']);
+}
+
+function buildCase(item, index) {
+  const template = WORKFLOW_CASES[item.workflow];
+  const profile = CASE_PROFILES[item.id];
+  const evidence = 6 + (index % 3);
+  const version = item.policy.match(/v\d+(?:\.\d+)?/i)?.[0] || 'current';
+  const isHardship = item.workflow === 'Hardship & Best Offer';
+  const hardship = HARDSHIP_INPUTS[item.id];
+  const decisionInputs = isHardship ? hardshipDecisionInputs(item, profile) : reconciliationDecisionInputs(item);
+  return {
+    ...item,
+    meta: `${item.id.replace('C-', 'AU-')} · ${item.state} · ${item.team}`,
+    stateLabel: `${item.state} ${item.customer.includes('Pty Ltd') ? 'small business' : 'residential'}`,
+    recommendation: template.recommendation,
+    recommendationSummary: template.summary,
+    evidenceCompletion: `${82 + (index * 3) % 17}%`,
+    confidence: `${86 + (index * 2) % 13}%`,
+    protections: template.protections,
+    policyVersion: version,
+    snapshot: [
+      ['Balance', profile.balance, item.priority === 'High' ? 'hot' : ''],
+      ['Current plan', profile.plan],
+      ['Account activity', profile.behaviour],
+      ['Contact preference', profile.contact],
+      ['Case signal', profile.detail, item.status === 'Exception found' || item.status === 'Data issue' ? 'hot' : ''],
+      ['Owning team', item.team],
+    ],
+    rules: template.rules,
+    decisionInputs,
+    sources: [
+      ...(isHardship
+        ? [['Hardship register', 'Current status and assistance history', true], ['Pricing engine', hardship.saving, true], ['Consent register', hardship.optOut, true]]
+        : [['Customer master', 'Identity and account attributes', true], ['Authoritative register', 'Source-of-truth verification', true], ['Operational system', profile.detail, true]]),
+      ['Billing ledger', profile.balance, true],
+      ['CRM and contact history', profile.contact, true],
+      ['Policy library', item.policy, true],
+      ['Previous decisions', 'Relevant account review history', true],
+      ...(evidence > 6 ? [['Workflow records', `${item.workflow} activity`, true]] : []),
+      ...(evidence > 7 ? [['External verification', 'Authoritative validation result', true]] : []),
+    ],
+    missing: profile.missing,
+    actions: template.actions.map((action) => [action, true]),
+    approvalEffects: [...template.effects, 'Freeze evidence, rules, uncertainty and officer in the audit record'],
+    outcome: template.outcome,
+    switchTrace: isHardship ? {
+      trigger: `${item.action} - best-offer duty effective 1 October`,
+      from: profile.plan,
+      to: hardship.offer,
+      saving: hardship.saving,
+      optOut: hardship.optOut,
+      effective: 'On approval under the 1 October best-offer workflow',
+    } : null,
+    sourceQuery: `For ${item.customer} in case ${item.id}, what policy obligations apply to this ${item.workflow.toLowerCase()} and what must the officer verify before deciding?`,
+  };
+}
+
+export const CASES = Object.fromEntries(QUEUE.map((item, index) => [
+  item.id,
+  item.id === AMELIA_CASE.id
+    ? {
+        ...AMELIA_CASE,
+        ...item,
+        stateLabel: 'VIC residential',
+        recommendation: 'Protect the account and move to the best available offer',
+        recommendationSummary: 'Confirm Amelia’s hardship eligibility, block adverse action and approve the $18/month lower offer using the 1 October workflow.',
+        evidenceCompletion: '94%',
+        confidence: '96%',
+        protections: 3,
+        policyVersion: 'v4.2',
+        outcome: 'Disconnection blocked · support review approved',
+        decisionInputs: hardshipDecisionInputs(item, { balance: '$312.00 arrears', plan: 'Standard Flexi' }),
+        switchTrace: { trigger: 'Silent hardship signals: two partial payments, failed direct debit and reduced work hours - best-offer duty effective 1 October', from: 'Standard Flexi', to: 'Assisted Essentials', saving: '$18/month', optOut: 'No opt-out recorded', effective: 'On officer approval under the 1 October workflow' },
+        outcome: 'Hardship protection and best-offer switch approved',
+        sourceQuery: 'For Amelia Hart, confirm hardship eligibility, the best available offer, opt-out status, and why a switch is required from 1 October.',
+      }
+    : buildCase(item, index),
+]));
+
 export const MONITORING = [
-  { customer: 'Sofia Nguyen', id: 'AU-51120', trend: [8, 7, 7, 6, 5, 4, 3, 2, 1, 0], pay: 'Consistent · 9 months', debt: '$0 — cleared', last: 'Check-in call 22 Jul', status: 'Stable', next: '14 Aug 2026', rec: 'Customer has maintained consistent payments for nine months and debt has reduced to zero. Recommend reviewing whether hardship support remains appropriate. Human review required.' },
-  { customer: 'Liam Forsyth', id: 'AU-49673', trend: [5, 5, 6, 6, 5, 6, 7, 7, 8, 8], pay: 'Deteriorating · 2 missed', debt: '$486 — rising', last: 'SMS unanswered 29 Jul', status: 'At risk', next: '8 Aug 2026', rec: 'Payment plan instalments missed twice consecutively. Recommend early re-engagement before default listing window.', hot: true },
-  { customer: 'Rosa Silva', id: 'AU-52034', trend: [6, 6, 5, 5, 5, 4, 4, 4, 3, 3], pay: 'On plan · $45/week', debt: '$188 — reducing', last: 'Plan payment 1 Aug', status: 'On track', next: '30 Sep 2026', rec: 'Arrangement performing as agreed. No change recommended.' },
-  { customer: 'Ken Watanabe', id: 'AU-50711', trend: [4, 4, 4, 5, 4, 4, 5, 5, 5, 5], pay: 'Stable · concession applied', debt: '$220 — flat', last: 'Bill issued 28 Jul', status: 'Watch', next: '21 Aug 2026', rec: 'Debt flat for three cycles despite concession. Recommend tariff review at next contact.' },
+  { customer: 'Sofia Nguyen', id: 'AU-51120', caseId: 'C-10444', trend: [8, 7, 7, 6, 5, 4, 3, 2, 1, 0], pay: 'Consistent · 9 months', debt: '$0 — cleared', last: 'Check-in call 22 Jul', status: 'Stable', next: '14 Aug 2026', confidence: 92, trigger: 'Balance cleared and arrangement maintained for nine months', rec: 'Review whether tailored assistance remains appropriate.', nextAction: 'Contact Sofia before changing support', evidence: ['9 successful monthly payments', 'Balance reduced to zero', 'No failed payments since November', 'Last check-in completed 22 July'] },
+  { customer: 'Liam Forsyth', id: 'AU-49673', trend: [5, 5, 6, 6, 5, 6, 7, 7, 8, 8], pay: 'Deteriorating · 2 missed', debt: '$486 — rising', last: 'SMS unanswered 29 Jul', status: 'At risk', next: '8 Aug 2026', confidence: 95, trigger: 'Two consecutive arrangement instalments missed', rec: 'Start an early hardship reassessment before the arrangement defaults.', nextAction: 'Attempt contact and reassess capacity to pay', evidence: ['Two consecutive missed instalments', 'Debt increased across three cycles', 'SMS unanswered on 29 July', 'Existing arrangement remains active'], hot: true },
+  { customer: 'Rosa Silva', id: 'AU-52034', trend: [6, 6, 5, 5, 5, 4, 4, 4, 3, 3], pay: 'On plan · $45/week', debt: '$188 — reducing', last: 'Plan payment 1 Aug', status: 'On track', next: '30 Sep 2026', confidence: 96, trigger: 'Arrangement performing within agreed tolerance', rec: 'Keep current support in place; no intervention is required.', nextAction: 'Continue monitoring until the scheduled review', evidence: ['All recent instalments received', 'Debt continues to reduce', 'No new vulnerability signal', 'Review already scheduled for 30 September'] },
+  { customer: 'Ken Watanabe', id: 'AU-50711', trend: [4, 4, 4, 5, 4, 4, 5, 5, 5, 5], pay: 'Stable · concession applied', debt: '$220 — flat', last: 'Bill issued 28 Jul', status: 'Watch', next: '21 Aug 2026', confidence: 84, trigger: 'Debt has remained flat for three billing cycles', rec: 'Review tariff suitability at the next customer contact.', nextAction: 'Run a best-offer comparison before 21 August', evidence: ['Concession remains active', 'Debt unchanged for three cycles', 'Payments cover current usage only', 'No tariff review in the last 12 months'] },
 ];
 
 export const AUDITS = [
-  { id: 'DEC-2026-08841', case: 'C-10390 · Harvey Lin', workflow: 'Payment Difficulty Review', outcome: 'Support approved', officer: 'P. Nair', ts: '2026-08-03 14:22', policy: 'PDF v4.2', evidence: 9, rules: 4 },
-  { id: 'DEC-2026-08836', case: 'C-10371 · Mia Torres', workflow: 'Best Offer Review', outcome: 'Plan switch approved', officer: 'D. Whitfield', ts: '2026-08-03 11:05', policy: 'BON v2.1', evidence: 6, rules: 3 },
-  { id: 'DEC-2026-08829', case: 'C-10355 · Owen Blake', workflow: 'Revenue Assurance', outcome: 'Re-bill issued', officer: 'P. Nair', ts: '2026-08-02 16:48', policy: 'BAS v3.0', evidence: 7, rules: 5 },
-  { id: 'DEC-2026-08815', case: 'C-10344 · Hana Yusuf', workflow: 'Payment Difficulty Review', outcome: 'Support declined — referred to plan', officer: 'T. Marchetti', ts: '2026-08-01 09:31', policy: 'PDF v4.2', evidence: 8, rules: 4 },
-  { id: 'DEC-2026-08802', case: 'C-10322 · Northbrook Cafe', workflow: 'Onboarding Validation', outcome: 'Account corrected', officer: 'D. Whitfield', ts: '2026-07-31 15:12', policy: 'SME v2.4', evidence: 5, rules: 3 },
+  { id: 'DEC-2026-08841', case: 'C-10390 · Harvey Lin', workflow: 'Hardship & Best Offer', outcome: 'Hardship protection and best-offer action approved', trigger: 'Silent payment-difficulty signals identified', officer: 'P. Nair', ts: '2026-08-03 14:22', policy: 'v4.2', evidence: 9, rules: 5 },
+  { id: 'DEC-2026-08836', case: 'C-10371 · Mia Torres', workflow: 'Hardship & Best Offer', outcome: 'Best-offer switch approved', trigger: 'Eligible hardship customer assessed under the 1 October workflow', officer: 'D. Whitfield', ts: '2026-08-03 11:05', policy: 'v4.2', evidence: 7, rules: 5 },
+  { id: 'DEC-2026-08829', case: 'C-10355 · Owen Blake', workflow: 'Data Quality & Reconciliation', outcome: 'Customer data reconciliation approved', trigger: 'Billing and meter records conflicted', officer: 'P. Nair', ts: '2026-08-02 16:48', policy: 'v3.0', evidence: 7, rules: 4 },
+  { id: 'DEC-2026-08815', case: 'C-10344 · Hana Yusuf', workflow: 'Hardship & Best Offer', outcome: 'Human reassessment opened', trigger: 'Arrangement performance deteriorated', officer: 'T. Marchetti', ts: '2026-08-01 09:31', policy: 'v4.2', evidence: 8, rules: 5 },
+  { id: 'DEC-2026-08802', case: 'C-10322 · Northbrook Cafe', workflow: 'Data Quality & Reconciliation', outcome: 'Customer data reconciliation approved', trigger: 'Legal name and account identity differed', officer: 'D. Whitfield', ts: '2026-07-31 15:12', policy: 'v3.0', evidence: 5, rules: 4 },
 ];
 
 export const POLICIES = [
   {
     name: 'Payment Difficulty Framework', ver: 'v4.2', eff: '1 Jul 2026',
     summary: 'Entitlements and retailer obligations for VIC customers anticipating or in payment difficulty — tailored assistance, minimum disconnection amount, contact requirements.',
-    workflows: ['Payment Difficulty Review', 'Reassessment', 'Monitoring'],
+    workflows: ['Hardship & Best Offer', 'Continuous Monitoring'],
     change: 'Minimum disconnection amount raised $300 → $500. 14 open cases re-evaluated; 2 recommendations changed.',
     hot: true,
   },
   {
     name: 'Best Offer Notice', ver: 'v2.1', eff: '1 Apr 2026',
     summary: 'Quarterly best-offer check: identify cheapest available plan for the customer\'s usage and disclose on the bill; switch on request with explicit consent.',
-    workflows: ['Best Offer Review', 'Monitoring'],
+    workflows: ['Hardship & Best Offer', 'Continuous Monitoring'],
     change: 'Comparison window extended to 12 months of interval data.',
   },
   {
     name: 'Billing Accuracy Standard', ver: 'v3.0', eff: '15 May 2026',
     summary: 'Controls for unbilled energy, estimated reads and re-billing; caps back-billing at 9 months absent customer fault.',
-    workflows: ['Revenue Assurance'],
+    workflows: ['Data Quality & Reconciliation'],
     change: 'Back-billing cap reduced from 12 to 9 months.',
   },
   {
     name: 'Move-in Deemed Supply', ver: 'v1.8', eff: '20 Feb 2026',
     summary: 'Handling unknown occupants consuming energy without an account — contact sequence, deemed contract terms, disconnection safeguards.',
-    workflows: ['Unknown Consumer'],
+    workflows: ['Data Quality & Reconciliation'],
     change: 'No changes this quarter.',
   },
   {
     name: 'Concession Verification', ver: 'v3.1', eff: '1 Jul 2026',
     summary: 'Centrelink card verification flow, retrospective application windows and annual revalidation.',
-    workflows: ['Onboarding Validation', 'Payment Difficulty Review'],
+    workflows: ['Data Quality & Reconciliation', 'Hardship & Best Offer'],
     change: 'Annual revalidation moved to rolling anniversary date.',
   },
 ];
 
 export const ANALYTICS = {
   kpis: [
-    ['Average investigation time', '6.4 min', 'was 41 min manual', 'good'],
-    ['Manual review workload', '37 open', '12% below 4-week avg', 'good'],
-    ['Cases awaiting approval', '9', '2 overdue > 48h', 'warn'],
-    ['Hardship detection lead time', '11 days', 'before first missed bill', 'good'],
-    ['Cases reassessed this month', '64', '22 currently overdue', 'warn'],
-    ['Evidence completeness', '91%', 'median across open cases', 'good'],
-    ['Decision turnaround', '1.8 days', 'queue entry → approval', 'good'],
-    ['Policy changes this month', '2', '14 cases re-evaluated', null],
+    ['Data conflicts open', '6', 'across CRM, billing and identity', 'warn'],
+    ['Reconciliations completed', '28', 'this week', 'good'],
+    ['Silent customers identified', '12', 'before proactive contact', 'good'],
+    ['Best-offer switches approved', '9', '$14 average monthly saving', 'good'],
+    ['Hardship reviews due', '2', 'one account currently at risk', 'warn'],
+    ['Support plans reassessed', '64', 'this month', 'good'],
   ],
-  workload: [42, 38, 45, 40, 37, 33, 37],
-  detection: [26, 22, 19, 17, 14, 12, 11],
+  workload: [12, 11, 10, 9, 8, 7, 6],
+  detection: [3, 4, 5, 7, 8, 10, 12],
 };

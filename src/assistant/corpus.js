@@ -1,8 +1,10 @@
+import REGULATION_DOCS from './regulations.generated.js';
+
 // The ask-your-documents corpus, mirrored from compliance-drift/scripts-gen-docs.mjs.
 // Page numbers follow the generator's pageBreak layout so citations returned by
 // the model land on the page the viewer actually renders.
 
-export const DOCS = [
+const CURATED_DOCS = [
   {
     id: 'aer-2026',
     title: 'AER (Retail Law) Instrument 2026',
@@ -80,11 +82,74 @@ export const DOCS = [
   }
 ];
 
-/** The corpus rendered for the system prompt: every quotable clause, tagged. */
-export function corpusPrompt() {
-  return DOCS.map((d) =>
-    `### ${d.title} (doc id: ${d.id})\nJurisdiction: ${d.scope}\n` +
-    d.sections.map((s) => `[page ${s.page} · ${s.ref}] ${s.text}`).join('\n')
+const CURATED_IDS = new Set(CURATED_DOCS.map((doc) => doc.id));
+export const DOCS = [
+  ...CURATED_DOCS,
+  ...REGULATION_DOCS.filter((doc) => !CURATED_IDS.has(doc.id)),
+];
+
+const EXPANSIONS = {
+  disconnect: ['disconnection', 'de-energisation', 'de energisation', 'arrears', 'warning notice', 'minimum amount'],
+  hardship: ['payment difficulty', 'tailored assistance', 'hardship', 'vulnerable', 'financial difficulty'],
+  silent: ['proactive', 'early identification', 'payment difficulty', 'missed payment', 'failed payment'],
+  switch: ['best offer', 'better offer', 'retail offer', 'explicit informed consent', 'tariff'],
+  'best offer': ['best offer', 'better offer', 'retail offer', 'tariff', 'switch'],
+  consent: ['explicit informed consent', 'consent', 'opt out', 'opt-out'],
+  billing: ['bill', 'billing', 'undercharge', 'overcharge', 'estimated read', 'meter data'],
+  reconcile: ['reconcile', 'data quality', 'record', 'information', 'billing error'],
+  monitor: ['monitor', 'review', 'reassess', 'arrangement', 'ongoing assistance'],
+  vulnerable: ['vulnerable', 'family violence', 'payment difficulty', 'hardship', 'life support'],
+};
+
+const STOP_WORDS = new Set(['about', 'after', 'before', 'could', 'does', 'from', 'have', 'into', 'should', 'their', 'there', 'these', 'they', 'this', 'what', 'when', 'where', 'which', 'with', 'would', 'officer', 'customer']);
+
+function queryTerms(query) {
+  const text = String(query || '').toLowerCase();
+  const terms = new Set((text.match(/[a-z0-9$-]{3,}/g) || []).filter((term) => !STOP_WORDS.has(term)));
+  for (const [trigger, additions] of Object.entries(EXPANSIONS)) {
+    if (text.includes(trigger)) additions.forEach((term) => terms.add(term));
+  }
+  return [...terms];
+}
+
+/** Rank original PDF pages locally so only relevant evidence enters the model context. */
+export function retrieveSections(query, limit = 12) {
+  const terms = queryTerms(query);
+  const ranked = [];
+  for (const doc of DOCS) {
+    const title = `${doc.title} ${doc.scope}`.toLowerCase();
+    for (const section of doc.sections) {
+      const text = section.text.toLowerCase();
+      let score = 0;
+      for (const term of terms) {
+        if (title.includes(term)) score += 8;
+        const occurrences = text.split(term).length - 1;
+        score += Math.min(occurrences, 5) * (term.includes(' ') ? 5 : 2);
+      }
+      if (score > 0 && CURATED_IDS.has(doc.id)) score += 6;
+      if (score > 0) ranked.push({ doc, section, score });
+    }
+  }
+  const selected = [];
+  const perDocument = new Map();
+  for (const hit of ranked.sort((a, b) => b.score - a.score || a.section.page - b.section.page)) {
+    const count = perDocument.get(hit.doc.id) || 0;
+    if (count >= 3) continue;
+    selected.push(hit);
+    perDocument.set(hit.doc.id, count + 1);
+    if (selected.length === limit) break;
+  }
+  return selected;
+}
+
+/** Render retrieved evidence with stable ids and original PDF page numbers. */
+export function corpusPrompt(selected) {
+  const rows = Array.isArray(selected)
+    ? selected
+    : DOCS.flatMap((doc) => doc.sections.map((section) => ({ doc, section })));
+  return rows.map(({ doc, section }) =>
+    `### ${doc.title} (doc id: ${doc.id})\nJurisdiction: ${doc.scope}\n` +
+    `[page ${section.page} · ${section.ref}] ${section.text}`
   ).join('\n\n');
 }
 

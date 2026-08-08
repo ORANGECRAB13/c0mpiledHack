@@ -4,6 +4,7 @@ import { DOC_META } from '../data/askdocs.js';
 import { askLive, assistantStatus } from '../data/assistantApi.js';
 import { loadChat, saveChat, toHistory } from '../data/chatStore.js';
 import PdfViewer from '../components/PdfViewer.jsx';
+import VoiceCapture from '../components/VoiceCapture.jsx';
 
 // The assistant page: a real chat over the internal compliance corpus.
 // Questions go to the backend model (/api/assistant/ask); every citation the
@@ -38,8 +39,8 @@ export default function Assistant() {
     setTarget({ ...cite, key: seq.current });
   };
 
-  async function send() {
-    const q = input.trim();
+  async function send(voiceText = null) {
+    const q = String(voiceText ?? input).trim();
     if (!q || busy) return;
     setInput('');
     const history = toHistory(messages);
@@ -139,7 +140,8 @@ export default function Assistant() {
             onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
             disabled={busy}
           />
-          <button className="chat-send" onClick={send} disabled={busy || !input.trim()} aria-label="Send">
+          <VoiceCapture className="chat-mic" onTranscript={(text) => send(text)} />
+          <button className="chat-send" onClick={() => send()} disabled={busy || !input.trim()} aria-label="Send">
             <Icon name="chevR" size={15} />
           </button>
         </div>

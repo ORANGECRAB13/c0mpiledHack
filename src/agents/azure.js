@@ -23,6 +23,15 @@ const config = {
   model: process.env.AZURE_NEW_AGENT_DEPLOYMENT || 'gpt-oss-120b'
 };
 
+function chatCompletionsUrl() {
+  // Foundry supplies a project endpoint such as
+  // https://resource.services.ai.azure.com/api/projects/project-name. Model
+  // inference lives at the resource root, not beneath the project path.
+  const url = new URL('/models/chat/completions', config.endpoint);
+  url.searchParams.set('api-version', API_VERSION);
+  return url.toString();
+}
+
 export function agentModelConfigured() {
   return Boolean(config.endpoint && config.apiKey);
 }
@@ -45,7 +54,7 @@ export async function complete(messages, { maxTokens = 1600, temperature = 0.2, 
     throw new Error('AZURE_NEW_ENDPOINT and AZURE_NEW_KEY are required for the proprietary agent tier.');
   }
 
-  const response = await fetch(`${config.endpoint}/models/chat/completions?api-version=${API_VERSION}`, {
+  const response = await fetch(chatCompletionsUrl(), {
     method: 'POST',
     headers: { 'api-key': config.apiKey, 'Content-Type': 'application/json' },
     body: JSON.stringify({
