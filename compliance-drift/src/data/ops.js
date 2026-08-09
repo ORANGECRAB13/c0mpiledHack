@@ -122,11 +122,33 @@ const AMELIA_CASE = {
       },
       savings: ['Switching saves ', '$216 a year', ' and clears the $312 arrears over 14 months at the existing payment rate.'],
     },
+    metrics: [
+      ['Current arrears', '$312.00'],
+      ['Change this cycle', '+$104', 'hot'],
+      ['Missed payments', '3 of 12'],
+      ['Debt age', '45 days'],
+    ],
     evidence: {
-      'Billing': { synced: '4 min ago', rows: [['Account balance', '$312.00 in arrears'], ['Age of debt', '45 days'], ['Last payment', '$60.00 · 12 Sep 2026'], ['Payment plan', 'None active'], ['Billing cycle', 'Monthly · issued 1st']] },
-      'CRM': { synced: '12 min ago', rows: [['Employment note', 'Reduced work hours · 24 Jun'], ['Sensitive marker', 'Detected — handle per FDV policy'], ['Contact preference', 'SMS · after 5pm'], ['Tenure', '4.2 years']] },
-      'Communications': { synced: '1 hr ago', rows: [['Last outbound', 'SMS 14 Jul — no reply'], ['Last inbound', 'Nothing in 60 days'], ['Preferred window', 'After 5pm']] },
-      'Payment History': { synced: '4 min ago', rows: [['24-month record', 'Deterioration from May'], ['Average payment', '$123.83'], ['Failed direct debits', '1 — 28 June'], ['Partial payments', '2 in 45 days']] },
+      'Billing': {
+        synced: 'Synced 4 min ago',
+        rows: [['Account balance', '$312.00 in arrears'], ['Age of debt', '45 days'], ['Last payment', '$60.00 · 12 Sep 2026'], ['Payment plan', 'None active'], ['Billing cycle', 'Monthly · issued 1st']],
+        note: 'Arrears sit below the minimum disconnection amount, so adverse action is blocked.',
+      },
+      'CRM': {
+        synced: 'Synced 4 min ago',
+        rows: [['Customer since', 'March 2019'], ['Segment', 'VIC residential'], ['Life support', 'Not registered'], ['Hardship register', 'Assessment required'], ['Open cases', '1 · C-10482']],
+        note: 'No hardship assessment has been completed on file. This is the gap the review must close.',
+      },
+      'Communications': {
+        synced: 'Synced 11 min ago',
+        rows: [['Last outbound', 'SMS · 28 Sep 2026'], ['Response', 'None'], ['Attempts (90 days)', '4 SMS · 2 calls'], ['Preferred channel', 'SMS'], ['Opt-out', 'No opt-out recorded']],
+        note: 'Four unanswered contacts in 90 days. Treat engagement status as silent, not refused.',
+      },
+      'Payment History': {
+        synced: 'Synced 4 min ago',
+        rows: [['12-month total', '$1,486.00'], ['On-time payments', '9 of 12'], ['Missed', '3 · Jul, Aug, Sep 2026'], ['Average payment', '$123.83'], ['Direct debit', 'Cancelled 4 Jul 2026']],
+        note: 'Payment behaviour was stable until July. The pattern is consistent with recent hardship.',
+      },
     },
   },
 };

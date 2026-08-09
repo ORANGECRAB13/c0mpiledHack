@@ -100,9 +100,9 @@ export default function CaseWorkspace({
   const [modal, setModal] = useState(false);
   const [proofOpen, setProofOpen] = useState(false);
   const [proofQuery, setProofQuery] = useState(caseData.sourceQuery);
-  // 'trend' is the landing view (narrative + chart, per the design);
-  // 'Back to recommendation' swaps in the recommendation + decision checks.
-  const [view, setView] = useState('trend');
+  // The left half of the top card cross-fades: 'recommendation' (default)
+  // ⇄ 'trend'. The chart on the right never moves (per the design reference).
+  const [view, setView] = useState('recommendation');
   const customer = caseData;
   const profile = buildProfile(customer);
   const systems = Object.keys(profile.evidence);
@@ -118,7 +118,7 @@ export default function CaseWorkspace({
   useEffect(() => {
     setModal(false);
     setProofOpen(false);
-    setView('trend');
+    setView('recommendation');
     setProofQuery(customer.sourceQuery);
     setActiveSystem(Object.keys(buildProfile(customer).evidence)[0]);
   }, [customer.id]);
@@ -163,62 +163,54 @@ export default function CaseWorkspace({
         </div>
       )}
 
-      {view === 'trend' ? (
-        /* ── debt trend analysis (drill-in) ── */
-        <section className="profile-card trend-card">
-          <div className="trend-narrative">
-            <div className="profile-card-h">Debt trend analysis <span className="engine-chip">12 months</span></div>
-            {profile.trendAnalysis.map(([title, body], i) => (
-              <div className="trend-point" key={title}>
-                <span className="trend-n">{String(i + 1).padStart(2, '0')}</span>
-                <div><b>{title}</b><p>{body}</p></div>
-              </div>
-            ))}
-          </div>
-          <div className="trend-viz">
-            <div className="trend-viz-h"><span>Debt trend</span><small>{profile.trend.caption}</small></div>
-            <TrendChart trend={profile.trend} />
-            <button className="btn-ghost" onClick={() => setView('recommendation')}>
-              Back to recommendation
-            </button>
-          </div>
-        </section>
-      ) : (
-        /* ── recommendation (landing view) ── */
-        <section className="profile-card">
-          <div className="recommendation-topline">
-            <span className="decision-label">Recommendation</span>
-            <span className="schip wait">Human review required</span>
-          </div>
-          <div className="decision-fallback" style={{ marginTop: 10 }}>
-            <h2>{customer.recommendation}</h2>
-            <p>{customer.recommendationSummary}</p>
-            <div className="recommendation-next"><span>Next action</span>{customer.action}</div>
-            <div className="recommendation-meta">
-              <span><b>{customer.confidence}</b> decision confidence</span>
+      {/* ── top card: recommendation ⇄ trend narrative on the left, chart fixed right ── */}
+      <section className="profile-card reco-card">
+        <div className="reco-left">
+          <div className={`reco-face ${view === 'trend' ? 'hidden' : ''}`}>
+            <div className="reco-topline">
+              <span className="decision-label">Recommendation</span>
+              <span className="schip wait">Human review required</span>
+            </div>
+            <h2 className="reco-title">{customer.recommendation}</h2>
+            <p className="reco-summary">{customer.recommendationSummary}</p>
+            <div className="reco-meta">
+              <span><b>{customer.confidence}</b> confidence</span>
               <span><b>{customer.sources.length}</b> evidence sources</span>
-              <span><b>{customer.policyVersion}</b> policy version</span>
+              <span><b>{customer.policyVersion}</b> policy</span>
             </div>
           </div>
-          <div className="trend-open">
-            <button className="btn-ghost" onClick={() => setView('trend')}>
-              <Icon name="activity" size={14} /> Debt trend analysis
-            </button>
+
+          <div className={`reco-face ${view === 'trend' ? '' : 'hidden'}`}>
+            <div className="reco-topline">
+              <span className="decision-label">Debt trend analysis</span>
+              <span className="schip wait">12 months</span>
+            </div>
+            <div className="trend-points">
+              {profile.trendAnalysis.map(([title, body], i) => (
+                <div className="trend-point" key={title}>
+                  <span className="trend-n">{String(i + 1).padStart(2, '0')}</span>
+                  <div><b>{title}</b><p>{body}</p></div>
+                </div>
+              ))}
+            </div>
+            {profile.metrics && (
+              <div className="reco-meta trend-metrics">
+                {profile.metrics.map(([k, v, tone]) => (
+                  <span key={k}><b className={tone === 'hot' ? 'hot' : ''}>{v}</b> {k}</span>
+                ))}
+              </div>
+            )}
           </div>
-          <div style={{ marginTop: 18 }}>
-            <div className="profile-card-h">Decision checks <span className="engine-chip">{customer.rules.length} checks</span></div>
-            {customer.rules.map(([name, verdict, tone, reason]) => (
-              <details className="decision-check" key={name}>
-                <summary>
-                  <span className="nm">{name}</span>
-                  <span className={`vchip ${tone}`}>{verdict}</span>
-                </summary>
-                <p>{reason}</p>
-              </details>
-            ))}
-          </div>
-        </section>
-      )}
+        </div>
+
+        <div className="reco-chart">
+          <div className="trend-viz-h"><span>Debt trend</span><small>{profile.trend.caption}</small></div>
+          <TrendChart trend={profile.trend} />
+          <button className="btn-ghost" onClick={() => setView(view === 'trend' ? 'recommendation' : 'trend')}>
+            {view === 'trend' ? 'Back to recommendation' : 'Debt trend analysis'}
+          </button>
+        </div>
+      </section>
 
       {/* ── the decision ── */}
       <section className="profile-card decision-card" ref={decisionRef}>
@@ -265,8 +257,23 @@ export default function CaseWorkspace({
             {active.rows.map(([k, v]) => (
               <div className="evidence-row" key={k}><span>{k}</span><b>{v}</b></div>
             ))}
+            {active.note && <p className="evidence-note">{active.note}</p>}
           </div>
         </div>
+      </section>
+
+      {/* ── decision checks ── */}
+      <section className="profile-card">
+        <div className="profile-card-h serif">Decision checks <small>{customer.rules.length} checks</small></div>
+        {customer.rules.map(([name, verdict, tone, reason]) => (
+          <details className="decision-check" key={name}>
+            <summary>
+              <span className="nm">{name}</span>
+              <span className={`vchip ${tone}`}>{verdict}</span>
+            </summary>
+            <p>{reason}</p>
+          </details>
+        ))}
       </section>
 
       {modal && (
