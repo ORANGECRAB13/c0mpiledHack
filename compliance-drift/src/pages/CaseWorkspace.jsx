@@ -100,6 +100,8 @@ export default function CaseWorkspace({
   const [modal, setModal] = useState(false);
   const [proofOpen, setProofOpen] = useState(false);
   const [proofQuery, setProofQuery] = useState(caseData.sourceQuery);
+  // 'recommendation' is the landing view; 'trend' is the debt-trend drill-in.
+  const [view, setView] = useState('recommendation');
   const customer = caseData;
   const profile = buildProfile(customer);
   const systems = Object.keys(profile.evidence);
@@ -115,6 +117,7 @@ export default function CaseWorkspace({
   useEffect(() => {
     setModal(false);
     setProofOpen(false);
+    setView('recommendation');
     setProofQuery(customer.sourceQuery);
     setActiveSystem(Object.keys(buildProfile(customer).evidence)[0]);
   }, [customer.id]);
@@ -159,25 +162,62 @@ export default function CaseWorkspace({
         </div>
       )}
 
-      {/* ── debt trend analysis ── */}
-      <section className="profile-card trend-card">
-        <div className="trend-narrative">
-          <div className="profile-card-h">Debt trend analysis <span className="engine-chip">12 months</span></div>
-          {profile.trendAnalysis.map(([title, body], i) => (
-            <div className="trend-point" key={title}>
-              <span className="trend-n">{String(i + 1).padStart(2, '0')}</span>
-              <div><b>{title}</b><p>{body}</p></div>
+      {view === 'trend' ? (
+        /* ── debt trend analysis (drill-in) ── */
+        <section className="profile-card trend-card">
+          <div className="trend-narrative">
+            <div className="profile-card-h">Debt trend analysis <span className="engine-chip">12 months</span></div>
+            {profile.trendAnalysis.map(([title, body], i) => (
+              <div className="trend-point" key={title}>
+                <span className="trend-n">{String(i + 1).padStart(2, '0')}</span>
+                <div><b>{title}</b><p>{body}</p></div>
+              </div>
+            ))}
+          </div>
+          <div className="trend-viz">
+            <div className="trend-viz-h"><span>Debt trend</span><small>{profile.trend.caption}</small></div>
+            <TrendChart trend={profile.trend} />
+            <button className="btn-ghost" onClick={() => setView('recommendation')}>
+              Back to recommendation
+            </button>
+          </div>
+        </section>
+      ) : (
+        /* ── recommendation (landing view) ── */
+        <section className="profile-card">
+          <div className="recommendation-topline">
+            <span className="decision-label">Recommendation</span>
+            <span className="schip wait">Human review required</span>
+          </div>
+          <div className="decision-fallback" style={{ marginTop: 10 }}>
+            <h2>{customer.recommendation}</h2>
+            <p>{customer.recommendationSummary}</p>
+            <div className="recommendation-next"><span>Next action</span>{customer.action}</div>
+            <div className="recommendation-meta">
+              <span><b>{customer.confidence}</b> decision confidence</span>
+              <span><b>{customer.sources.length}</b> evidence sources</span>
+              <span><b>{customer.policyVersion}</b> policy version</span>
             </div>
-          ))}
-        </div>
-        <div className="trend-viz">
-          <div className="trend-viz-h"><span>Debt trend</span><small>{profile.trend.caption}</small></div>
-          <TrendChart trend={profile.trend} />
-          <button className="btn-ghost" onClick={() => decisionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
-            Back to recommendation
-          </button>
-        </div>
-      </section>
+          </div>
+          <div className="trend-open">
+            <button className="btn-ghost" onClick={() => setView('trend')}>
+              <Icon name="activity" size={14} /> Debt trend analysis
+            </button>
+          </div>
+          <div style={{ marginTop: 18 }}>
+            <div className="profile-card-h">Decision checks <span className="engine-chip">{customer.rules.length} checks</span></div>
+            {customer.rules.map(([name, verdict, tone, reason]) => (
+              <details className="decision-check" key={name}>
+                <summary>
+                  <span className="nm">{name}</span>
+                  <span className={`vchip ${tone}`}>{verdict}</span>
+                </summary>
+                <p>{reason}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── the decision ── */}
       <section className="profile-card decision-card" ref={decisionRef}>

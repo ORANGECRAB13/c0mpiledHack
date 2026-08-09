@@ -847,6 +847,7 @@ h1.display {
   background: #F3F4EF; border-radius: 10px; padding: 11px 15px; font-size: 13px; color: var(--t2);
 }
 .savings-banner b { color: var(--t1); }
+.trend-open { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
 .decision-fallback h2 { font-family: var(--serif, Georgia, serif); font-size: 22px; margin: 0 0 6px; }
 .decision-fallback p { font-size: 13.5px; color: var(--t2); margin: 0 0 10px; }
 
