@@ -97,6 +97,38 @@ const AMELIA_CASE = {
     'Schedule the 90-day review',
     'Freeze evidence, rules, uncertainty and officer in the audit record',
   ],
+  profile: {
+    trendAnalysis: [
+      ['Debt began in July', 'Twelve months of on-time payments until 4 July, when the direct debit was cancelled. Arrears have accrued in every cycle since.'],
+      ['$312 over 45 days, still rising', 'Balance grew $104 in the last cycle. At the current rate it passes the $1,000 VIC disconnection floor in early March.'],
+      ['Affordability, not avoidance', 'Average payment held at $123.83 across the year. The $124 hardship offer sits inside what this customer has consistently paid.'],
+    ],
+    trend: {
+      months: ['O', 'N', 'D', 'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S'],
+      values: [4, 4, 4, 4, 4, 4, 4, 4, 4, 64, 208, 312],
+      threshold: 1000,
+      thresholdLabel: '$1,000 threshold',
+      caption: 'Arrears balance, 12 months',
+    },
+    decision: {
+      effective: 'Effective 1 October',
+      current: {
+        label: 'Current plan', name: 'Standard Flexi', price: '$142', per: '/mo',
+        rows: [['Usage rate', '28.4c/kWh'], ['Daily supply', '$1.12'], ['Discount', 'None'], ['Exit fee', '$0']],
+      },
+      best: {
+        label: 'Best available', name: 'Hardship Saver', price: '$124', per: '/mo', delta: '−$18/mo', recommended: true,
+        rows: [['Usage rate', '24.1c/kWh'], ['Daily supply', '$0.98'], ['Discount', 'Hardship 12%'], ['Exit fee', '$0']],
+      },
+      savings: ['Switching saves ', '$216 a year', ' and clears the $312 arrears over 14 months at the existing payment rate.'],
+    },
+    evidence: {
+      'Billing': { synced: '4 min ago', rows: [['Account balance', '$312.00 in arrears'], ['Age of debt', '45 days'], ['Last payment', '$60.00 · 12 Sep 2026'], ['Payment plan', 'None active'], ['Billing cycle', 'Monthly · issued 1st']] },
+      'CRM': { synced: '12 min ago', rows: [['Employment note', 'Reduced work hours · 24 Jun'], ['Sensitive marker', 'Detected — handle per FDV policy'], ['Contact preference', 'SMS · after 5pm'], ['Tenure', '4.2 years']] },
+      'Communications': { synced: '1 hr ago', rows: [['Last outbound', 'SMS 14 Jul — no reply'], ['Last inbound', 'Nothing in 60 days'], ['Preferred window', 'After 5pm']] },
+      'Payment History': { synced: '4 min ago', rows: [['24-month record', 'Deterioration from May'], ['Average payment', '$123.83'], ['Failed direct debits', '1 — 28 June'], ['Partial payments', '2 in 45 days']] },
+    },
+  },
 };
 
 const WORKFLOW_CASES = {
