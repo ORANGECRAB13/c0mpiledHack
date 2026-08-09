@@ -3,6 +3,7 @@ import AskOverlay from './AskOverlay.jsx';
 import { Icon, Mark } from '../icons.jsx';
 import { useProductAssistant } from '../product/AssistantContext.jsx';
 import { startLiveVoice, stopLiveVoice, sendToolResult, isLive } from '../voice/liveVoice.js';
+import { apiUrl } from '../data/apiBase.js';
 
 /* ── expanded workspace sidebar (Frameworks / Requires attention / etc.) ── */
 export function Sidebar({ page, go }) {
@@ -262,7 +263,7 @@ export function AskBar() {
         setVoiceState('processing');
         setVoiceMessage('Transcribing with ElevenLabs…');
         try {
-          const response = await fetch('/api/assistant/transcribe', {
+          const response = await fetch(apiUrl('/api/assistant/transcribe'), {
             method: 'POST',
             headers: { 'Content-Type': audio.type || 'audio/webm' },
             body: audio

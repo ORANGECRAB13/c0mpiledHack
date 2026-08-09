@@ -3,14 +3,16 @@
 // The overlay and Assistant page surface backend failures honestly; no canned
 // response is substituted for a model answer.
 
+import { apiUrl } from './apiBase.js';
+
 export async function assistantStatus() {
-  const r = await fetch('/api/assistant/status');
+  const r = await fetch(apiUrl('/api/assistant/status'));
   if (!r.ok) throw new Error(`status ${r.status}`);
   return r.json();
 }
 
 export async function askLive(question, history = []) {
-  const r = await fetch('/api/assistant/ask', {
+  const r = await fetch(apiUrl('/api/assistant/ask'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ question, history })

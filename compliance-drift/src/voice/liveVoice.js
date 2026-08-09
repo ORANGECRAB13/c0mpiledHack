@@ -3,6 +3,8 @@
 // the difference is the endpoint and that `tool` events are executed against
 // the running UI by the caller, which replies via sendToolResult().
 
+import { wsUrl } from '../data/apiBase.js';
+
 const SAMPLE_RATE = 24000;
 
 let ws = null;
@@ -97,8 +99,7 @@ export async function startLiveVoice(onEvent) {
   micStream = await navigator.mediaDevices.getUserMedia({
     audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true }
   });
-  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-  ws = new WebSocket(`${proto}://${location.host}/api/voice/officer`);
+  ws = new WebSocket(wsUrl('/api/voice/officer'));
 
   ws.onopen = () => {
     const node = audioContext.createMediaStreamSource(micStream);
