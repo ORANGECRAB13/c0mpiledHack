@@ -1,9 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd compliance-drift && npm install",
-  "buildCommand": "cd compliance-drift && npm run build",
-  "outputDirectory": "compliance-drift/dist",
-  "rewrites": [
-    { "source": "/((?!api/|docs/|assets/).*)", "destination": "/index.html" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "compliance-drift/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(?!api/).*", "dest": "/index.html" }
   ]
 }
