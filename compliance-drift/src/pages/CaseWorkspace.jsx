@@ -100,8 +100,9 @@ export default function CaseWorkspace({
   const [modal, setModal] = useState(false);
   const [proofOpen, setProofOpen] = useState(false);
   const [proofQuery, setProofQuery] = useState(caseData.sourceQuery);
-  // 'recommendation' is the landing view; 'trend' is the debt-trend drill-in.
-  const [view, setView] = useState('recommendation');
+  // 'trend' is the landing view (narrative + chart, per the design);
+  // 'Back to recommendation' swaps in the recommendation + decision checks.
+  const [view, setView] = useState('trend');
   const customer = caseData;
   const profile = buildProfile(customer);
   const systems = Object.keys(profile.evidence);
@@ -117,7 +118,7 @@ export default function CaseWorkspace({
   useEffect(() => {
     setModal(false);
     setProofOpen(false);
-    setView('recommendation');
+    setView('trend');
     setProofQuery(customer.sourceQuery);
     setActiveSystem(Object.keys(buildProfile(customer).evidence)[0]);
   }, [customer.id]);
