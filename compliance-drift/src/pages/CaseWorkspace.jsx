@@ -262,20 +262,6 @@ export default function CaseWorkspace({
         </div>
       </section>
 
-      {/* ── decision checks ── */}
-      <section className="profile-card">
-        <div className="profile-card-h serif">Decision checks <small>{customer.rules.length} checks</small></div>
-        {customer.rules.map(([name, verdict, tone, reason]) => (
-          <details className="decision-check" key={name}>
-            <summary>
-              <span className="nm">{name}</span>
-              <span className={`vchip ${tone}`}>{verdict}</span>
-            </summary>
-            <p>{reason}</p>
-          </details>
-        ))}
-      </section>
-
       {modal && (
         <div className="modalveil" onClick={() => setModal(false)}>
           <div className="modal" onClick={(event) => event.stopPropagation()}>
