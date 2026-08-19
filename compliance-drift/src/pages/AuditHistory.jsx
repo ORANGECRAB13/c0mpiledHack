@@ -1,10 +1,10 @@
 import React from 'react';
 import { Icon } from '../icons.jsx';
 import { Crumbs, AskBar } from '../components/Chrome.jsx';
-import { AUDITS } from '../data/ops.js';
 
-export default function AuditHistory({ latestDecision, sessionDecisions = [] }) {
-  const records = [...sessionDecisions].reverse().concat(AUDITS);
+export default function AuditHistory({ latestDecision, sessionDecisions = [], records: persisted = [] }) {
+  const backend = persisted.map((row) => ({ id: row.id, case: `${row.customer_id} · ${row.name}`, workflow: 'Hardship & Best Offer', outcome: row.outcome, evidence: row.evidence?.length || 0, rules: row.evidence?.length || 0, policy: `${row.policy_id}@${row.policy_version}`, officer: row.actor_id || 'Awaiting approval', ts: new Date(row.created_at).toLocaleString('en-AU'), trigger: row.action_type || null }));
+  const records = [...sessionDecisions].reverse().concat(backend);
   const exportEvidence = () => {
     const bundle = {
       exportedAt: new Date().toISOString(),
@@ -57,7 +57,7 @@ export default function AuditHistory({ latestDecision, sessionDecisions = [] }) 
         ))}
       </div>
       <div style={{ fontSize: 12.5, color: 'var(--t3)', padding: '12px 4px' }}>
-        + 8,836 prior decisions · each record preserves the evidence used, rules evaluated, policy version, uncertainty, notes, approver and timestamp
+        {records.length} persisted decisions · each record preserves the evidence used, rules evaluated, policy version, approver and timestamp
       </div>
 
       <AskBar />

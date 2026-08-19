@@ -186,8 +186,6 @@ export function AskBar() {
         if (event.type === 'connected') { setLive(true); setLiveLine('Live — just talk.'); }
         else if (event.type === 'transcript') setLiveLine(`${event.speaker === 'agent' ? 'Vocare' : 'You'}: ${event.text}`);
         else if (event.type === 'tool') {
-          // Execute against the running UI and report back so the model can
-          // confirm verbally. The ref keeps the newest app state in scope.
           let output;
           try { output = executeVoiceToolRef.current(event.name, event.args); }
           catch (error) { output = `Tool failed: ${error.message}`; }

@@ -1,9 +1,8 @@
 import React from 'react';
 import { Icon } from '../icons.jsx';
 import { Crumbs, AskBar } from '../components/Chrome.jsx';
-import { POLICIES } from '../data/ops.js';
 
-export default function PolicyLibrary({ goMgmt, openCase, showImpact }) {
+export default function PolicyLibrary({ goMgmt, openCase, showImpact, policies = [] }) {
   return (
     <div className="page">
       <Crumbs items={['Operations', 'Policy Impact']} />
@@ -35,20 +34,20 @@ export default function PolicyLibrary({ goMgmt, openCase, showImpact }) {
         <div><div className="secheading">Versioned policy objects</div><span>Mapped to live rules and workflows</span></div>
       </div>
       <div>
-        {POLICIES.map((policy) => (
-          <div className="polcard" key={policy.name}>
+        {policies.map((policy) => (
+          <div className="polcard" key={`${policy.id}@${policy.version}`}>
             <div className="top">
-              <span className="nm">{policy.name}</span>
-              <span className="ver">{policy.ver}</span>
-              <span className="eff">Effective {policy.eff}</span>
+              <span className="nm">{policy.id}</span>
+              <span className="ver">{policy.version}</span>
+              <span className="eff">Effective {new Date(policy.effectiveFrom).toLocaleDateString('en-AU')}</span>
             </div>
-            <div className="sum">{policy.summary}</div>
+            <div className="sum">{policy.owner} · {policy.jurisdiction} · {policy.citations?.map((item) => `${item.instrument} ${item.clauses}`).join(' · ')}</div>
             <div className="polwf">
-              {policy.workflows.map((workflow) => <span className="wfchip" key={workflow}>{workflow}</span>)}
+              {policy.readFields?.map((field) => <span className="wfchip" key={field}>{field}</span>)}
             </div>
-            <div className={`polchange ${policy.hot ? 'hot' : ''}`}>
-              <Icon name={policy.hot ? 'warn' : 'clock'} size={14} style={{ flexShrink: 0, marginTop: 1 }} />
-              {policy.change}
+            <div className="polchange">
+              <Icon name="clock" size={14} style={{ flexShrink: 0, marginTop: 1 }} />
+              Versioned code policy · joins to the decision ledger as {policy.id}@{policy.version}
             </div>
           </div>
         ))}

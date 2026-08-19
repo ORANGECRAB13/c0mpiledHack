@@ -1,11 +1,10 @@
 import React from 'react';
 import { Icon } from '../icons.jsx';
 import { AskBar } from '../components/Chrome.jsx';
-import { QUEUE } from '../data/ops.js';
 
-export default function Home({ openCase, goQueue, goWorkflow, goMonitoring, decisions }) {
-  const urgent = QUEUE.filter((item) => item.priority === 'High' && !decisions[item.id]?.approved);
-  const ready = QUEUE.filter((item) => item.status === 'Ready for review' && !decisions[item.id]?.approved).length;
+export default function Home({ openCase, goQueue, goWorkflow, goMonitoring, decisions, queue = [] }) {
+  const urgent = queue.filter((item) => item.priority === 'High' && !decisions[item.id]?.approved);
+  const ready = queue.filter((item) => item.status === 'Ready for review' && !decisions[item.id]?.approved).length;
   const completed = Object.values(decisions).filter((item) => item.approved).length;
 
   return (
@@ -31,12 +30,11 @@ export default function Home({ openCase, goQueue, goWorkflow, goMonitoring, deci
         </div>
         <div className="lifecycle-grid">
           {[
-            ['Data quality & reconciliation', 'Data Quality & Reconciliation', 'Resolve conflicting customer data before it drives the wrong action'],
             ['Hardship & best offer', 'Hardship & Best Offer', 'Find silent customers and make the required switch from 1 October'],
             ['Continuous hardship monitoring', 'Continuous Monitoring', 'Reassess whether support still fits as circumstances change'],
           ].map(([label, workflow, description]) => (
             <button key={workflow} onClick={() => workflow === 'Continuous Monitoring' ? goMonitoring() : goWorkflow(workflow)}>
-              <span><b>{workflow === 'Continuous Monitoring' ? 4 : QUEUE.filter((item) => item.workflow === workflow).length}</b>{label}</span>
+              <span><b>{workflow === 'Continuous Monitoring' ? queue.filter((item) => item.status === 'Monitoring').length : queue.filter((item) => item.workflow === workflow).length}</b>{label}</span>
               <small>{description}</small>
               <Icon name="chevR" size={13} />
             </button>

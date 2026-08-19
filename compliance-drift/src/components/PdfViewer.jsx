@@ -28,6 +28,8 @@ export default function PdfViewer({ url, target, onMeta }) {
   const [pageSize, setPageSize] = useState(null); // {w,h,scale}
   const [rects, setRects] = useState([]);         // highlight boxes
   const [bubble, setBubble] = useState(null);     // {top, reason, n}
+  const [loadError, setLoadError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
   const scrollRef = useRef(null);
   const canvases = useRef({});                    // pageNo -> canvas el
   const rendered = useRef(new Set());
@@ -39,8 +41,9 @@ export default function PdfViewer({ url, target, onMeta }) {
     let dead = false;
     rendered.current = new Set();
     canvases.current = {};
-    setDoc(null); setPageSize(null); setRects([]); setBubble(null);
-    pdfjsLib.getDocument({ url: new URL(url, window.location.origin).href }).promise.then(async (d) => {
+    setDoc(null); setPageSize(null); setRects([]); setBubble(null); setLoadError(false);
+    const loadingTask = pdfjsLib.getDocument({ url: new URL(url, window.location.origin).href });
+    loadingTask.promise.then(async (d) => {
       if (dead) return;
       const p1 = await d.getPage(1);
       const [, , w, h] = p1.view;
@@ -48,9 +51,15 @@ export default function PdfViewer({ url, target, onMeta }) {
       setPageSize({ w: PAGE_W, h: h * scale, scale });
       setDoc(d);
       onMeta?.({ numPages: d.numPages });
+    }).catch(() => {
+      if (!dead) setLoadError(true);
     });
-    return () => { dead = true; timers.current.forEach(clearTimeout); };
-  }, [url]);
+    return () => {
+      dead = true;
+      loadingTask.destroy();
+      timers.current.forEach(clearTimeout);
+    };
+  }, [url, retryKey]);
 
   const renderPage = async (n) => {
     if (!doc || rendered.current.has(n) || n < 1 || n > doc.numPages) return;
@@ -128,6 +137,15 @@ export default function PdfViewer({ url, target, onMeta }) {
       }
     }, 1050);
   }, [doc, pageSize, target?.key]);
+
+  if (loadError) {
+    return (
+      <div className="viewer-empty">
+        <span>Could not open this PDF.</span>
+        <button className="btn-ghost" onClick={() => setRetryKey((value) => value + 1)}>Retry</button>
+      </div>
+    );
+  }
 
   if (!doc || !pageSize) {
     return (

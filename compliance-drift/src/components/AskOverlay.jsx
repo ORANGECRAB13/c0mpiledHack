@@ -102,6 +102,7 @@ export default function AskOverlay({ query, onClose, fresh = false }) {
 
   const doc = activeCite ? DOC_META[activeCite.doc] : null;
   const lastDone = lastIsAnswer && streamed >= lastWords.length;
+  const sourceDocumentCount = new Set((last?.citations || []).map((citation) => citation.doc)).size;
 
   return (
     <div className="askveil">
@@ -118,7 +119,7 @@ export default function AskOverlay({ query, onClose, fresh = false }) {
                 : lastIsAnswer && last.error
                   ? <><Icon name="warn" size={12} /> model request failed</>
                   : lastIsAnswer
-                    ? <><Icon name="check" size={12} /> {last.citations?.length || 0} sources cited · {last.model || 'live model'}</>
+                    ? <><Icon name="check" size={12} /> {sourceDocumentCount} PDF{sourceDocumentCount === 1 ? '' : 's'} · {last.citations?.length || 0} citations · {last.model || 'live model'}</>
                   : null}
             </span>
           </div>
@@ -139,19 +140,7 @@ export default function AskOverlay({ query, onClose, fresh = false }) {
                     />
                   </div>
                   {(!isLast || lastDone) && m.citations?.length > 0 && (
-                    <div className="ask-cites">
-                      <div className="ask-cites-h">Sources — click to inspect</div>
-                      {m.citations.map((c) => (
-                        <button key={c.n} className={`ask-src ${activeCite === c ? 'on' : ''}`} onClick={() => jumpTo(c)}>
-                          <span className="cn">{c.n}</span>
-                          <span>
-                            <div className="dn">{DOC_META[c.doc]?.title || c.doc}</div>
-                            <div className="dp">p. {c.page} · {DOC_META[c.doc]?.scope || DOC_META[c.doc]?.file || ''}</div>
-                          </span>
-                          <Icon name="chevR" size={13} style={{ marginLeft: 'auto', color: 'var(--t4)' }} />
-                        </button>
-                      ))}
-                    </div>
+                    <SourceList citations={m.citations} activeCite={activeCite} onSelect={jumpTo} />
                   )}
                 </div>
               );
@@ -200,6 +189,35 @@ export default function AskOverlay({ query, onClose, fresh = false }) {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function SourceList({ citations, activeCite, onSelect }) {
+  const groups = citations.reduce((all, citation) => {
+    const existing = all.find((group) => group.doc === citation.doc);
+    if (existing) existing.citations.push(citation);
+    else all.push({ doc: citation.doc, citations: [citation] });
+    return all;
+  }, []);
+
+  return (
+    <div className="ask-cites">
+      <div className="ask-cites-h">Source documents — click to inspect</div>
+      {groups.map((group, index) => {
+        const pages = [...new Set(group.citations.map((citation) => citation.page))].sort((a, b) => a - b);
+        const meta = DOC_META[group.doc];
+        return (
+          <button key={group.doc} className={`ask-src ${activeCite?.doc === group.doc ? 'on' : ''}`} onClick={() => onSelect(group.citations[0])}>
+            <span className="cn">{index + 1}</span>
+            <span>
+              <div className="dn">{meta?.title || group.doc}</div>
+              <div className="dp">{group.citations.length} cited passages · pp. {pages.join(', ')} · {meta?.scope || meta?.file || ''}</div>
+            </span>
+            <Icon name="chevR" size={13} style={{ marginLeft: 'auto', color: 'var(--t4)' }} />
+          </button>
+        );
+      })}
     </div>
   );
 }

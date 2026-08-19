@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { Crumbs, AskBar } from '../components/Chrome.jsx';
-import { MONITORING } from '../data/ops.js';
 
 function Spark({ data, color }) {
   const max = Math.max(...data), min = Math.min(...data);
@@ -15,7 +14,7 @@ function Spark({ data, color }) {
 
 const STATUS = { Stable: 'ready', 'At risk': 'issue', 'On track': 'ready', Watch: 'wait' };
 
-export default function Monitoring({ decisions = {}, onDecision, openCase, openCustomer, focusId }) {
+export default function Monitoring({ decisions = {}, onDecision, openCase, openCustomer, focusId, monitoring = [] }) {
   const [selected, setSelected] = useState(null);
   const openProfile = (m) => (m.caseId ? openCase(m.caseId) : openCustomer?.(m.customer));
   useEffect(() => {
@@ -33,7 +32,7 @@ export default function Monitoring({ decisions = {}, onDecision, openCase, openC
       </div>
 
       <div className="mongrid">
-        {MONITORING.map((m) => (
+        {monitoring.map((m) => (
           <div className={`moncard ${selected === m.id ? 'selected' : ''}`} key={m.id}>
             <div className="mh">
               <span>

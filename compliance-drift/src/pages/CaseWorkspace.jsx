@@ -8,7 +8,7 @@ import AskOverlay from '../components/AskOverlay.jsx';
    first thing the chart says. */
 function TrendChart({ trend }) {
   const W = 560, H = 190, padL = 46, padR = 8, padT = 26, padB = 22;
-  const max = trend.threshold;
+  const max = Math.max(trend.threshold, ...trend.values);
   const innerW = W - padL - padR, innerH = H - padT - padB;
   const barW = innerW / trend.values.length - 8;
   const y = (v) => padT + innerH - (v / max) * innerH;
@@ -63,11 +63,31 @@ function PlanCard({ plan, best = false }) {
    what the case already knows about itself. */
 function buildProfile(c) {
   if (c.profile) return c.profile;
-  const seed = [...c.id].reduce((a, ch) => a + ch.charCodeAt(0), 0);
-  const values = Array.from({ length: 12 }, (_, i) => (i < 8 ? 4 + ((seed + i) % 5) : Math.round((i - 7) * (80 + (seed % 60))) ));
+  const seed = [...String(c.id || c.customer || 'case')].reduce((a, ch) => a + ch.charCodeAt(0), 0);
+  const snapshot = Array.isArray(c.snapshot) ? c.snapshot : [];
+  const sources = Array.isArray(c.sources) ? c.sources : [];
+  const rules = Array.isArray(c.rules) ? c.rules : [];
+  const decisionInputs = Array.isArray(c.decisionInputs) ? c.decisionInputs : [];
+  const context = Array.isArray(c.context) && c.context.length
+    ? c.context
+    : [
+        c.action || c.recommendation,
+        decisionInputs[0] && `${decisionInputs[0][0]}: ${decisionInputs[0][1]}`,
+        rules[0] && rules[0][3],
+      ].filter(Boolean);
+  const balanceText = snapshot.find(([label]) => label === 'Balance')?.[1] || '$0';
+  const balance = Number(String(balanceText).replace(/[^0-9.]/g, '')) || 0;
+  const endValue = Math.min(Math.max(balance, 40), 1400);
+  const values = Array.from({ length: 12 }, (_, i) => {
+    const progress = Math.max(0, i - 5) / 6;
+    return Math.round(Math.max(4, endValue * progress + ((seed + i) % 12)));
+  });
   const titles = ['What changed', 'Current position', 'What the evidence shows'];
   return {
-    trendAnalysis: c.context.slice(0, 3).map((text, i) => [titles[i], text]),
+    trendAnalysis: Array.from({ length: 3 }, (_, i) => [
+      titles[i],
+      context[i] || context[0] || 'The available connected-system evidence is ready for officer review.',
+    ]),
     trend: {
       months: ['O', 'N', 'D', 'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S'],
       values,
@@ -81,7 +101,25 @@ function buildProfile(c) {
       best: { label: 'Best available', name: c.switchTrace.to, price: '', per: '', delta: c.switchTrace.saving, recommended: true, rows: [] },
       savings: ['', c.switchTrace.saving || '', ` — ${c.switchTrace.trigger || c.action}.`],
     } : null,
-    evidence: Object.fromEntries(c.sources.slice(0, 6).map(([name, detail]) => [name, { synced: 'just now', rows: [['Record', detail]] }])),
+    metrics: [
+      ['Current balance', balanceText],
+      ['Evidence completeness', c.evidenceCompletion || 'Review'],
+      ['Evidence sources', String(sources.length)],
+      ['Policy version', c.policyVersion || 'Current'],
+    ],
+    evidence: Object.fromEntries((sources.length ? sources : [['Case record', c.recommendationSummary || c.action || 'Review required']])
+      .slice(0, 6)
+      .map(([name, detail]) => [name, {
+        synced: 'just now',
+        rows: [
+          ['Record', detail || 'Available'],
+          ...decisionInputs
+            .filter(([, , authority]) => !authority || authority.toLowerCase().includes(String(name).toLowerCase().split(' ')[0]))
+            .slice(0, 2)
+            .map(([label, value]) => [label, value]),
+        ],
+        note: `Included in the ${c.workflow || 'customer'} review and frozen when the officer approves the decision.`,
+      }])),
   };
 }
 
@@ -234,6 +272,18 @@ export default function CaseWorkspace({
             <div className="recommendation-next"><span>Next action</span>{customer.action}</div>
           </div>
         )}
+      </section>
+
+      <section className="profile-card regulatory-controls">
+        <div className="profile-card-h serif">Regulatory controls <small>{customer.rules.length} evaluated</small></div>
+        <div className="regulatory-control-grid">
+          {customer.rules.map(([name, result, tone, explanation]) => (
+            <div className="regulatory-control" key={name}>
+              <div><b>{name}</b><span className={`schip ${tone === 'ok' ? 'ready' : 'wait'}`}>{result}</span></div>
+              <p>{explanation}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* ── evidence: connected-system browser ── */}

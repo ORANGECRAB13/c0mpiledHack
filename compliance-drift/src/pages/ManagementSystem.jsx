@@ -3,6 +3,15 @@ import { Icon } from '../icons.jsx';
 import { Crumbs, AskBar } from '../components/Chrome.jsx';
 import { DOC_TABS, DOCS, DOC_OVERFLOW } from '../data/docs.js';
 
+const OCTOBER_CONTROLS = [
+  ['$1,000 floor', 'Disconnection blocked below the new minimum amount'],
+  ['Tailored assistance', 'Automatic deemed-best-offer eligibility'],
+  ['3 months + $1,000', 'Separate automatic-switch eligibility trigger'],
+  ['Payment choice', 'Accessible fee-free method; direct debit optional'],
+  ['Simple switching', '10-day check · 5-day notice · 10-day opt-out'],
+  ['Concessions', 'Check at key interactions and preserve on switch'],
+];
+
 export default function ManagementSystem() {
   const [tab, setTab] = useState('Regulatory corpus');
   const active = DOC_TABS.find((t) => t.id === tab);
@@ -26,6 +35,15 @@ export default function ManagementSystem() {
       </div>
       <div className="tabdesc">{active.desc}</div>
 
+      {tab === 'Regulatory corpus' && (
+        <section className="october-controls">
+          <div><b>Version 7 controls active</b><span>Victoria · effective 1 October 2026</span></div>
+          <div className="october-control-grid">
+            {OCTOBER_CONTROLS.map(([name, detail]) => <span key={name}><b>{name}</b><small>{detail}</small></span>)}
+          </div>
+        </section>
+      )}
+
       <div className="doctable">
         <div className="dt-head">
           <span>Name</span>
@@ -44,8 +62,10 @@ export default function ManagementSystem() {
                   <div className="nm">{nm}</div>
                   <div className="sb">
                     {flag === 'stale'
-                      ? <span style={{ color: 'var(--red)', fontWeight: 600 }}>Drift flagged — cites superseded $300 threshold</span>
-                      : 'Auto-filed'}
+                      ? <span style={{ color: 'var(--red)', fontWeight: 600 }}>Drift flagged — threshold and workflow update required</span>
+                      : flag === 'superseded'
+                        ? <span style={{ color: 'var(--red)', fontWeight: 600 }}>Superseded by Version 7 from 1 October 2026</span>
+                        : 'Auto-filed'}
                   </div>
                 </span>
               </span>
