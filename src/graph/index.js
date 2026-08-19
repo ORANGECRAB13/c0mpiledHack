@@ -6,6 +6,8 @@ import { getGraphCounts, getGraphVisualization, getLabelCounts, searchPolicyText
 import { resolveBenefitStack, resolveJurisdiction } from './resolve.js';
 import { explainProgram, isContextEngineConfigured, indexPolicyChunks } from './contextEngine.js';
 import { generateFillerMesh } from './meshFiller.js';
+import { ensureAuPolicySchema, ingestAuPolicyGraph } from './au-policy-schema.js';
+import { listPolicies } from '../policies/index.js';
 import {
   discoveryStatus,
   discoveryVisualization,
@@ -85,13 +87,17 @@ export async function syncGraph() {
     return { backend: 'memory', synced: false, reason: backend.reason, dataset: dataset.loadedAt };
   }
 
-  const schema = await withGraphSession(WRITE, (session) => ensureGraphSchema(session));
+  const schema = await withGraphSession(WRITE, async (session) => ({
+    us: await ensureGraphSchema(session),
+    au: await ensureAuPolicySchema(session)
+  }));
   const counts = await withGraphSession(WRITE, (session) => ingestDataset(session, dataset));
+  const auPolicies = await withGraphSession(WRITE, (session) => ingestAuPolicyGraph(session, listPolicies()));
   const semantic = await withGraphSession(WRITE, (session) => indexPolicyChunks(session, dataset));
   // Learnings recorded while the graph was unreachable live only in JSON.
   // Reconcile them here so an outage heals itself on the next sync.
   const learnings = await mirrorAllLearnings();
-  return { backend: 'neo4j', synced: true, schema, counts, semantic, learnings };
+  return { backend: 'neo4j', synced: true, schema, counts, auPolicies, semantic, learnings };
 }
 
 export async function visualization(options = {}) {

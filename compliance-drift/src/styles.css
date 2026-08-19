@@ -815,6 +815,26 @@ h1.display {
 }
 .profile-card-h small { margin-left: auto; font-size: 11.5px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--t3); }
 .profile-card-h.serif { font-family: var(--serif, Georgia, serif); font-size: 19px; font-weight: 650; letter-spacing: 0; text-transform: none; color: var(--t1); }
+.regulatory-control-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.regulatory-control { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); }
+.regulatory-control:nth-child(odd) { padding-right: 22px; border-right: 1px solid var(--line); }
+.regulatory-control:nth-child(even) { padding-left: 22px; }
+.regulatory-control > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.regulatory-control b { font-size: 13px; color: var(--t1); }
+.regulatory-control p { margin: 6px 0 0; color: var(--t3); font-size: 12px; line-height: 1.45; }
+.october-controls { margin: 18px 0; padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface, #fff); }
+.october-controls > div:first-child { display: flex; align-items: baseline; gap: 10px; margin-bottom: 13px; }
+.october-controls > div:first-child b { font-size: 14px; }
+.october-controls > div:first-child span { color: var(--t3); font-size: 12px; }
+.october-control-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.october-control-grid > span { display: flex; flex-direction: column; gap: 3px; padding: 10px; background: var(--bg, #f7f7f5); border-radius: 7px; }
+.october-control-grid b { font-size: 12px; }
+.october-control-grid small { color: var(--t3); font-size: 11px; line-height: 1.35; }
+@media (max-width: 900px) {
+  .regulatory-control-grid { grid-template-columns: 1fr; }
+  .regulatory-control:nth-child(odd), .regulatory-control:nth-child(even) { padding: 14px 0; border-right: 0; }
+  .october-control-grid { grid-template-columns: 1fr; }
+}
 
 /* Top card: left face cross-fades between recommendation and trend narrative;
    the chart column on the right is permanent. */

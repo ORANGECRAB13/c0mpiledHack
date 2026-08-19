@@ -11,30 +11,14 @@ import Analytics from './pages/Analytics.jsx';
 import Home from './pages/Home.jsx';
 import Customers from './pages/Customers.jsx';
 import Systems from './pages/Systems.jsx';
-import { CASES, MONITORING, QUEUE } from './data/ops.js';
+import { decisionLayerApi } from './api/decisionLayerApi.js';
 
 const DECISIONS_KEY = 'vocare:case-decisions';
 const MONITORING_KEY = 'vocare:monitoring-decisions';
 const loadDecisions = () => {
   try {
     const value = JSON.parse(localStorage.getItem(DECISIONS_KEY) || '{}');
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
-    return Object.fromEntries(Object.entries(value)
-      .filter(([caseId]) => CASES[caseId])
-      .map(([caseId, decision]) => {
-        const caseData = CASES[caseId];
-        const record = decision?.record ? {
-          ...decision.record,
-          case: `${caseData.id} · ${caseData.customer}`,
-          workflow: caseData.workflow,
-          outcome: caseData.outcome,
-          policy: caseData.policyVersion,
-          evidence: caseData.sources.length,
-          rules: caseData.rules.length,
-          trigger: caseData.switchTrace?.trigger || caseData.action,
-        } : null;
-        return [caseId, { ...decision, record }];
-      }));
+    return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
   } catch {
     return {};
   }
@@ -44,12 +28,17 @@ const loadDecisions = () => {
 // frameworks/attention/assistant → expanded workspace sidebar
 // mgmt → collapsed icon rail · routines → project sidebar
 export default function App() {
+  const [queue, setQueue] = useState([]);
+  const [cases, setCases] = useState({});
+  const [auditRecords, setAuditRecords] = useState([]);
+  const [monitoringAccounts, setMonitoringAccounts] = useState([]);
+  const [dataError, setDataError] = useState(null);
   const [page, setPage] = useState('home');
   const [queueFilters, setQueueFilters] = useState({ priority: 'All', workflow: 'All', status: 'All', team: 'All', query: '' });
   const [assistantNotice, setAssistantNotice] = useState(null);
   const [evidenceRequest, setEvidenceRequest] = useState(null);
   const [askRequest, setAskRequest] = useState(null);
-  const [selectedCaseId, setSelectedCaseId] = useState(QUEUE[0].id);
+  const [selectedCaseId, setSelectedCaseId] = useState(null);
   const [decisions, setDecisions] = useState(loadDecisions);
   const [monitoringDecisions, setMonitoringDecisions] = useState(() => {
     try { return JSON.parse(localStorage.getItem(MONITORING_KEY) || '{}'); } catch { return {}; }
@@ -58,8 +47,29 @@ export default function App() {
   const [customersQuery, setCustomersQuery] = useState('');
   const [latestDecision, setLatestDecision] = useState(null);
   const go = setPage;
-  const selectedCase = CASES[selectedCaseId] || CASES[QUEUE[0].id];
+  const selectedCase = cases[selectedCaseId] || cases[queue[0]?.id] || null;
   const selectedDecision = decisions[selectedCaseId] || { sourceVerified: false, approved: false, record: null };
+
+  const refreshProduct = async () => {
+    try {
+      const product = await decisionLayerApi.loadProduct();
+      setQueue(product.queue);
+      setCases(product.cases);
+      setAuditRecords(product.audit);
+      setMonitoringAccounts(Object.values(product.cases).filter((item) => item.snapshot.some(([field, value]) => field === 'hardshipStatus' && value !== 'NONE')).map((item, index) => ({
+        id: `MON-${item.id}`, caseId: item.id, customer: item.customer, next: item.snapshot.find(([field]) => field === 'hardshipReviewDueAt')?.[1] || 'not scheduled',
+        status: item.actionStatus === 'AWAITING_APPROVAL' ? 'At risk' : 'Watch', trend: [4, 8, 12, 18, 24, 32, 40 + index], hot: item.actionStatus === 'AWAITING_APPROVAL',
+        pay: item.snapshot.find(([field]) => field === 'partialPayments90d')?.[1] || '0', debt: item.snapshot.find(([field]) => field === 'balance')?.[1] || '$0', last: item.events[0]?.[0] || 'No event',
+        trigger: item.recommendation, confidence: item.decisionId ? 94 : 60, rec: item.recommendationSummary, nextAction: item.action, evidence: item.sources,
+      })));
+      setSelectedCaseId((current) => current && product.cases[current] ? current : product.queue[0]?.id || null);
+      setDataError(null);
+    } catch (error) {
+      setDataError(error.message);
+    }
+  };
+
+  useEffect(() => { refreshProduct(); }, []);
 
   useEffect(() => {
     localStorage.setItem(DECISIONS_KEY, JSON.stringify(decisions));
@@ -94,7 +104,8 @@ export default function App() {
   };
 
   const openCase = (caseId, message) => {
-    const target = CASES[caseId] || CASES[QUEUE[0].id];
+    const target = cases[caseId] || cases[queue[0]?.id];
+    if (!target) return;
     setSelectedCaseId(target.id);
     setPage('case');
     if (message) announceAction(message);
@@ -106,13 +117,13 @@ export default function App() {
     if (!command) return { handled: false };
 
     const normalise = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-    const commandCase = QUEUE.find((item) => {
+    const commandCase = queue.find((item) => {
       const name = normalise(item.customer.split('—')[0]);
       const tokens = name.split(' ').filter((token) => token.length >= 4);
       const id = normalise(item.id);
       return command.includes(id) || command.includes(item.id.toLowerCase()) || tokens.some((token) => command.includes(token));
     });
-    const commandMonitoring = MONITORING.find((item) => {
+    const commandMonitoring = monitoringAccounts.find((item) => {
       const tokens = normalise(item.customer).split(' ').filter((token) => token.length >= 4);
       return command.includes(normalise(item.id)) || tokens.some((token) => command.includes(token));
     });
@@ -124,8 +135,9 @@ export default function App() {
     }
 
     const wantsSource = /(?:open|show|view|find|check).*(?:source|evidence|clause|policy|threshold|instrument)/.test(command);
-    if (wantsSource && (commandCase || /(?:312|disconnect|five hundred|500)/.test(command))) {
-      const target = commandCase ? CASES[commandCase.id] : selectedCase;
+    if (wantsSource && (commandCase || /(?:312|disconnect|one thousand|1,?000)/.test(command))) {
+      const target = commandCase ? cases[commandCase.id] : selectedCase;
+      if (!target) return { handled: false };
       setSelectedCaseId(target.id);
       setPage('case');
       setEvidenceRequest({ id: Date.now(), caseId: target.id, query: target.sourceQuery });
@@ -138,7 +150,7 @@ export default function App() {
     // analysis half to the compliance agent in the same (persistent) chat.
     const wantsAnalysis = /analy[sz]e|assess|evaluate|cross[- ]?referen|regulation|complian|disconnect|eligib|can we|should we|whether|is it (?:legal|allowed|permitted)/.test(command);
     if (commandCase && wantsAnalysis) {
-      const target = CASES[commandCase.id];
+      const target = cases[commandCase.id];
       setSelectedCaseId(target.id);
       setPage('case');
       setAskRequest({ id: Date.now(), query: text });
@@ -209,25 +221,36 @@ export default function App() {
     }));
   };
 
-  const approveDecision = (caseId = selectedCaseId) => {
-    const caseData = CASES[caseId];
-    const record = {
-      id: `DEC-2026-${String(8847 + Object.values(decisions).filter((item) => item.approved).length).padStart(5, '0')}`,
-      case: `${caseData.id} · ${caseData.customer}`,
-      workflow: caseData.workflow,
-      outcome: caseData.outcome,
-      officer: 'Priya N.',
-      ts: '2026-08-08 10:42',
-      policy: caseData.policyVersion,
-      evidence: caseData.sources.length,
-      rules: caseData.rules.length,
-      trigger: caseData.switchTrace?.trigger || caseData.action,
-    };
-    setDecisions((current) => ({
-      ...current,
-      [caseId]: { ...(current[caseId] || {}), sourceVerified: true, approved: true, record },
-    }));
-    setLatestDecision(record);
+  const approveDecision = async (caseId = selectedCaseId) => {
+    const caseData = cases[caseId];
+    if (!caseData?.actionId) {
+      setDataError('This case has no approval-gated action. Run its evaluation first.');
+      return;
+    }
+    try {
+      const response = await decisionLayerApi.approve(caseData.actionId, { actorId: 'Priya N.', verdict: 'AGREED' });
+      const record = {
+        id: caseData.decisionId,
+        case: `${caseData.id} · ${caseData.customer}`,
+        workflow: caseData.workflow,
+        outcome: caseData.outcome,
+        officer: response.approval.actor_id,
+        ts: new Date(response.approval.decided_at).toLocaleString('en-AU'),
+        policy: caseData.policyVersion,
+        evidence: caseData.sources.length,
+        rules: caseData.rules.length,
+        trigger: caseData.action,
+      };
+      setDecisions((current) => ({
+        ...current,
+        [caseId]: { ...(current[caseId] || {}), sourceVerified: true, approved: true, record },
+      }));
+      setLatestDecision(record);
+      setDataError(null);
+      await refreshProduct();
+    } catch (error) {
+      setDataError(error.message);
+    }
   };
 
   const recordMonitoringDecision = (account, outcome) => {
@@ -253,7 +276,7 @@ export default function App() {
   const executeVoiceTool = (name, args = {}) => {
     const findCase = (ref) => {
       const norm = String(ref || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-      return QUEUE.find((item) =>
+      return queue.find((item) =>
         item.id.toLowerCase() === norm.replace(' ', '-') ||
         norm.includes(item.id.toLowerCase()) ||
         item.customer.toLowerCase().includes(norm) ||
@@ -269,7 +292,7 @@ export default function App() {
         const target = findCase(args.customer);
         if (!target) return `No case found for "${args.customer}".`;
         openCase(target.id, `Opened ${target.customer} · ${target.id}.`);
-        const caseData = CASES[target.id];
+        const caseData = cases[target.id];
         return `Opened ${target.customer} (${target.id}) — ${target.workflow}, ${target.status}. ${caseData?.snapshot?.[0]?.[1] ? `Balance: ${caseData.snapshot[0][1]}.` : ''}`;
       }
       case 'filter_queue': {
@@ -292,7 +315,7 @@ export default function App() {
         return `The compliance agent is answering on screen with citations${target ? ` on ${target.customer}'s case` : ''}. Tell the officer the answer is coming up.`;
       }
       case 'start_reassessment': {
-        const account = MONITORING.find((item) =>
+        const account = monitoringAccounts.find((item) =>
           item.customer.toLowerCase().includes(String(args.customer || '').toLowerCase()));
         if (!account) return `No monitored account matches "${args.customer}".`;
         recordMonitoringDecision(account, 'Human reassessment opened');
@@ -323,6 +346,7 @@ export default function App() {
       <Sidebar page={page} go={go} />
 
       <div className="main">
+        {dataError && <div className="okbanner compact-banner" style={{ margin: 20, borderColor: '#D64545' }}><span>Decision ledger unavailable: {dataError}</span><button onClick={refreshProduct}>Retry</button></div>}
         {page === 'home' && (
           <Home
             openCase={(caseId) => openCase(caseId)}
@@ -330,14 +354,15 @@ export default function App() {
             goWorkflow={(workflow) => { setQueueFilters((current) => ({ ...current, workflow })); go('queue'); }}
             goMonitoring={() => go('monitoring')}
             decisions={decisions}
+            queue={queue}
           />
         )}
-        {page === 'customers' && <Customers key={customersQuery} openCase={(caseId) => openCase(caseId)} decisions={decisions} initialQuery={customersQuery} />}
+        {page === 'customers' && <Customers key={customersQuery} openCase={(caseId) => openCase(caseId)} decisions={decisions} initialQuery={customersQuery} queue={queue} />}
         {page === 'systems' && <Systems />}
         {page === 'mgmt' && <ManagementSystem />}
         {page === 'assistant' && <Assistant />}
-        {page === 'queue' && <OpsQueue openCase={(caseId) => openCase(caseId)} decisions={decisions} filters={queueFilters} setFilters={setQueueFilters} />}
-        {page === 'case' && (
+        {page === 'queue' && <OpsQueue openCase={(caseId) => openCase(caseId)} decisions={decisions} filters={queueFilters} setFilters={setQueueFilters} queue={queue} />}
+        {page === 'case' && selectedCase && (
           <CaseWorkspace
             caseData={selectedCase}
             back={() => go('queue')}
@@ -353,6 +378,7 @@ export default function App() {
         )}
         {page === 'monitoring' && (
           <Monitoring
+            monitoring={monitoringAccounts}
             decisions={monitoringDecisions}
             onDecision={recordMonitoringDecision}
             openCase={(caseId) => openCase(caseId)}
@@ -363,13 +389,14 @@ export default function App() {
         {page === 'audit' && (
           <AuditHistory
             latestDecision={latestDecision}
+            records={auditRecords}
             sessionDecisions={[
               ...Object.values(decisions).map((item) => item.record).filter(Boolean),
               ...Object.values(monitoringDecisions).map((item) => item.record).filter(Boolean),
             ]}
           />
         )}
-        {page === 'analytics' && <Analytics />}
+        {page === 'analytics' && <Analytics queue={queue} auditRecords={auditRecords} />}
       </div>
       </div>
     </AssistantProvider>

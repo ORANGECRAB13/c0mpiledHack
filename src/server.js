@@ -34,6 +34,7 @@ const reflectionAgent = await import('./agents/reflection.js');
 const { agentModelStatus } = await import('./agents/azure.js');
 const { askAssistant, assistantStatus } = await import('./assistant/index.js');
 const { elevenLabsSttStatus, transcribeOfficerCommand } = await import('./stt/elevenlabs.js');
+const { default: decisionLayerRouter } = await import('./decision-layer/http.js');
 
 const app = express();
 // The compliance frontend deploys to Vercel on a different origin; without
@@ -52,6 +53,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json({ limit: '2mb' }));
+app.use('/api/decision-layer', decisionLayerRouter);
 
 // Serve the built React frontend (frontend-dist) as the primary UI when present;
 // the legacy vanilla console in public/ remains a fallback for API-less checks.
@@ -87,7 +89,14 @@ app.get('/api/health', wrap(async (_req, res) => {
       contextEngine: { configured: true, backend: engine.backend, fallbackReason: engine.fallbackReason },
       voice: { provider: (process.env.VOICE_PROVIDER || 'azure').toLowerCase() },
       transcription: { provider: 'elevenlabs', ...elevenLabsSttStatus() },
-      azureRealtime: { configured: realtimeConfig().configured },
+      azureRealtime: (() => {
+        const voice = realtimeConfig();
+        return {
+          configured: voice.configured,
+          deployment: voice.deployment,
+          endpoint: voice.url ? new URL(voice.url).host : null,
+        };
+      })(),
       azureOpenAI: { configured: Boolean(process.env['AZURE-OPENAI-API-KEY']) },
       semantic: { engine: 'neo4j', configured: Boolean(process.env.NEO4J_URI) },
       guild: { configured: Boolean(process.env.GUILD_API_KEY) },

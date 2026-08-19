@@ -4,7 +4,7 @@
 // layers=quality, doc=customer comms, zap=operations.
 
 export const DOC_TABS = [
-  { id: 'Regulatory corpus', n: 9, desc: 'The source PDFs available to compliance answers and decision evidence.' },
+  { id: 'Regulatory corpus', n: 10, desc: 'The source PDFs available to compliance answers and decision evidence.' },
   { id: 'Policies', n: 10, desc: 'Approved company policy documents that define commitments and rules.' },
   { id: 'Plans', n: 1, desc: 'Management plans that set out how obligations are met over time.' },
   { id: 'Procedures', n: 6, desc: 'Step-by-step controlled documents for regulated activities.' },
@@ -21,7 +21,8 @@ export const DOCS = {
     ['Best-Offer-Policy-v2.pdf', ['shield', 'doc'], 'System ingest', '8 August 2026'],
     ['Billing-Accuracy-Standard-v3.pdf', ['shield', 'layers'], 'System ingest', '8 August 2026'],
     ['Customer-Hardship-Policy-Rev4.pdf', ['shield', 'doc'], 'System ingest', '8 August 2026'],
-    ['Energy Retail Code of Practice (version 6)_2.pdf', ['shield'], 'System ingest', '8 August 2026'],
+    ['Energy Retail Code of Practice - Energy Consumer Reforms Amendment 2025.pdf', ['shield', 'layers'], 'System ingest', '9 August 2026'],
+    ['Energy Retail Code of Practice (version 6)_2.pdf', ['shield'], 'System ingest', '8 August 2026', 'superseded'],
     ['FDV-Policy-Rev2.pdf', ['shield', 'doc'], 'System ingest', '8 August 2026'],
     ['GL - Guideline-Payment Difficulty Framework - 1 October 2026 - 20261001_0.pdf', ['shield', 'layers'], 'System ingest', '8 August 2026'],
     ['NERR-v51.pdf', ['shield'], 'System ingest', '8 August 2026'],
@@ -30,20 +31,20 @@ export const DOCS = {
   Policies: [
     ['01. Customer Hardship Policy Rev 4.docx', ['shield', 'doc'], 'M. Okafor', '21 July 2026'],
     ['02. Credit and Collections Policy Rev 6.docx', ['shield'], null, '14 July 2026'],
-    ['03. Payment Difficulty and Assistance Policy (VIC) Rev 3.docx', ['shield', 'doc'], 'J. Tran', '6 July 2026'],
+    ['03. Payment Difficulty and Automatic Best Offer Policy (VIC) Rev 4.docx', ['shield', 'doc'], 'J. Tran', '9 August 2026'],
     ['04. Disconnection and Reconnection Policy Rev 5.docx', ['shield', 'zap'], null, '6 July 2026'],
     ['05. Life Support Customer Policy Rev 4.docx', ['shield', 'zap'], null, '30 June 2026'],
     ['06. Family and Domestic Violence Policy Rev 2.docx', ['shield', 'doc'], 'M. Okafor', '30 June 2026'],
     ['07. Privacy and Credit Reporting Policy Rev 3.docx', ['shield'], null, '24 June 2026'],
     ['08. Complaints and Dispute Resolution Policy Rev 4.docx', ['doc'], null, '18 June 2026'],
     ['09. Marketing and Explicit Informed Consent Policy Rev 2.docx', ['layers'], null, '12 June 2026'],
-    ['10. Concessions and Rebates Policy Rev 3.docx', ['shield', 'doc'], 'J. Tran', '2 June 2026'],
+    ['10. Concessions and Rebates Policy Rev 4.docx', ['shield', 'doc'], 'J. Tran', '9 August 2026'],
   ],
   Plans: [
     ['Regulatory Compliance Management Plan 2026 Rev 1.docx', ['shield', 'layers'], 'M. Okafor', '1 July 2026'],
   ],
   Procedures: [
-    ['PR-01. Hardship Program Entry and Exit Procedure Rev 5.docx', ['shield', 'doc'], null, '19 July 2026'],
+    ['PR-01. Hardship, Best Offer and Six-Month Review Procedure Rev 6.docx', ['shield', 'doc'], 'J. Tran', '9 August 2026'],
     ['PR-02. Disconnection Warning Notice Procedure Rev 7.docx', ['shield', 'zap'], 'J. Tran', '12 July 2026'],
     ['PR-03. Life Support Registration and Deregistration Procedure Rev 4.docx', ['shield', 'zap'], null, '5 July 2026'],
     ['PR-04. Concession Verification Procedure Rev 3.docx', ['shield'], null, '28 June 2026'],
@@ -58,7 +59,7 @@ export const DOCS = {
   'Work Instructions': [
     ['WI-4. Credit and Collections Work Instruction v11.docx', ['shield', 'zap'], 'J. Tran', '25 May 2026', 'stale'],
     ['WI-7. DNSP De-energisation Request Work Instruction v6.docx', ['zap'], null, '11 July 2026'],
-    ['WI-9. Centrepay and Direct Debit Setup Work Instruction v4.docx', ['doc'], null, '3 July 2026'],
+    ['WI-9. Accessible Payment Method Setup Work Instruction v5.docx', ['doc'], 'J. Tran', '9 August 2026'],
   ],
   Forms: [
     ['F-012. Hardship Program Application Form Rev 5.docx', ['doc'], null, '20 July 2026'],

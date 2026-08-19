@@ -14,7 +14,10 @@ export const CUSTOMERS = [
       'Two partial payments in 45 days ($55 on 2 Jun, $40 of $96 due on 12 Jul); direct debit failed 28 Jun (insufficient funds).',
       'CRM note 24 Jun records reduced work hours; financial stress indicators on 2 notes.',
       'Sensitive customer marker detected — handle per the Family and Domestic Violence Policy; contact preference SMS after 5pm.',
-      'No concession recorded; current tariff is not the cheapest — an $18/month saving is available; no prior hardship review.'
+      'No concession recorded; clause 16A eligibility check is due when tailored assistance begins.',
+      'Current tariff is not the cheapest — an $18/month saving is available. Tailored assistance triggers an automatic best-offer check within 10 business days.',
+      'Arrears are below the Victorian $1,000 disconnection threshold. The cheaper plan supports fee-free BPAY or card; direct debit is optional.',
+      'If the check is positive, issue notice within 5 business days, allow 10 business days to opt out, preserve concessions and retain the decision inputs.'
     ]
   },
   {
@@ -64,7 +67,8 @@ export const CUSTOMERS = [
       'In the hardship program 9 months; consistent payments for all nine; debt reduced from $640 to $0 — cleared.',
       'Last contact: check-in call 22 Jul; next review 14 Aug 2026.',
       'Recommendation on file: review whether hardship support remains appropriate; human review required before exit.',
-      'Concession applied; on the cheapest suitable tariff since March.'
+      'Concession applied; on the cheapest suitable tariff since March.',
+      'Version 7 requires another eligibility and best-offer check at least every six months while she remains eligible.'
     ]
   },
   {
@@ -81,9 +85,10 @@ export const CUSTOMERS = [
     id: 'C-10437', account: 'AU-49954', name: 'Grace Muller', state: 'VIC', segment: 'VIC Residential · 8.2 yr tenure',
     workflow: 'Hardship & Best Offer', priority: 'Low', status: 'Ready for review', action: 'Confirm eligibility and required plan switch',
     facts: [
-      'Best offer comparison complete on 12 months of interval data; $11/month saving identified.',
-      'Verbal consent has not yet been captured; the switch remains subject to human approval and a valid consent record.',
-      'Long-tenure customer on a legacy tariff; no arrears; no hardship indicators.'
+      'Arrears are $1,248.10 and 126 days old, satisfying the separate three-month and $1,000 automatic-best-offer trigger in clause 132B.',
+      'Best offer comparison identifies an $11/month saving on Essential Saver.',
+      'Issue the switch notice within 5 business days and provide a 10-business-day oral-or-written opt-out window.',
+      'The switch must be free, preserve the verified concession and retain the inputs used for the check.'
     ]
   },
   {
@@ -120,8 +125,9 @@ export const CUSTOMERS = [
     workflow: 'Hardship & Best Offer', priority: 'Medium', status: 'Ready for review', action: 'Verify opt-out status and execute switch',
     facts: [
       'Best offer comparison complete; $9/month saving identified using 12 months of interval data.',
-      'Consent requested by email 28 Jul — not yet returned; switch cannot proceed without explicit informed consent.',
-      'No arrears; solar feed-in customer, comparison included feed-in tariff value.'
+      'A simple in-app and telephone switching path is available; the intention-to-switch notice and 10-business-day opt-out window are ready.',
+      'The cheaper plan supports BPAY without charge and does not require direct debit.',
+      'Concession eligibility was checked and the solar feed-in value was included in the comparison.'
     ]
   }
 ];

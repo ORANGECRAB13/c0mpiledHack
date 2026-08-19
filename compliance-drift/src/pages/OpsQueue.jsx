@@ -1,7 +1,6 @@
 import React from 'react';
 import { Icon } from '../icons.jsx';
 import { Crumbs, AskBar } from '../components/Chrome.jsx';
-import { QUEUE } from '../data/ops.js';
 
 const PRIO = { High: '#D64545', Medium: '#E5A833', Low: '#C4C4CA' };
 const SCHIP = {
@@ -9,8 +8,8 @@ const SCHIP = {
   'Investigation open': 'wait', Monitoring: 'mon', 'Data issue': 'issue',
 };
 
-export default function OpsQueue({ openCase, decisions, filters, setFilters }) {
-  const filtered = QUEUE.filter((item) => (
+export default function OpsQueue({ openCase, decisions, filters, setFilters, queue = [] }) {
+  const filtered = queue.filter((item) => (
     (filters.priority === 'All' || item.priority === filters.priority)
     && (filters.workflow === 'All' || item.workflow === filters.workflow)
     && (filters.status === 'All' || (decisions[item.id]?.approved ? 'Completed' : item.status) === filters.status)
@@ -18,11 +17,11 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters }) {
     && (!filters.query || `${item.customer} ${item.id} ${item.action} ${item.workflow}`.toLowerCase().includes(filters.query.toLowerCase()))
   ));
 
-  const workflows = [...new Set(QUEUE.map((item) => item.workflow))];
-  const statuses = [...new Set(QUEUE.map((item) => item.status)), 'Completed'];
-  const teams = [...new Set(QUEUE.map((item) => item.team))];
-  const readyCount = QUEUE.filter((item) => item.status === 'Ready for review' && !decisions[item.id]?.approved).length;
-  const evidenceCount = QUEUE.filter((item) => item.status === 'Evidence assembling' || item.status === 'Data issue').length;
+  const workflows = [...new Set(queue.map((item) => item.workflow))];
+  const statuses = [...new Set(queue.map((item) => item.status)), 'Completed'];
+  const teams = [...new Set(queue.map((item) => item.team).filter(Boolean))];
+  const readyCount = queue.filter((item) => item.status === 'Ready for review' && !decisions[item.id]?.approved).length;
+  const evidenceCount = queue.filter((item) => item.status === 'Evidence assembling' || item.status === 'Data issue').length;
   const completedCount = Object.values(decisions).filter((item) => item.approved).length;
 
   return (

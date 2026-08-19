@@ -5,10 +5,10 @@
  * fall back to the AZURE_REALTIME_* names the plan originally reserved.
  */
 export function realtimeConfig() {
-  const endpoint = process.env.AZURE_NEW_ENDPOINT || process.env.AZURE_REALTIME_ENDPOINT || '';
-  const apiKey = process.env.AZURE_NEW_KEY || process.env.AZURE_REALTIME_API_KEY || '';
+  const endpoint = process.env.AZURE_REALTIME_ENDPOINT || process.env.AZURE_NEW_ENDPOINT || '';
+  const apiKey = process.env.AZURE_REALTIME_API_KEY || process.env.AZURE_NEW_KEY || '';
   const deployment =
-    process.env.AZURE_NEW_DEPLOYMENT || process.env.AZURE_REALTIME_DEPLOYMENT || 'gpt-realtime-2.1';
+    process.env.AZURE_REALTIME_DEPLOYMENT || process.env.AZURE_NEW_DEPLOYMENT || 'gpt-realtime-2.1';
   const apiVersion = process.env.AZURE_REALTIME_API_VERSION || '2025-04-01-preview';
 
   const configured = Boolean(endpoint && apiKey);

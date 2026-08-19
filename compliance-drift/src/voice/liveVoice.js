@@ -1,6 +1,5 @@
 // Live officer voice client — PCM16 @ 24kHz mic capture, gapless playback, WS
-// to the officer bridge (/api/voice/officer). Ported from frontend/src/voice.ts;
-// the difference is the endpoint and that `tool` events are executed against
+// to the officer bridge (/api/voice/officer). Tool events are executed against
 // the running UI by the caller, which replies via sendToolResult().
 
 import { wsUrl } from '../data/apiBase.js';
@@ -27,11 +26,13 @@ function floatToPCM16(f) {
   }
   return pcm;
 }
+
 function b64FromBytes(b) {
   let s = '';
   for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
   return btoa(s);
 }
+
 function bytesFromB64(b64) {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
@@ -106,19 +107,18 @@ export async function startLiveVoice(onEvent) {
     processor = audioContext.createScriptProcessor(4096, 1, 1);
     node.connect(processor);
     processor.connect(audioContext.destination);
-    processor.onaudioprocess = (ev) => {
-      if (ws?.readyState !== WebSocket.OPEN) return;
-      if (agentIsSpeaking()) return;
-      const pcm = floatToPCM16(ev.inputBuffer.getChannelData(0));
+    processor.onaudioprocess = (event) => {
+      if (ws?.readyState !== WebSocket.OPEN || agentIsSpeaking()) return;
+      const pcm = floatToPCM16(event.inputBuffer.getChannelData(0));
       ws.send(JSON.stringify({ type: 'audio', audio: b64FromBytes(new Uint8Array(pcm.buffer)) }));
     };
-    onEvent({ type: 'connected' });
   };
-  ws.onmessage = (m) => {
-    const e = JSON.parse(m.data);
-    if (e.type === 'audio') play(e.audio);
-    else if (e.type === 'interrupted') flushPlayback();
-    else onEvent(e);
+  ws.onmessage = (message) => {
+    const event = JSON.parse(message.data);
+    if (event.type === 'audio') play(event.audio);
+    else if (event.type === 'interrupted') flushPlayback();
+    else if (event.type === 'ready') onEvent({ type: 'connected' });
+    else onEvent(event);
   };
   ws.onerror = () => onEvent({ type: 'error', message: 'Voice connection error.' });
   ws.onclose = () => onEvent({ type: 'closed' });
@@ -128,9 +128,12 @@ export function stopLiveVoice() {
   flushPlayback();
   try { ws?.send(JSON.stringify({ type: 'hangup' })); } catch { /* closing */ }
   try { processor?.disconnect(); } catch { /* closing */ }
-  try { micStream?.getTracks().forEach((t) => t.stop()); } catch { /* closing */ }
+  try { micStream?.getTracks().forEach((track) => track.stop()); } catch { /* closing */ }
   try { ws?.close(); } catch { /* closing */ }
   try { audioContext?.close(); } catch { /* closing */ }
-  ws = null; processor = null; micStream = null; audioContext = null;
+  ws = null;
+  processor = null;
+  micStream = null;
+  audioContext = null;
   agentAudioUntil = 0;
 }

@@ -116,6 +116,7 @@ class OfficerSession {
     this.client = client;
     this.upstream = null;
     this.closed = false;
+    this.ready = false;
     this.responseActive = false;
     this.pendingTools = new Map(); // call_id -> azure call id (browser executes, we await)
   }
@@ -166,7 +167,6 @@ class OfficerSession {
         max_response_output_tokens: 400
       }
     });
-    this.toClient({ type: 'ready' });
   }
 
   // ── browser → server ────────────────────────────────────────────────
@@ -210,6 +210,13 @@ class OfficerSession {
     }
 
     switch (event.type) {
+      case 'session.updated':
+        if (!this.ready) {
+          this.ready = true;
+          this.toClient({ type: 'ready' });
+        }
+        break;
+
       case 'input_audio_buffer.speech_started':
         if (this.responseActive) {
           this.toAzure({ type: 'response.cancel' });

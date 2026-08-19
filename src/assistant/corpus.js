@@ -6,6 +6,23 @@ import REGULATION_DOCS from './regulations.generated.js';
 
 const CURATED_DOCS = [
   {
+    id: 'vic-ercop-v7-amendment',
+    title: 'Energy Retail Code of Practice Version 7 — Energy Consumer Reforms Amendment 2025',
+    scope: 'VIC only — Version 7 Schedule 4 commences 1 October 2026; automatic best offer, $1,000 disconnection threshold, payment methods, switching and concessions',
+    file: 'Energy Retail Code of Practice - Energy Consumer Reforms Amendment 2025.pdf',
+    sections: [
+      { page: 4, ref: 'cl 16A', text: 'A retailer must determine residential customer concession eligibility whenever reasonable and always when entering a contract, switching contracts, or when the customer first requests standard or tailored assistance.' },
+      { page: 11, ref: 'cl 72(2A)', text: 'A retailer must offer at least one commonly used and accessible payment method for which neither the retailer nor payment service provider imposes a charge.' },
+      { page: 12, ref: 'cl 111A', text: 'A retailer must maintain a simple and accessible deemed-best-offer switching process, including clear website instructions and both website and telephone switching paths.' },
+      { page: 13, ref: 'cl 132B', text: 'An eligible residential customer is receiving tailored assistance, or has been in arrears for at least three months with arrears of at least $1,000 per fuel. All residential customers in arrears must be checked at least every six months.' },
+      { page: 14, ref: 'cl 132C', text: 'The deemed-best-offer check is due within 10 business days after eligibility and at least every six months while eligibility continues, or every 12 months after an opt-out.' },
+      { page: 14, ref: 'cl 132D(1)', text: 'Where the check finds a cheaper deemed best offer, the intention-to-switch notice is due no later than 5 business days after the check.' },
+      { page: 16, ref: 'cl 132D(5)-(9)', text: 'The customer may opt out orally or in writing and receives 10 business days to do so. If they do not opt out, the retailer must switch without charge and preserve any government concession or rebate.' },
+      { page: 16, ref: 'cl 132G', text: 'The retailer must retain records, including the data inputs used for deemed-best-offer checks, sufficient to evidence compliance.' },
+      { page: 17, ref: 'cl 187(2)', text: 'A retailer or exempt electricity seller must not arrange disconnection where the customer’s total arrears are less than $1,000 inclusive of GST.' },
+    ]
+  },
+  {
     id: 'aer-2026',
     title: 'AER (Retail Law) Instrument 2026',
     scope: 'General — AER instrument, applies in all NERL states (NSW, QLD, SA, ACT, TAS)',
@@ -60,7 +77,7 @@ const CURATED_DOCS = [
   {
     id: 'best-offer',
     title: 'Best Offer Policy v2.1',
-    scope: 'VIC only — Victorian Energy Retail Code obligation; does not apply to NSW, QLD or SA customers',
+    scope: 'VIC only — pre-1 October 2026 policy; superseded by Version 7 for automatic best-offer switching',
     file: 'Best-Offer-Policy-v2.pdf',
     sections: [
       { page: 1, ref: 'cl 1.1', text: 'Victorian customers must be shown the best offer message on at least every third bill, comparing their current plan cost with our cheapest generally available plan for their usage.' },
@@ -95,6 +112,9 @@ const EXPANSIONS = {
   switch: ['best offer', 'better offer', 'retail offer', 'explicit informed consent', 'tariff'],
   'best offer': ['best offer', 'better offer', 'retail offer', 'tariff', 'switch'],
   consent: ['explicit informed consent', 'consent', 'opt out', 'opt-out'],
+  'direct debit': ['payment method', 'accessible', 'fee-free', 'charges', 'clause 72'],
+  concession: ['concession eligibility', 'rebate', 'clause 16A', 'preserve concession'],
+  '1 october': ['automatic best offer', '$1,000', 'three months', 'payment method', 'concession', 'switching process'],
   billing: ['bill', 'billing', 'undercharge', 'overcharge', 'estimated read', 'meter data'],
   reconcile: ['reconcile', 'data quality', 'record', 'information', 'billing error'],
   monitor: ['monitor', 'review', 'reassess', 'arrangement', 'ongoing assistance'],
@@ -115,6 +135,7 @@ function queryTerms(query) {
 /** Rank original PDF pages locally so only relevant evidence enters the model context. */
 export function retrieveSections(query, limit = 12) {
   const terms = queryTerms(query);
+  const version7Query = /version\s*7|1\s+october\s+2026|october\s+1,?\s+2026/i.test(String(query || ''));
   const ranked = [];
   for (const doc of DOCS) {
     const title = `${doc.title} ${doc.scope}`.toLowerCase();
@@ -127,6 +148,8 @@ export function retrieveSections(query, limit = 12) {
         score += Math.min(occurrences, 5) * (term.includes(' ') ? 5 : 2);
       }
       if (score > 0 && CURATED_IDS.has(doc.id)) score += 6;
+      if (version7Query && doc.id === 'vic-ercop-v7-amendment') score += 220;
+      if (version7Query && ['energy-retail-code-v6', 'best-offer'].includes(doc.id)) score -= 120;
       if (score > 0) ranked.push({ doc, section, score });
     }
   }
@@ -134,7 +157,8 @@ export function retrieveSections(query, limit = 12) {
   const perDocument = new Map();
   for (const hit of ranked.sort((a, b) => b.score - a.score || a.section.page - b.section.page)) {
     const count = perDocument.get(hit.doc.id) || 0;
-    if (count >= 3) continue;
+    const maxPerDocument = version7Query && hit.doc.id === 'vic-ercop-v7-amendment' ? 9 : 3;
+    if (count >= maxPerDocument) continue;
     selected.push(hit);
     perDocument.set(hit.doc.id, count + 1);
     if (selected.length === limit) break;

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { AskBar, Crumbs } from '../components/Chrome.jsx';
-import { QUEUE } from '../data/ops.js';
 
 const STATUS_TONE = {
   'Ready for review': 'ready',
@@ -12,9 +11,9 @@ const STATUS_TONE = {
   'Investigation open': 'wait',
 };
 
-export default function Customers({ openCase, decisions, initialQuery = '' }) {
+export default function Customers({ openCase, decisions, initialQuery = '', queue = [] }) {
   const [query, setQuery] = useState(initialQuery);
-  const matches = QUEUE.filter((item) => `${item.customer} ${item.id} ${item.state} ${item.team}`.toLowerCase().includes(query.toLowerCase()));
+  const matches = queue.filter((item) => `${item.customer} ${item.id} ${item.state} ${item.team || ''}`.toLowerCase().includes(query.toLowerCase()));
 
   return (
     <div className="page product-page">
