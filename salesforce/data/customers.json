@@ -1,0 +1,3902 @@
+[
+  {
+    "customer_id": "1001",
+    "name": "Maya Donnelly",
+    "segment": "below_floor",
+    "account": {
+      "balance": 849,
+      "oldest_debt_days": 38,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1002",
+    "name": "Rohan Kim",
+    "segment": "below_floor",
+    "account": {
+      "balance": 300,
+      "oldest_debt_days": 49,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "requested",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1003",
+    "name": "Sofia Bashir",
+    "segment": "exited",
+    "account": {
+      "balance": 214,
+      "oldest_debt_days": 41,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "exited",
+      "entered_at": "2025-11-08",
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1004",
+    "name": "Ruby Camilleri",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 462,
+      "oldest_debt_days": 214,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-05-11",
+      "review_due_at": "2026-10-04"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1005",
+    "name": "Zara Deng",
+    "segment": "below_floor",
+    "account": {
+      "balance": 194,
+      "oldest_debt_days": 80,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "rental stress"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1006",
+    "name": "Isla Webb",
+    "segment": "opted_out",
+    "account": {
+      "balance": 2032,
+      "oldest_debt_days": 186,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1007",
+    "name": "Freya Haddad",
+    "segment": "below_floor",
+    "account": {
+      "balance": 475,
+      "oldest_debt_days": 25,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1008",
+    "name": "Grace Whitlock",
+    "segment": "current",
+    "account": {
+      "balance": 3,
+      "oldest_debt_days": 7,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1009",
+    "name": "Nadia Donnelly",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1881,
+      "oldest_debt_days": 212,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1010",
+    "name": "Marcus Quinn",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1049,
+      "oldest_debt_days": 245,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1011",
+    "name": "Aisha Nakamura",
+    "segment": "exited",
+    "account": {
+      "balance": 154,
+      "oldest_debt_days": 20,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "exited",
+      "entered_at": "2025-08-01",
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1012",
+    "name": "Leilani Forsyth",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1513,
+      "oldest_debt_days": 95,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-07-12",
+      "review_due_at": "2026-08-26"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "reduced work hours"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1013",
+    "name": "Ethan Bashir",
+    "segment": "below_floor",
+    "account": {
+      "balance": 305,
+      "oldest_debt_days": 80,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "requested",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1014",
+    "name": "Aisha Vargas",
+    "segment": "opted_out",
+    "account": {
+      "balance": 1487,
+      "oldest_debt_days": 149,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1015",
+    "name": "Caleb Forsyth",
+    "segment": "below_floor",
+    "account": {
+      "balance": 167,
+      "oldest_debt_days": 29,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "rental stress"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1016",
+    "name": "Elena Haddad",
+    "segment": "opted_out",
+    "account": {
+      "balance": 2211,
+      "oldest_debt_days": 126,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1017",
+    "name": "Mateo Mahmoud",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1110,
+      "oldest_debt_days": 84,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-07-07",
+      "review_due_at": "2026-09-26"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1018",
+    "name": "Sofia Donnelly",
+    "segment": "below_floor",
+    "account": {
+      "balance": 535,
+      "oldest_debt_days": 54,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "requested",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1019",
+    "name": "Elena Vargas",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1946,
+      "oldest_debt_days": 116,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1020",
+    "name": "Leila Haddad",
+    "segment": "current",
+    "account": {
+      "balance": 26,
+      "oldest_debt_days": 15,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1021",
+    "name": "Felix Silva",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1978,
+      "oldest_debt_days": 218,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 4,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1022",
+    "name": "Enzo Rossi",
+    "segment": "current",
+    "account": {
+      "balance": 21,
+      "oldest_debt_days": 15,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1023",
+    "name": "Blake Sharma",
+    "segment": "current",
+    "account": {
+      "balance": 55,
+      "oldest_debt_days": 11,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1024",
+    "name": "Enzo Brennan",
+    "segment": "opted_out",
+    "account": {
+      "balance": 1944,
+      "oldest_debt_days": 182,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1025",
+    "name": "Noah Adeyemi",
+    "segment": "below_floor",
+    "account": {
+      "balance": 348,
+      "oldest_debt_days": 81,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1026",
+    "name": "Blake Fraser",
+    "segment": "below_floor",
+    "account": {
+      "balance": 413,
+      "oldest_debt_days": 39,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1027",
+    "name": "Ken Camilleri",
+    "segment": "below_floor",
+    "account": {
+      "balance": 614,
+      "oldest_debt_days": 43,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "business downturn"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1028",
+    "name": "Jia Larsen",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 966,
+      "oldest_debt_days": 297,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-07-24",
+      "review_due_at": "2026-09-17"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1029",
+    "name": "Leila Haddad",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 2283,
+      "oldest_debt_days": 204,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-04-02",
+      "review_due_at": "2026-12-08"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1030",
+    "name": "Ken Lombardi",
+    "segment": "below_floor",
+    "account": {
+      "balance": 716,
+      "oldest_debt_days": 26,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "requested",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1031",
+    "name": "Fatima Nakamura",
+    "segment": "current",
+    "account": {
+      "balance": 72,
+      "oldest_debt_days": 20,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1032",
+    "name": "Marcus Larsen",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1069,
+      "oldest_debt_days": 241,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1033",
+    "name": "Ethan Brennan",
+    "segment": "current",
+    "account": {
+      "balance": 88,
+      "oldest_debt_days": 15,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1034",
+    "name": "Liam Tupou",
+    "segment": "current",
+    "account": {
+      "balance": 107,
+      "oldest_debt_days": 15,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1035",
+    "name": "Leila Faletau",
+    "segment": "exited",
+    "account": {
+      "balance": 247,
+      "oldest_debt_days": 26,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "exited",
+      "entered_at": "2025-09-12",
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1036",
+    "name": "Yuki Raman",
+    "segment": "both_rules",
+    "account": {
+      "balance": 2958,
+      "oldest_debt_days": 157,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 4,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "carer responsibilities"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1037",
+    "name": "Ken Larsen",
+    "segment": "below_floor",
+    "account": {
+      "balance": 623,
+      "oldest_debt_days": 32,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1038",
+    "name": "Lucas Fraser",
+    "segment": "below_floor",
+    "account": {
+      "balance": 509,
+      "oldest_debt_days": 59,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "reduced work hours"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1039",
+    "name": "Noah Muller",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 638,
+      "oldest_debt_days": 109,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-03-08",
+      "review_due_at": "2026-12-15"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "reduced work hours"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1040",
+    "name": "Rosa Novak",
+    "segment": "opted_out",
+    "account": {
+      "balance": 2257,
+      "oldest_debt_days": 99,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1041",
+    "name": "Blake Okafor",
+    "segment": "current",
+    "account": {
+      "balance": 109,
+      "oldest_debt_days": 11,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1042",
+    "name": "Dev Patel",
+    "segment": "below_floor",
+    "account": {
+      "balance": 789,
+      "oldest_debt_days": 75,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1043",
+    "name": "Leila Salib",
+    "segment": "current",
+    "account": {
+      "balance": 53,
+      "oldest_debt_days": 8,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1044",
+    "name": "Ruby Watanabe",
+    "segment": "below_floor",
+    "account": {
+      "balance": 436,
+      "oldest_debt_days": 48,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "rental stress"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1045",
+    "name": "Enzo Nguyen",
+    "segment": "below_floor",
+    "account": {
+      "balance": 262,
+      "oldest_debt_days": 43,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1046",
+    "name": "Angus Novak",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1792,
+      "oldest_debt_days": 179,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-03-02",
+      "review_due_at": "2026-09-01"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "business downturn"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1047",
+    "name": "Marcus Quinn",
+    "segment": "current",
+    "account": {
+      "balance": 38,
+      "oldest_debt_days": 12,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1048",
+    "name": "Jack Whitlock",
+    "segment": "below_floor",
+    "account": {
+      "balance": 814,
+      "oldest_debt_days": 83,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1049",
+    "name": "Leila Nakamura",
+    "segment": "current",
+    "account": {
+      "balance": 4,
+      "oldest_debt_days": 6,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1050",
+    "name": "Jack Okonkwo",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1890,
+      "oldest_debt_days": 188,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-06-10",
+      "review_due_at": "2026-11-24"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "reduced work hours"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1051",
+    "name": "Jia Sharma",
+    "segment": "exited",
+    "account": {
+      "balance": 101,
+      "oldest_debt_days": 32,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "exited",
+      "entered_at": "2025-10-05",
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1052",
+    "name": "Isla Lombardi",
+    "segment": "current",
+    "account": {
+      "balance": 65,
+      "oldest_debt_days": 3,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1053",
+    "name": "Felix Raman",
+    "segment": "below_floor",
+    "account": {
+      "balance": 833,
+      "oldest_debt_days": 55,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1054",
+    "name": "Rohan Deng",
+    "segment": "current",
+    "account": {
+      "balance": 35,
+      "oldest_debt_days": 0,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1055",
+    "name": "Oliver Haddad",
+    "segment": "current",
+    "account": {
+      "balance": 50,
+      "oldest_debt_days": 11,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1056",
+    "name": "Maya Mercer",
+    "segment": "current",
+    "account": {
+      "balance": 34,
+      "oldest_debt_days": 16,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1057",
+    "name": "Leila Faletau",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1893,
+      "oldest_debt_days": 142,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "rental stress"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1058",
+    "name": "Ken Donnelly",
+    "segment": "both_rules",
+    "account": {
+      "balance": 2079,
+      "oldest_debt_days": 134,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1059",
+    "name": "Lucas Adeyemi",
+    "segment": "current",
+    "account": {
+      "balance": 40,
+      "oldest_debt_days": 1,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1060",
+    "name": "Mateo Haddad",
+    "segment": "current",
+    "account": {
+      "balance": 81,
+      "oldest_debt_days": 15,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1061",
+    "name": "Freya Hoang",
+    "segment": "opted_out",
+    "account": {
+      "balance": 2460,
+      "oldest_debt_days": 155,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1062",
+    "name": "Isla Kim",
+    "segment": "both_rules",
+    "account": {
+      "balance": 2640,
+      "oldest_debt_days": 196,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 5,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1063",
+    "name": "Elena Iyer",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 606,
+      "oldest_debt_days": 292,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-05-11",
+      "review_due_at": "2026-11-05"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "business downturn"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1064",
+    "name": "Leilani Bashir",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 834,
+      "oldest_debt_days": 43,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 4
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-04-14",
+      "review_due_at": "2026-12-14"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "reduced work hours"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1065",
+    "name": "Zara Deng",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 494,
+      "oldest_debt_days": 72,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 4
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-03-28",
+      "review_due_at": "2026-09-22"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1066",
+    "name": "Liam Lombardi",
+    "segment": "current",
+    "account": {
+      "balance": 26,
+      "oldest_debt_days": 3,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1067",
+    "name": "Ruby Watanabe",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1693,
+      "oldest_debt_days": 209,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-03-13",
+      "review_due_at": "2026-08-07"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1068",
+    "name": "Arjun Watanabe",
+    "segment": "exited",
+    "account": {
+      "balance": 108,
+      "oldest_debt_days": 20,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "exited",
+      "entered_at": "2025-11-24",
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1069",
+    "name": "Yuki Nakamura",
+    "segment": "current",
+    "account": {
+      "balance": 101,
+      "oldest_debt_days": 14,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1070",
+    "name": "Leilani Vargas",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1045,
+      "oldest_debt_days": 106,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-02-01",
+      "review_due_at": "2026-11-10"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1071",
+    "name": "Rohan Mahmoud",
+    "segment": "exited",
+    "account": {
+      "balance": 23,
+      "oldest_debt_days": 16,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "exited",
+      "entered_at": "2025-08-29",
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1072",
+    "name": "Anika Webb",
+    "segment": "exited",
+    "account": {
+      "balance": 242,
+      "oldest_debt_days": 12,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "exited",
+      "entered_at": "2025-08-05",
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1073",
+    "name": "Cooper Donnelly",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1508,
+      "oldest_debt_days": 271,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 4
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-02-22",
+      "review_due_at": "2026-08-26"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1074",
+    "name": "Zara Faletau",
+    "segment": "below_floor",
+    "account": {
+      "balance": 258,
+      "oldest_debt_days": 72,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1075",
+    "name": "Ravi Mahmoud",
+    "segment": "current",
+    "account": {
+      "balance": 50,
+      "oldest_debt_days": 8,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1076",
+    "name": "Lucas Donnelly",
+    "segment": "opted_out",
+    "account": {
+      "balance": 1688,
+      "oldest_debt_days": 127,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 4,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1077",
+    "name": "Noah Muller",
+    "segment": "below_floor",
+    "account": {
+      "balance": 551,
+      "oldest_debt_days": 66,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1078",
+    "name": "Hugo Nguyen",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1804,
+      "oldest_debt_days": 170,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1079",
+    "name": "Sofia Okafor",
+    "segment": "opted_out",
+    "account": {
+      "balance": 1082,
+      "oldest_debt_days": 195,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 4,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "rental stress"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1080",
+    "name": "Dev Dube",
+    "segment": "current",
+    "account": {
+      "balance": 6,
+      "oldest_debt_days": 5,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1081",
+    "name": "Rohan Muller",
+    "segment": "below_floor",
+    "account": {
+      "balance": 571,
+      "oldest_debt_days": 76,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1082",
+    "name": "Rosa Whitlock",
+    "segment": "current",
+    "account": {
+      "balance": 6,
+      "oldest_debt_days": 14,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1083",
+    "name": "Oliver Iyer",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1115,
+      "oldest_debt_days": 279,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-05-22",
+      "review_due_at": "2026-09-10"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "carer responsibilities"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1084",
+    "name": "Sara Nakamura",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 247,
+      "oldest_debt_days": 142,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-07-18",
+      "review_due_at": "2026-08-22"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1085",
+    "name": "Felix Marsh",
+    "segment": "below_floor",
+    "account": {
+      "balance": 323,
+      "oldest_debt_days": 49,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1086",
+    "name": "Ravi Petrov",
+    "segment": "below_floor",
+    "account": {
+      "balance": 844,
+      "oldest_debt_days": 61,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1087",
+    "name": "Sara Mahmoud",
+    "segment": "below_floor",
+    "account": {
+      "balance": 754,
+      "oldest_debt_days": 66,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1088",
+    "name": "Tom Watanabe",
+    "segment": "current",
+    "account": {
+      "balance": 113,
+      "oldest_debt_days": 20,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1089",
+    "name": "Dev Reyes",
+    "segment": "opted_out",
+    "account": {
+      "balance": 2479,
+      "oldest_debt_days": 165,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1090",
+    "name": "Hana Haddad",
+    "segment": "current",
+    "account": {
+      "balance": 54,
+      "oldest_debt_days": 2,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1091",
+    "name": "Amelia Faletau",
+    "segment": "below_floor",
+    "account": {
+      "balance": 833,
+      "oldest_debt_days": 78,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1092",
+    "name": "Omar Donnelly",
+    "segment": "exited",
+    "account": {
+      "balance": 66,
+      "oldest_debt_days": 28,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "exited",
+      "entered_at": "2025-08-28",
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1093",
+    "name": "Ivy Watanabe",
+    "segment": "below_floor",
+    "account": {
+      "balance": 782,
+      "oldest_debt_days": 47,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1094",
+    "name": "Cooper Kovac",
+    "segment": "current",
+    "account": {
+      "balance": 76,
+      "oldest_debt_days": 16,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1095",
+    "name": "Fatima Watanabe",
+    "segment": "below_floor",
+    "account": {
+      "balance": 653,
+      "oldest_debt_days": 88,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "requested",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1096",
+    "name": "Leilani Sutton",
+    "segment": "below_floor",
+    "account": {
+      "balance": 615,
+      "oldest_debt_days": 55,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1097",
+    "name": "Arjun Kovac",
+    "segment": "current",
+    "account": {
+      "balance": 114,
+      "oldest_debt_days": 17,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1098",
+    "name": "Maya Barlow",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 2330,
+      "oldest_debt_days": 116,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-03-02",
+      "review_due_at": "2026-08-23"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1099",
+    "name": "Fatima Watanabe",
+    "segment": "below_floor",
+    "account": {
+      "balance": 217,
+      "oldest_debt_days": 47,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1100",
+    "name": "Freya Abbas",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1233,
+      "oldest_debt_days": 182,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 4
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-04-18",
+      "review_due_at": "2026-08-31"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1101",
+    "name": "Hugo Quinn",
+    "segment": "below_floor",
+    "account": {
+      "balance": 720,
+      "oldest_debt_days": 57,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1102",
+    "name": "Zara Sharma",
+    "segment": "current",
+    "account": {
+      "balance": 70,
+      "oldest_debt_days": 11,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1103",
+    "name": "Enzo Watanabe",
+    "segment": "current",
+    "account": {
+      "balance": 73,
+      "oldest_debt_days": 11,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1104",
+    "name": "Marcus Kovac",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 275,
+      "oldest_debt_days": 295,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-07-10",
+      "review_due_at": "2026-10-27"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "rental stress"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1105",
+    "name": "Dev Vargas",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1264,
+      "oldest_debt_days": 275,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 4
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-06-12",
+      "review_due_at": "2026-11-15"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1106",
+    "name": "Ethan Mahmoud",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1538,
+      "oldest_debt_days": 147,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1107",
+    "name": "Isla Deng",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1008,
+      "oldest_debt_days": 62,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-05-15",
+      "review_due_at": "2026-08-15"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "business downturn"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1108",
+    "name": "Talia Okafor",
+    "segment": "below_floor",
+    "account": {
+      "balance": 576,
+      "oldest_debt_days": 34,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1109",
+    "name": "Mia Quinn",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1472,
+      "oldest_debt_days": 218,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-06-02",
+      "review_due_at": "2026-08-26"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1110",
+    "name": "Hugo Silva",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1898,
+      "oldest_debt_days": 257,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 4,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "carer responsibilities"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1111",
+    "name": "Lucas Okonkwo",
+    "segment": "opted_out",
+    "account": {
+      "balance": 2143,
+      "oldest_debt_days": 117,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 4,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1112",
+    "name": "Hana Iyer",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1044,
+      "oldest_debt_days": 73,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 3,
+      "partial_payments_90d": 4
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-03-01",
+      "review_due_at": "2026-10-18"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "carer responsibilities"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1113",
+    "name": "Sione Faletau",
+    "segment": "current",
+    "account": {
+      "balance": 100,
+      "oldest_debt_days": 3,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1114",
+    "name": "Liam Webb",
+    "segment": "current",
+    "account": {
+      "balance": 42,
+      "oldest_debt_days": 8,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1115",
+    "name": "Isla Quinn",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1800,
+      "oldest_debt_days": 262,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-07-27",
+      "review_due_at": "2026-10-17"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "carer responsibilities"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1116",
+    "name": "Felix Novak",
+    "segment": "both_rules",
+    "account": {
+      "balance": 2414,
+      "oldest_debt_days": 140,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 4,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1117",
+    "name": "Oliver Larsen",
+    "segment": "below_floor",
+    "account": {
+      "balance": 266,
+      "oldest_debt_days": 42,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1118",
+    "name": "Sofia Quinn",
+    "segment": "below_floor",
+    "account": {
+      "balance": 575,
+      "oldest_debt_days": 38,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1119",
+    "name": "Rosa Vargas",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1101,
+      "oldest_debt_days": 157,
+      "current_plan": "Hardship Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-04-02",
+      "review_due_at": "2026-08-14"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "business downturn"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1120",
+    "name": "Ken Camilleri",
+    "segment": "exited",
+    "account": {
+      "balance": 296,
+      "oldest_debt_days": 26,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "exited",
+      "entered_at": "2025-11-08",
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1121",
+    "name": "Leilani Mahmoud",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1394,
+      "oldest_debt_days": 247,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 5,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1122",
+    "name": "Dev Kim",
+    "segment": "opted_out",
+    "account": {
+      "balance": 1859,
+      "oldest_debt_days": 104,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 4,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1123",
+    "name": "Elena Iyer",
+    "segment": "both_rules",
+    "account": {
+      "balance": 2410,
+      "oldest_debt_days": 164,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "rental stress"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1124",
+    "name": "Caleb Quinn",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1367,
+      "oldest_debt_days": 96,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 4
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-03-01",
+      "review_due_at": "2026-11-28"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1125",
+    "name": "Leilani Silva",
+    "segment": "below_floor",
+    "account": {
+      "balance": 701,
+      "oldest_debt_days": 35,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "job loss"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1126",
+    "name": "Yuki Iyer",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1447,
+      "oldest_debt_days": 133,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "carer responsibilities"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1127",
+    "name": "Hana Muller",
+    "segment": "opted_out",
+    "account": {
+      "balance": 1734,
+      "oldest_debt_days": 95,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "rental stress"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1128",
+    "name": "Ethan Marsh",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 241,
+      "oldest_debt_days": 231,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-03-12",
+      "review_due_at": "2026-11-12"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1129",
+    "name": "Caleb Deng",
+    "segment": "current",
+    "account": {
+      "balance": 99,
+      "oldest_debt_days": 10,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1130",
+    "name": "Oliver Whitlock",
+    "segment": "current",
+    "account": {
+      "balance": 100,
+      "oldest_debt_days": 9,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1131",
+    "name": "Talia Haddad",
+    "segment": "below_floor",
+    "account": {
+      "balance": 547,
+      "oldest_debt_days": 49,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1132",
+    "name": "Tom Marsh",
+    "segment": "below_floor",
+    "account": {
+      "balance": 835,
+      "oldest_debt_days": 80,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1133",
+    "name": "Ethan Novak",
+    "segment": "current",
+    "account": {
+      "balance": 68,
+      "oldest_debt_days": 18,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1134",
+    "name": "Freya Kovac",
+    "segment": "opted_out",
+    "account": {
+      "balance": 2416,
+      "oldest_debt_days": 176,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "carer responsibilities"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1135",
+    "name": "Sara Reyes",
+    "segment": "below_floor",
+    "account": {
+      "balance": 608,
+      "oldest_debt_days": 83,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1136",
+    "name": "Ethan Kaur",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1809,
+      "oldest_debt_days": 179,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 4,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "rental stress"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1137",
+    "name": "Hugo Okafor",
+    "segment": "current",
+    "account": {
+      "balance": 27,
+      "oldest_debt_days": 5,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1138",
+    "name": "Ravi Haddad",
+    "segment": "both_rules",
+    "account": {
+      "balance": 1227,
+      "oldest_debt_days": 219,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 5,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "carer responsibilities"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1139",
+    "name": "Nadia Rossi",
+    "segment": "below_floor",
+    "account": {
+      "balance": 247,
+      "oldest_debt_days": 78,
+      "current_plan": "Standard Flexi"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1140",
+    "name": "Daniel Iyer",
+    "segment": "current",
+    "account": {
+      "balance": 97,
+      "oldest_debt_days": 3,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1141",
+    "name": "Mia Salib",
+    "segment": "below_floor",
+    "account": {
+      "balance": 642,
+      "oldest_debt_days": 63,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "requested",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "business downturn"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1142",
+    "name": "Liam Fraser",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 560,
+      "oldest_debt_days": 246,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-06-27",
+      "review_due_at": "2026-11-08"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1143",
+    "name": "Chloe Mahmoud",
+    "segment": "below_floor",
+    "account": {
+      "balance": 152,
+      "oldest_debt_days": 69,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 2
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1144",
+    "name": "Ruby Kovac",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 1018,
+      "oldest_debt_days": 228,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-05-23",
+      "review_due_at": "2026-11-11"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "separation"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1145",
+    "name": "Tom Camilleri",
+    "segment": "on_hardship",
+    "account": {
+      "balance": 2037,
+      "oldest_debt_days": 95,
+      "current_plan": "Assisted Essentials"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "active",
+      "entered_at": "2026-04-09",
+      "review_due_at": "2026-11-03"
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "medical costs"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1146",
+    "name": "Marcus Marsh",
+    "segment": "below_floor",
+    "account": {
+      "balance": 736,
+      "oldest_debt_days": 77,
+      "current_plan": "Solar Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "requested",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1147",
+    "name": "Sofia Fraser",
+    "segment": "both_rules",
+    "account": {
+      "balance": 2574,
+      "oldest_debt_days": 190,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 3
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "bereavement"
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1148",
+    "name": "Zara Faletau",
+    "segment": "current",
+    "account": {
+      "balance": 22,
+      "oldest_debt_days": 6,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 0,
+      "partial_payments_90d": 1
+    },
+    "hardship": {
+      "status": "none",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  },
+  {
+    "customer_id": "1149",
+    "name": "Omar Dube",
+    "segment": "below_floor",
+    "account": {
+      "balance": 364,
+      "oldest_debt_days": 45,
+      "current_plan": "Everyday Saver"
+    },
+    "payments": {
+      "missed_payments_90d": 1,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "requested",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": true,
+      "reason": "business downturn"
+    },
+    "preferences": {
+      "best_offer_opt_out": true
+    }
+  },
+  {
+    "customer_id": "1150",
+    "name": "Enzo Hart",
+    "segment": "below_floor",
+    "account": {
+      "balance": 721,
+      "oldest_debt_days": 49,
+      "current_plan": "Time-of-Use Plus"
+    },
+    "payments": {
+      "missed_payments_90d": 2,
+      "partial_payments_90d": 0
+    },
+    "hardship": {
+      "status": "requested",
+      "entered_at": null,
+      "review_due_at": null
+    },
+    "crm": {
+      "financial_stress_signal": false,
+      "reason": null
+    },
+    "preferences": {
+      "best_offer_opt_out": false
+    }
+  }
+]
