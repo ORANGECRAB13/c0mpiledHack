@@ -1,0 +1,80 @@
+{
+  "version": "TARIFF_TABLE_V1",
+  "provenance": {
+    "what": "A declared demo tariff set for the six retail plan names that appear in the Salesforce org (Everyday Saver, Standard Flexi, Time-of-Use Plus, Solar Saver, Assisted Essentials, Hardship Saver).",
+    "isNot": "NOT a retailer's live pricing. These rates were authored for this deployment. They are not quoted, not sourced from a Victorian Default Offer determination, not from the Victorian Energy Compare feed, and not from any retailer price fact sheet.",
+    "useConstraint": "Any saving computed from this table is a MODELLED estimate. It may be used to prioritise a best-offer review; it must not be presented to a customer as a quoted offer, and it is not evidence that a cl 132C best-offer check was performed against real market pricing.",
+    "effectiveFrom": "2026-07-01",
+    "jurisdiction": "VIC",
+    "fuel": "electricity",
+    "currency": "AUD",
+    "gstBasis": "GST_INCLUSIVE",
+    "author": "Vocare decision layer (demo dataset)",
+    "replaceWith": "A live retailer/VEC pricing integration. When one exists, register it as a separate PRICING_PROVIDER and retire this table."
+  },
+  "assumptions": {
+    "daysPerYear": 365,
+    "daysPerMonth": 30.4375,
+    "singleFuelElectricityOnly": true,
+    "flatRateEquivalent": "Time-of-Use Plus is modelled at a single blended c/kWh. Without interval data we cannot split peak/shoulder/off-peak, so its rate is a flat-rate equivalent and a customer with an unusual load shape will be mispriced."
+  },
+  "plans": [
+    {
+      "planId": "Everyday Saver",
+      "usageRateCentsPerKwh": 28.5,
+      "dailySupplyCents": 110.0,
+      "discountFraction": 0.0,
+      "exitFeeDollars": 0,
+      "eligibility": {}
+    },
+    {
+      "planId": "Standard Flexi",
+      "usageRateCentsPerKwh": 32.0,
+      "dailySupplyCents": 125.0,
+      "discountFraction": 0.0,
+      "exitFeeDollars": 0,
+      "eligibility": {}
+    },
+    {
+      "planId": "Time-of-Use Plus",
+      "usageRateCentsPerKwh": 30.5,
+      "dailySupplyCents": 118.0,
+      "discountFraction": 0.03,
+      "exitFeeDollars": 55,
+      "eligibility": { "note": "Modelled as a flat-rate equivalent; see assumptions.flatRateEquivalent." }
+    },
+    {
+      "planId": "Solar Saver",
+      "usageRateCentsPerKwh": 31.0,
+      "dailySupplyCents": 105.0,
+      "discountFraction": 0.0,
+      "exitFeeDollars": 45,
+      "eligibility": {
+        "requiresSolar": true,
+        "note": "Only meaningful with an exporting solar system. The snapshot carries no solar marker, so this plan is never recommended to a customer not already on it."
+      }
+    },
+    {
+      "planId": "Assisted Essentials",
+      "usageRateCentsPerKwh": 26.0,
+      "dailySupplyCents": 95.0,
+      "discountFraction": 0.1,
+      "exitFeeDollars": 0,
+      "eligibility": {
+        "hardshipOnly": true,
+        "note": "Tailored-assistance plan. Offered only to customers in hardship."
+      }
+    },
+    {
+      "planId": "Hardship Saver",
+      "usageRateCentsPerKwh": 25.5,
+      "dailySupplyCents": 88.0,
+      "discountFraction": 0.12,
+      "exitFeeDollars": 0,
+      "eligibility": {
+        "hardshipOnly": true,
+        "note": "Tailored-assistance plan. Offered only to customers in hardship."
+      }
+    }
+  ]
+}

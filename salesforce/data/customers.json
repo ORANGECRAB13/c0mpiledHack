@@ -22,6 +22,10 @@
       "reason": "job loss",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6036,
+      "seasonality": 0.2
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -48,6 +52,10 @@
       "financial_stress_signal": true,
       "reason": "medical costs",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5493,
+      "seasonality": 0.2
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -76,6 +84,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5674,
+      "seasonality": 0.24
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -102,6 +114,10 @@
       "financial_stress_signal": true,
       "reason": "separation",
       "sensitive_customer": true
+    },
+    "usage": {
+      "annual_kwh": 6579,
+      "seasonality": 0.2
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -130,6 +146,10 @@
       "reason": "rental stress",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6760,
+      "seasonality": 0.24
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -156,6 +176,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6217,
+      "seasonality": 0.24
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -184,6 +208,10 @@
       "reason": "bereavement",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6398,
+      "seasonality": 0.28
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -210,6 +238,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7303,
+      "seasonality": 0.24
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -238,6 +270,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7484,
+      "seasonality": 0.27
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -264,6 +300,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5646,
+      "seasonality": 0.22
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -292,6 +332,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5465,
+      "seasonality": 0.18
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -318,6 +362,10 @@
       "financial_stress_signal": true,
       "reason": "reduced work hours",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6008,
+      "seasonality": 0.18
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -346,6 +394,10 @@
       "reason": "medical costs",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5827,
+      "seasonality": 0.26
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -372,6 +424,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 4922,
+      "seasonality": 0.18
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -400,6 +456,10 @@
       "reason": "rental stress",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 4741,
+      "seasonality": 0.26
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -426,6 +486,10 @@
       "financial_stress_signal": true,
       "reason": "job loss",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5284,
+      "seasonality": 0.26
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -454,6 +518,10 @@
       "reason": "job loss",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5103,
+      "seasonality": 0.22
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -480,6 +548,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7094,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -508,6 +580,10 @@
       "reason": "bereavement",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6913,
+      "seasonality": 0.25
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -534,6 +610,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5437,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -562,6 +642,10 @@
       "reason": "medical costs",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5618,
+      "seasonality": 0.19
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -588,6 +672,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5799,
+      "seasonality": 0.23
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -616,6 +704,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5980,
+      "seasonality": 0.27
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -642,6 +734,10 @@
       "financial_stress_signal": true,
       "reason": "bereavement",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6161,
+      "seasonality": 0.19
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -670,6 +766,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6342,
+      "seasonality": 0.23
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -696,6 +796,10 @@
       "financial_stress_signal": true,
       "reason": "separation",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6523,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -724,6 +828,10 @@
       "reason": "business downturn",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6704,
+      "seasonality": 0.19
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -750,6 +858,10 @@
       "financial_stress_signal": true,
       "reason": "bereavement",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3989,
+      "seasonality": 0.2
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -778,6 +890,10 @@
       "reason": "job loss",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 4170,
+      "seasonality": 0.24
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -804,6 +920,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6796,
+      "seasonality": 0.23
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -832,6 +952,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6615,
+      "seasonality": 0.19
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -858,6 +982,10 @@
       "financial_stress_signal": true,
       "reason": "separation",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6434,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -886,6 +1014,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6253,
+      "seasonality": 0.23
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -912,6 +1044,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7520,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -940,6 +1076,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7339,
+      "seasonality": 0.23
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -966,6 +1106,10 @@
       "financial_stress_signal": true,
       "reason": "carer responsibilities",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7158,
+      "seasonality": 0.19
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -994,6 +1138,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6977,
+      "seasonality": 0.27
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1020,6 +1168,10 @@
       "financial_stress_signal": true,
       "reason": "reduced work hours",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5348,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1048,6 +1200,10 @@
       "reason": "reduced work hours",
       "sensitive_customer": true
     },
+    "usage": {
+      "annual_kwh": 5167,
+      "seasonality": 0.23
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1074,6 +1230,10 @@
       "financial_stress_signal": true,
       "reason": "job loss",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6587,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -1102,6 +1262,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6768,
+      "seasonality": 0.21
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1128,6 +1292,10 @@
       "financial_stress_signal": true,
       "reason": "medical costs",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6225,
+      "seasonality": 0.21
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1156,6 +1324,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6406,
+      "seasonality": 0.25
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1182,6 +1354,10 @@
       "financial_stress_signal": true,
       "reason": "rental stress",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5863,
+      "seasonality": 0.25
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1210,6 +1386,10 @@
       "reason": "medical costs",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6044,
+      "seasonality": 0.29
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1236,6 +1416,10 @@
       "financial_stress_signal": true,
       "reason": "business downturn",
       "sensitive_customer": true
+    },
+    "usage": {
+      "annual_kwh": 5501,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1264,6 +1448,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5682,
+      "seasonality": 0.21
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1290,6 +1478,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5139,
+      "seasonality": 0.21
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1318,6 +1510,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5320,
+      "seasonality": 0.25
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1344,6 +1540,10 @@
       "financial_stress_signal": true,
       "reason": "reduced work hours",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5986,
+      "seasonality": 0.28
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1372,6 +1572,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5805,
+      "seasonality": 0.24
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -1398,6 +1602,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": true
+    },
+    "usage": {
+      "annual_kwh": 6348,
+      "seasonality": 0.24
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1426,6 +1634,10 @@
       "reason": "job loss",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6167,
+      "seasonality": 0.2
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1452,6 +1664,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6710,
+      "seasonality": 0.2
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1480,6 +1696,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6529,
+      "seasonality": 0.28
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1506,6 +1726,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7072,
+      "seasonality": 0.28
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1534,6 +1758,10 @@
       "reason": "rental stress",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6891,
+      "seasonality": 0.24
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1560,6 +1788,10 @@
       "financial_stress_signal": true,
       "reason": "separation",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7434,
+      "seasonality": 0.24
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1588,6 +1820,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7253,
+      "seasonality": 0.2
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1614,6 +1850,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3641,
+      "seasonality": 0.19
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1642,6 +1882,10 @@
       "reason": "job loss",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3822,
+      "seasonality": 0.23
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -1668,6 +1912,10 @@
       "financial_stress_signal": true,
       "reason": "job loss",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 4003,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1696,6 +1944,10 @@
       "reason": "business downturn",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 4184,
+      "seasonality": 0.19
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1722,6 +1974,10 @@
       "financial_stress_signal": true,
       "reason": "reduced work hours",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 2917,
+      "seasonality": 0.28
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1750,6 +2006,10 @@
       "reason": "job loss",
       "sensitive_customer": true
     },
+    "usage": {
+      "annual_kwh": 3098,
+      "seasonality": 0.2
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1776,6 +2036,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3279,
+      "seasonality": 0.23
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1804,6 +2068,10 @@
       "reason": "separation",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3460,
+      "seasonality": 0.27
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -1830,6 +2098,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5089,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1858,6 +2130,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5270,
+      "seasonality": 0.19
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1884,6 +2160,10 @@
       "financial_stress_signal": true,
       "reason": "bereavement",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3432,
+      "seasonality": 0.25
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1912,6 +2192,10 @@
       "reason": null,
       "sensitive_customer": true
     },
+    "usage": {
+      "annual_kwh": 3251,
+      "seasonality": 0.21
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1938,6 +2222,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3070,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1966,6 +2254,10 @@
       "reason": "separation",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 2889,
+      "seasonality": 0.25
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -1992,6 +2284,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 2708,
+      "seasonality": 0.21
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2020,6 +2316,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7927,
+      "seasonality": 0.29
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2046,6 +2346,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7746,
+      "seasonality": 0.25
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -2074,6 +2378,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7565,
+      "seasonality": 0.21
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2100,6 +2408,10 @@
       "financial_stress_signal": true,
       "reason": "job loss",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 4880,
+      "seasonality": 0.21
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2128,6 +2440,10 @@
       "reason": "rental stress",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 4699,
+      "seasonality": 0.29
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -2154,6 +2470,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3223,
+      "seasonality": 0.19
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2182,6 +2502,10 @@
       "reason": "medical costs",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3404,
+      "seasonality": 0.23
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2208,6 +2532,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 2861,
+      "seasonality": 0.23
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2236,6 +2564,10 @@
       "reason": "carer responsibilities",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3042,
+      "seasonality": 0.27
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -2262,6 +2594,10 @@
       "financial_stress_signal": true,
       "reason": "separation",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3947,
+      "seasonality": 0.23
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2290,6 +2626,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 4128,
+      "seasonality": 0.27
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2316,6 +2656,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3585,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2344,6 +2688,10 @@
       "reason": "bereavement",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3766,
+      "seasonality": 0.19
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2370,6 +2718,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7175,
+      "seasonality": 0.23
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2398,6 +2750,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7356,
+      "seasonality": 0.27
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -2424,6 +2780,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": true
+    },
+    "usage": {
+      "annual_kwh": 3014,
+      "seasonality": 0.25
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -2452,6 +2812,10 @@
       "reason": "separation",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 2833,
+      "seasonality": 0.21
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2478,6 +2842,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3376,
+      "seasonality": 0.21
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2506,6 +2874,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3195,
+      "seasonality": 0.29
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2532,6 +2904,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7690,
+      "seasonality": 0.21
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2560,6 +2936,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7509,
+      "seasonality": 0.29
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2586,6 +2966,10 @@
       "financial_stress_signal": true,
       "reason": "bereavement",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 2652,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2614,6 +2998,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7871,
+      "seasonality": 0.25
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2640,6 +3028,10 @@
       "financial_stress_signal": true,
       "reason": "bereavement",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6966,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2668,6 +3060,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6785,
+      "seasonality": 0.25
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2694,6 +3090,10 @@
       "financial_stress_signal": true,
       "reason": "medical costs",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3196,
+      "seasonality": 0.23
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2722,6 +3122,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3015,
+      "seasonality": 0.19
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2748,6 +3152,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 2834,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2776,6 +3184,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 2653,
+      "seasonality": 0.23
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -2802,6 +3214,10 @@
       "financial_stress_signal": true,
       "reason": "rental stress",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3920,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2830,6 +3246,10 @@
       "reason": "job loss",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3739,
+      "seasonality": 0.23
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2856,6 +3276,10 @@
       "financial_stress_signal": true,
       "reason": "separation",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3558,
+      "seasonality": 0.19
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2884,6 +3308,10 @@
       "reason": "business downturn",
       "sensitive_customer": true
     },
+    "usage": {
+      "annual_kwh": 3377,
+      "seasonality": 0.27
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2910,6 +3338,10 @@
       "financial_stress_signal": true,
       "reason": "bereavement",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7148,
+      "seasonality": 0.27
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2938,6 +3370,10 @@
       "reason": "medical costs",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6967,
+      "seasonality": 0.24
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -2964,6 +3400,10 @@
       "financial_stress_signal": true,
       "reason": "carer responsibilities",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3405,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2992,6 +3432,10 @@
       "reason": "job loss",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3586,
+      "seasonality": 0.21
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -3018,6 +3462,10 @@
       "financial_stress_signal": true,
       "reason": "carer responsibilities",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3767,
+      "seasonality": 0.25
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3046,6 +3494,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3948,
+      "seasonality": 0.29
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3072,6 +3524,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 4129,
+      "seasonality": 0.21
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3100,6 +3556,10 @@
       "reason": "carer responsibilities",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 4310,
+      "seasonality": 0.25
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3126,6 +3586,10 @@
       "financial_stress_signal": true,
       "reason": "bereavement",
       "sensitive_customer": true
+    },
+    "usage": {
+      "annual_kwh": 4491,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3154,6 +3618,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 4672,
+      "seasonality": 0.21
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3180,6 +3648,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7357,
+      "seasonality": 0.22
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3208,6 +3680,10 @@
       "reason": "business downturn",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7538,
+      "seasonality": 0.26
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3234,6 +3710,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7446,
+      "seasonality": 0.22
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3262,6 +3742,10 @@
       "reason": "separation",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7265,
+      "seasonality": 0.18
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3288,6 +3772,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7808,
+      "seasonality": 0.18
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3316,6 +3804,10 @@
       "reason": "rental stress",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7627,
+      "seasonality": 0.26
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3342,6 +3834,10 @@
       "financial_stress_signal": true,
       "reason": "bereavement",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6722,
+      "seasonality": 0.18
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3370,6 +3866,10 @@
       "reason": "job loss",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6541,
+      "seasonality": 0.26
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3396,6 +3896,10 @@
       "financial_stress_signal": true,
       "reason": "carer responsibilities",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7084,
+      "seasonality": 0.26
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3424,6 +3928,10 @@
       "reason": "rental stress",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6903,
+      "seasonality": 0.22
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -3450,6 +3958,10 @@
       "financial_stress_signal": true,
       "reason": "separation",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3494,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3478,6 +3990,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3313,
+      "seasonality": 0.26
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3504,6 +4020,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7655,
+      "seasonality": 0.28
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3532,6 +4052,10 @@
       "reason": "medical costs",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7836,
+      "seasonality": 0.2
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3558,6 +4082,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 7293,
+      "seasonality": 0.2
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3586,6 +4114,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 7474,
+      "seasonality": 0.24
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -3612,6 +4144,10 @@
       "financial_stress_signal": true,
       "reason": "carer responsibilities",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 2979,
+      "seasonality": 0.2
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3640,6 +4176,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3160,
+      "seasonality": 0.24
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3666,6 +4206,10 @@
       "financial_stress_signal": true,
       "reason": "rental stress",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 2617,
+      "seasonality": 0.24
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3694,6 +4238,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 2798,
+      "seasonality": 0.28
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -3720,6 +4268,10 @@
       "financial_stress_signal": true,
       "reason": "carer responsibilities",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 3703,
+      "seasonality": 0.24
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3748,6 +4300,10 @@
       "reason": null,
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3884,
+      "seasonality": 0.28
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3774,6 +4330,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5232,
+      "seasonality": 0.25
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3802,6 +4362,10 @@
       "reason": "business downturn",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 5051,
+      "seasonality": 0.21
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3828,6 +4392,10 @@
       "financial_stress_signal": true,
       "reason": "bereavement",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 4870,
+      "seasonality": 0.29
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3856,6 +4424,10 @@
       "reason": "medical costs",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 4689,
+      "seasonality": 0.25
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3882,6 +4454,10 @@
       "financial_stress_signal": true,
       "reason": "separation",
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 4508,
+      "seasonality": 0.22
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3910,6 +4486,10 @@
       "reason": "medical costs",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 4327,
+      "seasonality": 0.18
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3936,6 +4516,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 4146,
+      "seasonality": 0.26
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3964,6 +4548,10 @@
       "reason": "bereavement",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 3965,
+      "seasonality": 0.22
+    },
     "preferences": {
       "best_offer_opt_out": false
     }
@@ -3990,6 +4578,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 6680,
+      "seasonality": 0.21
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -4018,6 +4610,10 @@
       "reason": "business downturn",
       "sensitive_customer": false
     },
+    "usage": {
+      "annual_kwh": 6499,
+      "seasonality": 0.29
+    },
     "preferences": {
       "best_offer_opt_out": true
     }
@@ -4044,6 +4640,10 @@
       "financial_stress_signal": false,
       "reason": null,
       "sensitive_customer": false
+    },
+    "usage": {
+      "annual_kwh": 5441,
+      "seasonality": 0.2
     },
     "preferences": {
       "best_offer_opt_out": false

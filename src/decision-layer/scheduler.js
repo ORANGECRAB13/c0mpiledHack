@@ -19,11 +19,12 @@ export async function runSchedulerTick(at = new Date().toISOString()) {
   const due = await dueSchedules(at);
   const fired = [];
   for (const item of due) {
-    const customer = (await ledgerPool().query('SELECT current_state FROM customer WHERE id=$1', [item.customer_id])).rows[0];
-    const stateOverrides = item.reason === 'debt reaches 3 months'
-      ? { oldestDebtDays: Math.max(90, Number(customer?.current_state?.oldestDebtDays || 0)) }
-      : {};
-    const result = await evaluateCustomer(item.customer_id, { evaluatedAt: at, policyId: item.policy_id || undefined, stateOverrides, triggeredBy: { kind: 'SCHEDULE', ref: item.id } });
+    // The schedule chooses WHEN to look, never WHAT is true. A crossing is
+    // expressed as the date the customer reaches 90 days (set at scheduling
+    // time); at fire time we re-read whatever Salesforce actually says. If the
+    // customer paid down or the CRM was corrected, the evaluation must see
+    // that rather than an asserted `oldestDebtDays: 90`.
+    const result = await evaluateCustomer(item.customer_id, { evaluatedAt: at, policyId: item.policy_id || undefined, triggeredBy: { kind: 'SCHEDULE', ref: item.id } });
     await markScheduleFired(item.id);
     fired.push({ scheduleId: item.id, result });
   }

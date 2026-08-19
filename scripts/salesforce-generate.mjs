@@ -31,10 +31,25 @@ const pick = (list) => list[Math.floor(rand() * list.length)];
 const between = (lo, hi) => lo + Math.floor(rand() * (hi - lo + 1));
 
 /** Stable per-customer randomness that does not disturb the main stream. */
-const idHash = (id) => {
+const hashOf = (salt, id) => {
   let h = 2166136261;
-  for (const ch of `sensitive:${id}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  for (const ch of `${salt}:${id}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
   return (h >>> 0);
+};
+const idHash = (id) => hashOf('sensitive', id);
+
+/**
+ * Household electricity consumption. Deliberately independent of the arrears
+ * balance: a customer's usage is a fact about their home, not about whether
+ * they have paid. Deriving billing history from arrears would make any
+ * tariff comparison circular — the "spend" would encode the debt it is meant
+ * to be assessed alongside.
+ */
+const consumptionFor = (id) => {
+  const h = hashOf('usage', id);
+  const annualKwh = 2600 + (h % 5400);              // 2,600–8,000 kWh/yr
+  const seasonality = 0.18 + ((h >>> 13) % 12) / 100; // winter/summer swing
+  return { annualKwh, seasonality };
 };
 
 const FIRST = ['Amelia','Daniel','Priya','Marcus','Sofia','Grace','Tom','Leila','Ravi','Jia','Liam','Rosa','Ken','Hana','Noah','Mia','Ethan','Zara','Oliver','Aisha','Lucas','Chloe','Arjun','Isla','Mateo','Freya','Sione','Nina','Caleb','Yuki','Omar','Elena','Jack','Fatima','Hugo','Ruby','Dev','Anika','Felix','Talia','Cooper','Maya','Enzo','Sara','Blake','Leilani','Rohan','Ivy','Angus','Nadia'];
@@ -118,6 +133,7 @@ for (let i = 0; i < COUNT; i++) {
       // would shift every later draw and silently regenerate the whole book.
       sensitive_customer: idHash(id) % 100 < (s.hardship === 'active' ? 18 : 4),
     },
+    usage: (() => { const u = consumptionFor(id); return { annual_kwh: u.annualKwh, seasonality: Math.round(u.seasonality * 100) / 100 }; })(),
     preferences: { best_offer_opt_out: s.optOut },
   });
 }

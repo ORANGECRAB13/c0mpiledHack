@@ -85,13 +85,103 @@ export async function createAction(decisionId, type, executionMode, status = nul
   return (await ledgerPool().query('INSERT INTO action (id,decision_id,type,execution_mode,status) VALUES ($1,$2,$3,$4,$5) RETURNING *', [id(), decisionId, type, executionMode, finalStatus])).rows[0];
 }
 
-export async function recordApproval(actionId, approval) {
+/**
+ * Verdict → resulting action status.
+ *
+ * Migration 002 fixed the pre-existing oddity where every non-AGREED verdict
+ * marked the action DONE, so a REJECTED regulatory decision looked completed.
+ *   AGREED     → PENDING  (approved; queued for execution)
+ *   OVERRIDDEN → DONE     (officer closed it out without executing — unchanged)
+ *   REJECTED   → REJECTED (new terminal state)
+ */
+export const STATUS_FOR_VERDICT = Object.freeze({ AGREED: 'PENDING', OVERRIDDEN: 'DONE', REJECTED: 'REJECTED' });
+export const statusForVerdict = (verdict) => STATUS_FOR_VERDICT[verdict] || 'DONE';
+
+export function assertApprovalRule(approval) {
+  if (!STATUS_FOR_VERDICT[approval?.verdict]) throw new Error(`Unknown verdict ${approval?.verdict}`);
+  if (!String(approval.actorId || '').trim()) throw new Error('actorId is required on every approval');
   if (approval.verdict !== 'AGREED' && !String(approval.overrideReason || '').trim()) throw new Error('overrideReason is required when verdict is not AGREED');
+}
+
+/**
+ * I5: append-only. This INSERTs an approval row; it never rewrites the
+ * decision or any prior approval. The only UPDATE is the action's own
+ * workflow status, which is operational state, not history.
+ */
+async function insertApproval(client, actionId, approval) {
+  assertApprovalRule(approval);
+  const row = (await client.query('INSERT INTO approval (id,action_id,actor_id,decided_at,verdict,override_reason) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
+    [id(), actionId, approval.actorId, approval.decidedAt, approval.verdict, approval.overrideReason || null])).rows[0];
+  await client.query('UPDATE action SET status=$2::action_status WHERE id=$1', [actionId, statusForVerdict(approval.verdict)]);
+  return row;
+}
+
+export async function recordApproval(actionId, approval) {
+  return withTransaction((client) => insertApproval(client, actionId, approval));
+}
+
+/**
+ * Bulk approval. One transaction for the whole batch (I5-safe: N appended
+ * approval rows, zero history rewrites). Any failure rolls the batch back so
+ * the ledger never holds a half-approved state.
+ *
+ * @param {Array<{actionId:string, verdict:string, overrideReason?:string}>} items
+ * @param {{actorId:string, decidedAt:string}} common
+ */
+export async function recordApprovalBatch(items, common) {
   return withTransaction(async (client) => {
-    const row = (await client.query('INSERT INTO approval (id,action_id,actor_id,decided_at,verdict,override_reason) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *', [id(), actionId, approval.actorId, approval.decidedAt, approval.verdict, approval.overrideReason || null])).rows[0];
-    await client.query("UPDATE action SET status=CASE WHEN $2='AGREED' THEN 'PENDING'::action_status ELSE 'DONE'::action_status END WHERE id=$1", [actionId, approval.verdict]);
-    return row;
+    const approvals = [];
+    for (const item of items) {
+      const approval = { actorId: common.actorId, decidedAt: common.decidedAt, verdict: item.verdict, overrideReason: item.overrideReason };
+      const locked = (await client.query('SELECT id,status FROM action WHERE id=$1 FOR UPDATE', [item.actionId])).rows[0];
+      if (!locked) throw new Error(`Unknown action ${item.actionId}`);
+      if (locked.status !== 'AWAITING_APPROVAL') throw new Error(`Action ${item.actionId} is ${locked.status}, not AWAITING_APPROVAL`);
+      const row = await insertApproval(client, item.actionId, approval);
+      approvals.push({ actionId: item.actionId, approvalId: row.id, verdict: row.verdict, status: statusForVerdict(row.verdict) });
+    }
+    return approvals;
   });
+}
+
+/** The approval worklist. Paginated — there is no unbounded variant on purpose. */
+export async function listActionsAwaitingApproval({ limit = 50, offset = 0, status = 'AWAITING_APPROVAL' } = {}) {
+  const { rows } = await ledgerPool().query(`
+    SELECT a.id AS action_id, a.type AS action_type, a.status AS action_status, a.execution_mode, a.created_at,
+           d.id AS decision_id, d.decision_key, d.outcome, d.policy_id, d.policy_version, d.snapshot_hash,
+           c.id AS customer_id, c.external_customer_id, c.name, c.jurisdiction, c.pipeline_halted,
+           c.current_state->>'balance' AS balance, c.current_state->>'hardshipStatus' AS hardship_status,
+           (c.current_state->>'sensitiveCustomer')::boolean AS sensitive_customer,
+           count(*) OVER () AS total
+    FROM action a
+    JOIN decision d ON d.id = a.decision_id
+    JOIN customer c ON c.id = d.customer_id
+    WHERE a.status = $1::action_status
+    ORDER BY a.created_at, a.id
+    LIMIT $2 OFFSET $3`, [status, limit, offset]);
+  return { total: rows[0] ? Number(rows[0].total) : 0, rows };
+}
+
+/**
+ * Clear a circuit-breaker halt. `haltPipeline` sets pipeline_halted permanently
+ * and nothing else in the codebase clears it, so a bulk run could otherwise
+ * brick the whole book. This is the recovery path.
+ */
+export async function resumePipeline(customerId, { actorId = null, reason = null } = {}) {
+  const { rows } = await ledgerPool().query(`
+    UPDATE customer
+       SET pipeline_halted = false,
+           current_state = (current_state - 'pipelineHaltReason')
+             || jsonb_build_object('pipelineResumedAt', now()::text, 'pipelineResumedBy', $2::text, 'pipelineResumeReason', $3::text),
+           updated_at = now()
+     WHERE id = $1
+     RETURNING id, pipeline_halted`, [customerId, actorId, reason]);
+  return rows[0] || null;
+}
+
+export async function listHaltedCustomers() {
+  const { rows } = await ledgerPool().query(
+    "SELECT id, name, current_state->>'pipelineHaltReason' AS reason FROM customer WHERE pipeline_halted ORDER BY name");
+  return rows;
 }
 
 export async function scheduleEvaluation(item) {

@@ -80,7 +80,42 @@ async function upsertCustomer(c) {
   return { customer: await stripe.customers.create(payload), created: true };
 }
 
-/** One open invoice carrying the arrears, plus a short paid history. */
+// The same declared tariff table the decision layer prices against, so a
+// customer's bills are genuinely consistent with the plan they are on: the
+// pricing provider can invert them back to consumption and recover the truth.
+const TARIFFS = JSON.parse(readFileSync('src/decision-layer/data/tariffs.json', 'utf8'));
+const tariffFor = (planId) => TARIFFS.plans.find((p) => p.planId === planId) || null;
+
+/**
+ * Twelve months of bills from the household's own annual consumption, with a
+ * winter/summer swing so the series looks like metering rather than a flat
+ * repeat. Amounts come from consumption x tariff; nothing here reads arrears.
+ */
+function monthlyBillsFor(c) {
+  const annualKwh = c.usage?.annual_kwh;
+  const tariff = tariffFor(c.account.current_plan);
+  if (!annualKwh || !tariff) return [];
+
+  const rate = Number(tariff.usageRateCentsPerKwh) / 100;   // c/kWh -> dollars
+  const supply = Number(tariff.dailySupplyCents) / 100;      // c/day  -> dollars
+  const discount = Number(tariff.discountFraction || 0);
+  const swing = c.usage?.seasonality ?? 0.2;
+
+  const bills = [];
+  for (let back = 12; back >= 1; back--) {
+    const when = new Date(TODAY.getTime() - back * 30.44 * 86400000);
+    // Southern-hemisphere winter peak: June/July heaviest.
+    const seasonal = 1 + swing * Math.cos((2 * Math.PI * (when.getUTCMonth() - 5)) / 12);
+    const kwh = Math.round((annualKwh / 12) * seasonal);
+    const days = 30;
+    const gross = kwh * rate + days * supply;
+    const amount = Math.round(gross * (1 - discount) * 100) / 100;
+    if (amount > 0) bills.push({ month: when.toISOString().slice(0, 7), kwh, amount });
+  }
+  return bills;
+}
+
+/** One open invoice carrying the arrears, plus a real paid history. */
 async function seedInvoices(customer, c) {
   const existing = await stripe.invoices.list({ customer: customer.id, limit: 1 });
   if (existing.data.length) return 0; // already has billing history
@@ -116,11 +151,17 @@ async function seedInvoices(customer, c) {
     written++;
   };
 
-  // Paid history: three settled monthly bills before the trouble started.
-  for (let i = 5; i >= 3; i--) {
+  // Twelve settled monthly bills, priced from the household's own consumption
+  // at its current tariff — NOT derived from the arrears balance. Billing that
+  // encodes the debt makes any downstream tariff comparison circular: the
+  // "spend" the comparison reads would already contain the arrears it is meant
+  // to be assessed alongside. Consumption is a fact about the home; arrears are
+  // a fact about payment. They must vary independently.
+  const monthlyBills = monthlyBillsFor(c);
+  for (const bill of monthlyBills) {
     await writeInvoice({
-      amount: monthly,
-      description: `Electricity usage — ${daysAgo(i * 30).toISOString().slice(0, 7)}`,
+      amount: bill.amount,
+      description: `Electricity usage — ${bill.month} · ${bill.kwh} kWh`,
       cycle: 'historical',
       settle: true,
     });

@@ -10,7 +10,8 @@
     "db:migrate": "node-pg-migrate up --migrations-dir migrations --database-url-var DATABASE_URL",
     "db:down": "node-pg-migrate down --migrations-dir migrations --database-url-var DATABASE_URL",
     "test:decision-layer": "node --test test/decision-layer/*.test.js",
-    "seed:decision-layer": "node src/decision-layer/seed-cli.js"
+    "seed:decision-layer": "node src/decision-layer/seed-cli.js",
+    "sync:salesforce": "node src/decision-layer/sync-cli.js"
   },
   "dependencies": {
     "@xenova/transformers": "^2.17.2",

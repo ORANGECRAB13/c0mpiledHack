@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { AskBar } from '../components/Chrome.jsx';
-import AskOverlay from '../components/AskOverlay.jsx';
+import EvidenceOverlay from '../components/EvidenceOverlay.jsx';
 
 /* Debt-trend bar chart: 12 monthly bars against a dashed regulatory threshold.
    The y-axis tops out at the threshold so "how far from disconnection" is the
@@ -126,18 +126,14 @@ function buildProfile(c) {
 export default function CaseWorkspace({
   caseData,
   back,
-  sourceVerified,
   approved,
-  onVerifySource,
   onApprove,
   decisionRecord,
   viewAudit,
-  evidenceRequest,
-  onEvidenceRequestHandled,
 }) {
   const [modal, setModal] = useState(false);
-  const [proofOpen, setProofOpen] = useState(false);
-  const [proofQuery, setProofQuery] = useState(caseData.sourceQuery);
+  // The compliance evidence view: live audit trail + the two systems of record.
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
   // The left half of the top card cross-fades: 'recommendation' (default)
   // ⇄ 'trend'. The chart on the right never moves (per the design reference).
   const [view, setView] = useState('recommendation');
@@ -147,28 +143,12 @@ export default function CaseWorkspace({
   const [activeSystem, setActiveSystem] = useState(systems[0]);
   const decisionRef = useRef(null);
 
-  const inspectSource = () => {
-    setProofQuery(customer.sourceQuery);
-    onVerifySource();
-    setProofOpen(true);
-  };
-
   useEffect(() => {
     setModal(false);
-    setProofOpen(false);
+    setEvidenceOpen(false);
     setView('recommendation');
-    setProofQuery(customer.sourceQuery);
     setActiveSystem(Object.keys(buildProfile(customer).evidence)[0]);
   }, [customer.id]);
-
-  useEffect(() => {
-    if (!evidenceRequest) return;
-    if (evidenceRequest.caseId && evidenceRequest.caseId !== customer.id) return;
-    setProofQuery(evidenceRequest.query || customer.sourceQuery);
-    onVerifySource();
-    setProofOpen(true);
-    onEvidenceRequestHandled?.();
-  }, [evidenceRequest?.id]);
 
   const active = profile.evidence[activeSystem] || { synced: '', rows: [] };
 
@@ -186,7 +166,9 @@ export default function CaseWorkspace({
           <div className="h1sub">{customer.id} · {customer.workflow} · {customer.stateLabel}</div>
         </div>
         <div className="case-actions">
-          <button className="btn-ghost" onClick={inspectSource}>{sourceVerified ? 'Changes requested' : 'Request changes'}</button>
+          <button className="btn-ghost" onClick={() => setEvidenceOpen(true)}>
+            Compliance evidence
+          </button>
           <button className="btn-dark" onClick={() => setModal(true)} disabled={approved}>
             {approved ? 'Approved' : 'Approve'}
           </button>
@@ -333,8 +315,15 @@ export default function CaseWorkspace({
         </div>
       )}
 
+      <EvidenceOverlay
+        open={evidenceOpen}
+        reference={customer.externalCustomerId || customer.id}
+        name={customer.customer}
+        subtitle={[customer.workflow, customer.stateLabel].filter(Boolean).join(' · ')}
+        onClose={() => setEvidenceOpen(false)}
+      />
+
       <AskBar />
-      {proofOpen && <AskOverlay query={proofQuery} onClose={() => setProofOpen(false)} fresh />}
     </div>
   );
 }

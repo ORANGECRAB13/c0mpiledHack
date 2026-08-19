@@ -1,6 +1,6 @@
 import pg from 'pg';
 
-const DEFAULT_URL = 'postgres://vocare:vocare_local@127.0.0.1:5433/vocare';
+const DEFAULT_URL = 'postgres://vocare:vocare_local@127.0.0.1:5434/vocare';
 let pool;
 
 export function ledgerPool() {

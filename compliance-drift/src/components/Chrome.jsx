@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import AskOverlay from './AskOverlay.jsx';
+import React, { useRef, useState } from 'react';
 import { Icon, Mark } from '../icons.jsx';
 import { useProductAssistant } from '../product/AssistantContext.jsx';
 import { startLiveVoice, stopLiveVoice, sendToolResult, isLive } from '../voice/liveVoice.js';
@@ -45,93 +44,6 @@ export function Sidebar({ page, go }) {
   );
 }
 
-/* ── project sidebar (Routines screen) ── */
-export function ProjectSidebar({ page, go }) {
-  return (
-    <div className="sidebar" style={{ width: 230 }}>
-      <div className="sb-top">
-        <div className="sb-logo">
-          <Mark size={24} />
-          <span className="word" style={{ fontSize: 15 }}>Compliance</span>
-        </div>
-        <span className="bell"><Icon name="bell" size={16} /><span className="badge">45</span></span>
-        <button className="collapse"><Icon name="chevL" size={14} /></button>
-      </div>
-
-      <div className="sb-search">
-        <Icon name="search" size={14} />
-        Find or ask anything…
-        <span className="kbd">⌘K</span>
-      </div>
-
-      <button className="sb-item" onClick={() => go('frameworks')} style={{ marginBottom: 10 }}>
-        <Icon name="back" size={15} /> All projects
-      </button>
-
-      <div className="sb-sec">
-        <div className="sb-h">Work <Icon name="chevU" size={12} /></div>
-        <button className="sb-item"><Icon name="file" size={15} /> Files</button>
-        <button className={`sb-item ${page === 'routines' ? 'on' : ''}`} style={page === 'routines' ? { borderLeft: '2px solid var(--orange)', borderRadius: '0 8px 8px 0' } : {}}>
-          <Icon name="refresh" size={15} /> Routines
-        </button>
-        <button className="sb-item"><Icon name="mic" size={15} /> Meetings</button>
-        <button className="sb-item"><Icon name="phone" size={15} /> Phone</button>
-        <button className="sb-item"><Icon name="mail" size={15} /> Emails</button>
-      </div>
-
-      <div className="sb-sec">
-        <div className="sb-h">Knowledge <Icon name="chevU" size={12} /></div>
-        <button className="sb-item"><Icon name="brain" size={15} /> Brain</button>
-        <button className="sb-item"><Icon name="activity" size={15} /> Activity</button>
-        <button className="sb-item"><Icon name="findings" size={15} /> Findings</button>
-      </div>
-
-      <div className="sb-sec">
-        <div className="sb-h">People <Icon name="chevU" size={12} /></div>
-        <button className="sb-item"><Icon name="people" size={15} /> Members</button>
-        <button className="sb-item"><Icon name="key" size={15} /> Access</button>
-      </div>
-
-      <div className="sb-foot">
-        <button className="sb-item"><Icon name="warn" size={15} /> Report a problem</button>
-        <button className="sb-item"><Icon name="help" size={15} /> Help</button>
-        <div className="sb-account">
-          <span className="av"><Icon name="user" size={15} /></span>
-          <span>
-            <div className="nm">Account</div>
-            <div className="rl">Project Manager, Northgate Tower</div>
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ── collapsed icon rail (Management system screen) ── */
-export function IconRail({ go }) {
-  return (
-    <div className="rail-side">
-      <button className="ric" style={{ marginBottom: 6 }}><Mark size={22} /></button>
-      <button className="ric"><Icon name="chevR" size={15} /></button>
-      <div style={{ height: 26 }} />
-      <button className="ric"><Icon name="search" size={16} /></button>
-      <div style={{ height: 14 }} />
-      <button className="ric"><Icon name="sun" size={16} /></button>
-      <button className="ric" onClick={() => go('routines')}><Icon name="grid" size={16} /></button>
-      <button className="ric"><Icon name="org" size={16} /></button>
-      <button className="ric on" onClick={() => go('frameworks')}><Icon name="shield" size={16} /></button>
-      <button className="ric"><Icon name="exchange" size={16} /></button>
-      <div style={{ height: 22 }} />
-      <button className="ric"><Icon name="plug" size={16} /></button>
-      <button className="ric"><Icon name="clock" size={16} /></button>
-      <div className="spacer" />
-      <button className="ric"><Icon name="warn" size={16} /></button>
-      <button className="ric"><Icon name="help" size={16} /></button>
-      <button className="ric"><Icon name="user" size={16} /></button>
-    </div>
-  );
-}
-
 export function Crumbs({ items }) {
   return (
     <div className="crumbs">
@@ -148,7 +60,6 @@ export function Crumbs({ items }) {
 
 export function AskBar() {
   const [q, setQ] = useState('');
-  const [open, setOpen] = useState(null);
   const [voiceState, setVoiceState] = useState('idle');
   const [voiceMessage, setVoiceMessage] = useState('');
   const recorderRef = useRef(null);
@@ -156,7 +67,7 @@ export function AskBar() {
   const recordingTimerRef = useRef(null);
   const [live, setLive] = useState(() => isLive());
   const [liveLine, setLiveLine] = useState('');
-  const { runProductCommand, assistantNotice, dismissNotice, askRequest, clearAskRequest, executeVoiceTool } = useProductAssistant();
+  const { runProductCommand, assistantNotice, dismissNotice, announceAction, executeVoiceTool } = useProductAssistant();
   const executeVoiceToolRef = useRef(executeVoiceTool);
   executeVoiceToolRef.current = executeVoiceTool;
 
@@ -186,19 +97,12 @@ export function AskBar() {
     }
   };
 
-  // A compound command ("open X and analyze …") navigates first, then leaves
-  // the analysis half here: open the agent chat on whatever page we landed on.
-  useEffect(() => {
-    if (!askRequest) return;
-    setOpen(askRequest.query);
-    clearAskRequest();
-  }, [askRequest]);
-
   const execute = (text) => {
     const query = String(text ?? q).trim();
     if (!query) return;
     const result = runProductCommand(query);
-    if (!result.handled) setOpen(query);
+    // Be honest about the limit rather than silently dropping the request.
+    if (!result.handled) announceAction(`I can't do that yet: "${query}". Try opening a customer, filtering the queue, or naming a page.`, 'unhandled');
     setQ('');
   };
 
@@ -311,7 +215,6 @@ export function AskBar() {
         {live && liveLine && <span className="voice-status live-line">{liveLine}</span>}
       </div>
       <div className="askhandle" />
-      {open && <AskOverlay query={open} onClose={() => setOpen(null)} />}
     </>
   );
 }
