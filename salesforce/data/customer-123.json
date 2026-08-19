@@ -1,0 +1,25 @@
+{
+  "customer_id": "123",
+  "name": "Customer 123",
+  "account": {
+    "balance": 1080,
+    "oldest_debt_days": 94,
+    "current_plan": "Everyday Saver"
+  },
+  "payments": {
+    "missed_payments_90d": 2,
+    "partial_payments_90d": 2
+  },
+  "hardship": {
+    "status": "none",
+    "entered_at": null,
+    "review_due_at": null
+  },
+  "crm": {
+    "financial_stress_signal": true,
+    "reason": "reduced work hours"
+  },
+  "preferences": {
+    "best_offer_opt_out": false
+  }
+}

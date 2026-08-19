@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Financial_Stress_Reason__c</fullName>
+    <label>Financial Stress Reason</label>
+    <description>Why the stress signal was raised</description>
+    <type>Text</type>
+    <length>255</length>
+</CustomField>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Missed_Payments_90d__c</fullName>
+    <label>Missed Payments 90d</label>
+    <description>Missed payments in the last 90 days</description>
+    <type>Number</type>
+    <precision>18</precision>
+    <scale>0</scale>
+</CustomField>

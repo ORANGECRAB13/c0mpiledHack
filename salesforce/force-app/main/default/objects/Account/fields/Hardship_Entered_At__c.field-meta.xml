@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Hardship_Entered_At__c</fullName>
+    <label>Hardship Entered At</label>
+    <description>Date tailored assistance started</description>
+    <type>Date</type>
+</CustomField>
