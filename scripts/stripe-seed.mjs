@@ -37,10 +37,9 @@ const LIMIT = limitIndex >= 0 ? Number(args[limitIndex + 1]) : Infinity;
 const CURRENCY = process.env.STRIPE_CURRENCY || 'aud';
 const CONCURRENCY = 8;
 
-const stripe = new Stripe(KEY, { apiVersion: '2024-06-20', maxNetworkRetries: 2 });
+const stripe = new Stripe(KEY, { maxNetworkRetries: 2 });
 
 const TODAY = new Date('2026-08-19T00:00:00Z');
-const unix = (date) => Math.floor(date.getTime() / 1000);
 const daysAgo = (n) => new Date(TODAY.getTime() - n * 86400000);
 const cents = (dollars) => Math.round(dollars * 100);
 
@@ -89,35 +88,54 @@ async function seedInvoices(customer, c) {
   let written = 0;
   const monthly = Math.max(40, Math.round((c.account.balance || 120) / 3));
 
+  // Items must name their invoice explicitly: pending invoice items are no
+  // longer swept onto new invoices by default, which silently yields a $0
+  // invoice that auto-pays the moment it is finalized.
+  // Stripe refuses a due_date in the past, so an arrears invoice cannot be
+  // literally backdated without test clocks. It is instead due immediately and
+  // carries the real age in metadata and its description, which is what the
+  // compliance workspace reads.
+  const writeInvoice = async ({ amount, description, cycle, dueInDays = 21, overdueDays, settle }) => {
+    const inv = await stripe.invoices.create({
+      customer: customer.id,
+      collection_method: 'send_invoice',
+      auto_advance: false,
+      days_until_due: dueInDays,
+      metadata: {
+        external_customer_id: c.customer_id,
+        cycle,
+        ...(overdueDays === undefined ? {} : { overdue_days: String(overdueDays), overdue_since: daysAgo(overdueDays).toISOString().slice(0, 10) }),
+      },
+    });
+    await stripe.invoiceItems.create({
+      customer: customer.id, invoice: inv.id, currency: CURRENCY, amount: cents(amount), description,
+    });
+    const finalized = await stripe.invoices.finalizeInvoice(inv.id);
+    if (finalized.total === 0) throw new Error(`invoice ${inv.id} finalized empty`);
+    if (settle) await stripe.invoices.pay(inv.id, { paid_out_of_band: true });
+    written++;
+  };
+
   // Paid history: three settled monthly bills before the trouble started.
   for (let i = 5; i >= 3; i--) {
-    await stripe.invoiceItems.create({
-      customer: customer.id, currency: CURRENCY, amount: cents(monthly),
+    await writeInvoice({
+      amount: monthly,
       description: `Electricity usage — ${daysAgo(i * 30).toISOString().slice(0, 7)}`,
+      cycle: 'historical',
+      settle: true,
     });
-    const inv = await stripe.invoices.create({
-      customer: customer.id, collection_method: 'send_invoice', days_until_due: 21,
-      auto_advance: false, metadata: { external_customer_id: c.customer_id, cycle: 'historical' },
-    });
-    await stripe.invoices.finalizeInvoice(inv.id);
-    await stripe.invoices.pay(inv.id, { paid_out_of_band: true });
-    written++;
   }
 
   // The arrears themselves: one open invoice, due as far back as the debt age.
   if (c.account.balance > 0) {
-    await stripe.invoiceItems.create({
-      customer: customer.id, currency: CURRENCY, amount: cents(c.account.balance),
+    await writeInvoice({
+      amount: c.account.balance,
       description: `Outstanding balance — ${c.account.oldest_debt_days} days overdue`,
+      cycle: 'arrears',
+      dueInDays: 0,
+      overdueDays: c.account.oldest_debt_days,
+      settle: false,
     });
-    const inv = await stripe.invoices.create({
-      customer: customer.id, collection_method: 'send_invoice',
-      due_date: unix(daysAgo(Math.max(1, c.account.oldest_debt_days))),
-      auto_advance: false,
-      metadata: { external_customer_id: c.customer_id, cycle: 'arrears', oldest_debt_days: String(c.account.oldest_debt_days) },
-    });
-    await stripe.invoices.finalizeInvoice(inv.id);
-    written++;
   }
   return written;
 }
