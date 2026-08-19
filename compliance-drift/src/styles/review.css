@@ -1,0 +1,135 @@
+/* Review workflows: bulk review, category summary, recommended plan, bulk approval.
+   Owned by the review-workflow lane — do not merge into styles.css. */
+
+.rv-actions { display: flex; gap: 8px; align-items: center; }
+
+.rv-btn {
+  border: 1px solid var(--line2); background: var(--card); color: var(--t1);
+  border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: background .15s var(--ease), border-color .15s var(--ease);
+}
+.rv-btn:hover:not(:disabled) { background: var(--side); border-color: var(--t4); }
+.rv-btn:disabled { opacity: .5; cursor: not-allowed; }
+.rv-btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.rv-btn.primary:hover:not(:disabled) { background: var(--ink-hover); }
+.rv-btn.small { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+
+/* ---- modal shell ---- */
+.rv-scrim {
+  position: fixed; inset: 0; background: rgba(14,14,16,.45);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 40px 20px; overflow-y: auto; z-index: 90;
+}
+.rv-modal {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  width: 100%; max-width: 940px; box-shadow: 0 20px 60px rgba(0,0,0,.18);
+}
+.rv-modal.narrow { max-width: 620px; }
+.rv-modal-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  padding: 18px 22px; border-bottom: 1px solid var(--line);
+}
+.rv-modal-head h2 { font-size: 17px; font-weight: 600; margin: 0; }
+.rv-modal-head .sub { font-size: 12.5px; color: var(--t3); margin-top: 3px; }
+.rv-close {
+  border: 1px solid var(--line2); background: var(--card); border-radius: 6px;
+  width: 26px; height: 26px; cursor: pointer; color: var(--t2); line-height: 1; flex: none;
+}
+.rv-modal-body { padding: 20px 22px; }
+.rv-modal-foot {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 14px 22px; border-top: 1px solid var(--line); background: var(--side);
+  border-radius: 0 0 14px 14px; font-size: 12.5px; color: var(--t2);
+}
+
+/* ---- run progress / honesty banners ---- */
+.rv-progress { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--t2); }
+.rv-spinner {
+  width: 14px; height: 14px; border-radius: 50%; flex: none;
+  border: 2px solid var(--line2); border-top-color: var(--ink);
+  animation: rv-spin .8s linear infinite;
+}
+@keyframes rv-spin { to { transform: rotate(360deg); } }
+
+.rv-note {
+  border: 1px solid var(--line); border-left: 3px solid var(--t4);
+  background: var(--side); border-radius: 8px; padding: 11px 13px;
+  font-size: 12.5px; color: var(--t2); margin-bottom: 14px;
+}
+.rv-note b { color: var(--t1); }
+.rv-note.warn { border-left-color: var(--amber); }
+.rv-note.bad { border-left-color: var(--red); }
+.rv-note.good { border-left-color: var(--green); }
+.rv-note ul { margin: 6px 0 0; padding-left: 18px; }
+
+/* ---- category tabs ---- */
+.rv-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.rv-tab {
+  border: 1px solid var(--line2); background: var(--card); border-radius: 999px;
+  padding: 6px 13px; font-size: 12.5px; color: var(--t2); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.rv-tab:hover { background: var(--side); }
+.rv-tab.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.rv-tab .n { font-variant-numeric: tabular-nums; font-weight: 600; }
+.rv-tab .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--t4); }
+.rv-tab.act .dot { background: var(--amber); }
+.rv-tab.on .dot { background: #fff; }
+
+/* ---- customer rows ---- */
+.rv-rows { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.rv-row {
+  display: grid; grid-template-columns: 1.6fr 1fr .9fr auto; gap: 12px; align-items: center;
+  padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--card);
+  cursor: pointer; text-align: left; width: 100%; border-left: 0; border-right: 0; border-top: 0;
+  font: inherit; color: inherit;
+}
+.rv-row:last-child { border-bottom: 0; }
+.rv-row:hover { background: var(--side); }
+.rv-row .nm { font-weight: 500; }
+.rv-row .meta { font-size: 11.5px; color: var(--t3); margin-top: 2px; }
+.rv-row .num { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--t2); }
+.rv-empty { padding: 26px; text-align: center; color: var(--t3); font-size: 13px; }
+
+.rv-pill {
+  display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 999px;
+  border: 1px solid var(--line2); color: var(--t2); background: var(--side);
+}
+.rv-pill.act { border-color: var(--amber); color: #8A6114; background: #FDF6E7; }
+.rv-pill.block { border-color: var(--red); color: var(--red); background: #FCEDED; }
+.rv-pill.ok { border-color: var(--green); color: var(--green); background: #EEF7F0; }
+
+/* ---- recommended plan ---- */
+.rv-plan {
+  border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--card);
+}
+.rv-plan.has { border-left: 3px solid var(--green); }
+.rv-plan.none { border-left: 3px solid var(--t4); }
+.rv-plan.blocked { border-left: 3px solid var(--red); }
+.rv-plan h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+.rv-plan p { margin: 0 0 10px; font-size: 13px; color: var(--t2); line-height: 1.5; }
+.rv-kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; font-size: 12.5px; margin-top: 12px; }
+.rv-kv dt { color: var(--t3); }
+.rv-kv dd { margin: 0; color: var(--t1); }
+
+.rv-evlist { list-style: none; margin: 10px 0 0; padding: 0; }
+.rv-evlist li {
+  border-top: 1px solid var(--line); padding: 9px 0; font-size: 12.5px; color: var(--t2);
+}
+.rv-evlist .r { font-weight: 500; color: var(--t1); }
+.rv-evlist .cite { color: var(--orange); font-size: 11.5px; }
+.rv-sev { font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; margin-left: 6px; }
+.rv-sev.BLOCKING { color: var(--red); }
+.rv-sev.ATTENTION { color: var(--amber); }
+.rv-sev.INFO, .rv-sev.PASS { color: var(--t4); }
+
+/* ---- approval table ---- */
+.rv-appr { display: grid; grid-template-columns: 1.4fr .8fr auto 1.4fr; gap: 10px; align-items: center;
+  padding: 10px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
+.rv-appr select, .rv-appr input {
+  font: inherit; border: 1px solid var(--line2); border-radius: 6px; padding: 5px 7px;
+  background: var(--card); color: var(--t1); width: 100%;
+}
+.rv-appr input.missing { border-color: var(--red); }
+.rv-appr-head { color: var(--t3); font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; border-top: 0; }
+.rv-scroll { max-height: 46vh; overflow-y: auto; }

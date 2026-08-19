@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Sidebar } from './components/Chrome.jsx';
 import { AssistantProvider } from './product/AssistantContext.jsx';
-import ManagementSystem from './pages/ManagementSystem.jsx';
-import Assistant from './pages/Assistant.jsx';
 import OpsQueue from './pages/OpsQueue.jsx';
 import CaseWorkspace from './pages/CaseWorkspace.jsx';
 import Monitoring from './pages/Monitoring.jsx';
 import AuditHistory from './pages/AuditHistory.jsx';
-import Analytics from './pages/Analytics.jsx';
 import Home from './pages/Home.jsx';
 import Customers from './pages/Customers.jsx';
-import Systems from './pages/Systems.jsx';
 import { decisionLayerApi } from './api/decisionLayerApi.js';
 
 const DECISIONS_KEY = 'vocare:case-decisions';
@@ -24,9 +20,9 @@ const loadDecisions = () => {
   }
 };
 
-// Five screens, three sidebar variants (per the reference):
-// frameworks/attention/assistant → expanded workspace sidebar
-// mgmt → collapsed icon rail · routines → project sidebar
+// Three top-level tabs: Dashboard (home), Detection (queue), Monitoring.
+// 'case' (case workspace), 'customers' (customer profile) and 'audit' stay as
+// drill-in routes reachable from those tabs, but are not sidebar entries.
 export default function App() {
   const [queue, setQueue] = useState([]);
   const [cases, setCases] = useState({});
@@ -36,8 +32,6 @@ export default function App() {
   const [page, setPage] = useState('home');
   const [queueFilters, setQueueFilters] = useState({ priority: 'All', workflow: 'All', status: 'All', team: 'All', query: '' });
   const [assistantNotice, setAssistantNotice] = useState(null);
-  const [evidenceRequest, setEvidenceRequest] = useState(null);
-  const [askRequest, setAskRequest] = useState(null);
   const [selectedCaseId, setSelectedCaseId] = useState(null);
   const [decisions, setDecisions] = useState(loadDecisions);
   const [monitoringDecisions, setMonitoringDecisions] = useState(() => {
@@ -56,11 +50,16 @@ export default function App() {
       setQueue(product.queue);
       setCases(product.cases);
       setAuditRecords(product.audit);
-      setMonitoringAccounts(Object.values(product.cases).filter((item) => item.snapshot.some(([field, value]) => field === 'hardshipStatus' && value !== 'NONE')).map((item, index) => ({
-        id: `MON-${item.id}`, caseId: item.id, customer: item.customer, next: item.snapshot.find(([field]) => field === 'hardshipReviewDueAt')?.[1] || 'not scheduled',
-        status: item.actionStatus === 'AWAITING_APPROVAL' ? 'At risk' : 'Watch', trend: [4, 8, 12, 18, 24, 32, 40 + index], hot: item.actionStatus === 'AWAITING_APPROVAL',
+      // Monitoring rows need the Salesforce/Stripe external id to query those
+      // systems without a second fetch. /customers and /cases both expose it as a
+      // real field; keep it explicit rather than assuming it equals the ledger id.
+      const externalIds = new Map(product.queue.map((row) => [row.id, row.externalCustomerId]));
+      setMonitoringAccounts(Object.values(product.cases).filter((item) => item.snapshot.some(([field, value]) => field === 'hardshipStatus' && value !== 'NONE')).map((item) => ({
+        id: `MON-${item.id}`, caseId: item.id, customer: item.customer,
+        externalCustomerId: externalIds.get(item.id) || item.externalCustomerId || null, next: item.snapshot.find(([field]) => field === 'hardshipReviewDueAt')?.[1] || 'not scheduled',
+        status: item.actionStatus === 'AWAITING_APPROVAL' ? 'At risk' : 'Watch', hot: item.actionStatus === 'AWAITING_APPROVAL',
         pay: item.snapshot.find(([field]) => field === 'partialPayments90d')?.[1] || '0', debt: item.snapshot.find(([field]) => field === 'balance')?.[1] || '$0', last: item.events[0]?.[0] || 'No event',
-        trigger: item.recommendation, confidence: item.decisionId ? 94 : 60, rec: item.recommendationSummary, nextAction: item.action, evidence: item.sources,
+        trigger: item.recommendation, rec: item.recommendationSummary, nextAction: item.action, evidence: item.sources,
       })));
       setSelectedCaseId((current) => current && product.cases[current] ? current : product.queue[0]?.id || null);
       setDataError(null);
@@ -103,9 +102,14 @@ export default function App() {
     announceAction(message);
   };
 
+  // A summary row hands us a real customerId; only fall back to the first case
+  // when no id was supplied at all, so we never open the wrong customer.
   const openCase = (caseId, message) => {
-    const target = cases[caseId] || cases[queue[0]?.id];
-    if (!target) return;
+    const target = cases[caseId] || (caseId ? null : cases[queue[0]?.id]);
+    if (!target) {
+      setDataError(`No case record is loaded for ${caseId}. Reload the ledger and try again.`);
+      return;
+    }
     setSelectedCaseId(target.id);
     setPage('case');
     if (message) announceAction(message);
@@ -131,30 +135,6 @@ export default function App() {
     if (commandMonitoring && /(?:monitor|reassess|continuous|support review)/.test(command)) {
       setMonitoringFocus(commandMonitoring.id);
       navigate('monitoring', `Opened the monitoring review for ${commandMonitoring.customer}.`);
-      return { handled: true };
-    }
-
-    const wantsSource = /(?:open|show|view|find|check).*(?:source|evidence|clause|policy|threshold|instrument)/.test(command);
-    if (wantsSource && (commandCase || /(?:312|disconnect|one thousand|1,?000)/.test(command))) {
-      const target = commandCase ? cases[commandCase.id] : selectedCase;
-      if (!target) return { handled: false };
-      setSelectedCaseId(target.id);
-      setPage('case');
-      setEvidenceRequest({ id: Date.now(), caseId: target.id, query: target.sourceQuery });
-      announceAction(`Opened ${target.customer} and the policy evidence for this review.`, 'evidence');
-      return { handled: true };
-    }
-
-    // Compound commands: "open Amelia Hart's case and analyze whether we can
-    // disconnect her based on regulation" — navigate to the case, then hand the
-    // analysis half to the compliance agent in the same (persistent) chat.
-    const wantsAnalysis = /analy[sz]e|assess|evaluate|cross[- ]?referen|regulation|complian|disconnect|eligib|can we|should we|whether|is it (?:legal|allowed|permitted)/.test(command);
-    if (commandCase && wantsAnalysis) {
-      const target = cases[commandCase.id];
-      setSelectedCaseId(target.id);
-      setPage('case');
-      setAskRequest({ id: Date.now(), query: text });
-      announceAction(`Opened ${target.customer} · ${target.id} and asked the compliance agent to analyse it against the regulations.`, 'analysis');
       return { handled: true };
     }
 
@@ -186,15 +166,11 @@ export default function App() {
     }
 
     const routes = [
-      { test: /home|dashboard|my work/, page: 'home', message: 'Opened Home.' },
+      { test: /home|dashboard|my work/, page: 'home', message: 'Opened the dashboard.' },
       { test: /customers|customer directory|accounts/, page: 'customers', message: 'Opened Customers.' },
-      { test: /management system|document library|company documents/, page: 'mgmt', message: 'Opened Management system.' },
       { test: /decision audit|audit history|audit record/, page: 'audit', message: 'Opened Decision audit.' },
-      { test: /continuous monitoring|monitoring|supported accounts|reassessment/, page: 'monitoring', message: 'Opened continuous hardship monitoring.' },
-      { test: /outcomes|analytics|reporting/, page: 'analytics', message: 'Opened Outcomes.' },
-      { test: /compliance assistant|document assistant|assistant page/, page: 'assistant', message: 'Opened Compliance assistant.' },
-      { test: /operational reviews|decision queue|operational queue|work queue|open cases/, page: 'queue', message: 'Opened Operational reviews.' },
-      { test: /connected systems|integrations|systems page|crm|billing systems|system map/, page: 'systems', message: 'Opened Connected systems.' },
+      { test: /continuous monitoring|monitoring|supported accounts|reassessment/, page: 'monitoring', message: 'Opened Monitoring.' },
+      { test: /detection|operational reviews|decision queue|operational queue|work queue|open cases/, page: 'queue', message: 'Opened Detection.' },
     ];
     // A navigation verb makes intent explicit, but a spoken instruction that
     // simply names a page ("continuous monitoring please") should still land there.
@@ -212,13 +188,6 @@ export default function App() {
     }
 
     return { handled: false };
-  };
-
-  const verifySource = (caseId = selectedCaseId) => {
-    setDecisions((current) => ({
-      ...current,
-      [caseId]: { ...(current[caseId] || {}), sourceVerified: true, approved: current[caseId]?.approved || false, record: current[caseId]?.record || null },
-    }));
   };
 
   const approveDecision = async (caseId = selectedCaseId) => {
@@ -286,7 +255,7 @@ export default function App() {
     switch (name) {
       case 'navigate': {
         const result = runProductCommand(`open ${args.target || ''}`);
-        return result.handled ? `Opened ${args.target}.` : `No page called "${args.target}" — valid pages: home, customers, operational reviews, continuous monitoring, decision audit, management system, compliance assistant, connected systems, outcomes.`;
+        return result.handled ? `Opened ${args.target}.` : `No page called "${args.target}" — valid pages: dashboard, detection, monitoring.`;
       }
       case 'open_case': {
         const target = findCase(args.customer);
@@ -304,15 +273,6 @@ export default function App() {
         setPage('queue');
         announceAction('Filtered the decision queue by voice.', 'filter');
         return `Queue filtered to ${args.priority || 'all'} priority, ${args.workflow || 'all workflows'}.`;
-      }
-      case 'ask_compliance': {
-        const target = args.customer ? findCase(args.customer) : null;
-        if (target) {
-          setSelectedCaseId(target.id);
-          setPage('case');
-        }
-        setAskRequest({ id: Date.now(), query: args.question });
-        return `The compliance agent is answering on screen with citations${target ? ` on ${target.customer}'s case` : ''}. Tell the officer the answer is coming up.`;
       }
       case 'start_reassessment': {
         const account = monitoringAccounts.find((item) =>
@@ -336,8 +296,7 @@ export default function App() {
     runProductCommand,
     assistantNotice,
     dismissNotice: () => setAssistantNotice(null),
-    askRequest,
-    clearAskRequest: () => setAskRequest(null),
+    announceAction,
   };
 
   return (
@@ -358,22 +317,15 @@ export default function App() {
           />
         )}
         {page === 'customers' && <Customers key={customersQuery} openCase={(caseId) => openCase(caseId)} decisions={decisions} initialQuery={customersQuery} queue={queue} />}
-        {page === 'systems' && <Systems />}
-        {page === 'mgmt' && <ManagementSystem />}
-        {page === 'assistant' && <Assistant />}
-        {page === 'queue' && <OpsQueue openCase={(caseId) => openCase(caseId)} decisions={decisions} filters={queueFilters} setFilters={setQueueFilters} queue={queue} />}
+        {page === 'queue' && <OpsQueue openCase={(caseId) => openCase(caseId)} decisions={decisions} filters={queueFilters} setFilters={setQueueFilters} queue={queue} actorId="Priya N." onLedgerChanged={refreshProduct} />}
         {page === 'case' && selectedCase && (
           <CaseWorkspace
             caseData={selectedCase}
             back={() => go('queue')}
-            sourceVerified={selectedDecision.sourceVerified}
             approved={selectedDecision.approved}
             decisionRecord={selectedDecision.record}
-            onVerifySource={() => verifySource(selectedCaseId)}
             onApprove={() => approveDecision(selectedCaseId)}
             viewAudit={() => go('audit')}
-            evidenceRequest={evidenceRequest}
-            onEvidenceRequestHandled={() => setEvidenceRequest(null)}
           />
         )}
         {page === 'monitoring' && (
@@ -396,7 +348,6 @@ export default function App() {
             ]}
           />
         )}
-        {page === 'analytics' && <Analytics queue={queue} auditRecords={auditRecords} />}
       </div>
       </div>
     </AssistantProvider>

@@ -60,7 +60,7 @@ export default function BulkApproval({ actorId, onClose, onApproved, openCase })
         <>
           <span>
             {outcome ? 'Result recorded below.' : missingReasons.length
-              ? `${missingReasons.length} item${missingReasons.length === 1 ? '' : 's'} need a reason before this batch can be submitted.`
+              ? `${missingReasons.length} item${missingReasons.length === 1 ? ' needs' : 's need'} a reason before this batch can be submitted.`
               : `Submitting as ${actorId}: ${VERDICTS.filter((verdict) => byVerdictPreview[verdict]).map((verdict) => `${byVerdictPreview[verdict]} ${verdict.toLowerCase()}`).join(', ') || 'nothing'}.`}
           </span>
           <span className="rv-actions">
@@ -76,7 +76,19 @@ export default function BulkApproval({ actorId, onClose, onApproved, openCase })
     >
       {error && <div className="rv-note bad">Could not load the approval queue: {error}</div>}
 
-      {outcome && !outcome.ok && <div className="rv-note bad">Nothing was written. {outcome.error}</div>}
+      {outcome && !outcome.ok && (
+        <div className="rv-note bad">
+          Nothing was written. {outcome.error}
+          {!!outcome.detail?.violations?.length && (
+            <ul>{outcome.detail.violations.map((violation) => (
+              <li key={violation.actionId || violation.index}>
+                {actions?.find((action) => action.actionId === violation.actionId)?.customer || violation.actionId}: {violation.error}
+              </li>
+            ))}</ul>
+          )}
+          {outcome.detail?.rolledBack && <div>The batch was rolled back — an action had already moved on. Reload the queue.</div>}
+        </div>
+      )}
       {outcome?.ok && (
         <div className="rv-note good">
           <b>{outcome.batch.approved} of {outcome.batch.requested} recorded</b> by {outcome.batch.actorId} at {new Date(outcome.batch.decidedAt).toLocaleString('en-AU')}.

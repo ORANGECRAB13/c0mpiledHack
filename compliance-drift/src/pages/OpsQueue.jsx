@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { Crumbs, AskBar } from '../components/Chrome.jsx';
+import SingleReview from '../components/SingleReview.jsx';
+import ReviewAllSummary from '../components/ReviewAllSummary.jsx';
+import BulkApproval from '../components/BulkApproval.jsx';
+import '../styles/review.css';
 
 const PRIO = { High: '#D64545', Medium: '#E5A833', Low: '#C4C4CA' };
 const SCHIP = {
@@ -8,7 +12,13 @@ const SCHIP = {
   'Investigation open': 'wait', Monitoring: 'mon', 'Data issue': 'issue',
 };
 
-export default function OpsQueue({ openCase, decisions, filters, setFilters, queue = [] }) {
+export default function OpsQueue({ openCase, decisions, filters, setFilters, queue = [], actorId = 'Priya N.', onLedgerChanged }) {
+  // Which review surface is open: a single-customer review, the whole-book
+  // summary, or the bulk approval dialog. Only one at a time.
+  const [singleReview, setSingleReview] = useState(null);
+  const [reviewAll, setReviewAll] = useState(false);
+  const [approveAll, setApproveAll] = useState(false);
+
   const filtered = queue.filter((item) => (
     (filters.priority === 'All' || item.priority === filters.priority)
     && (filters.workflow === 'All' || item.workflow === filters.workflow)
@@ -26,13 +36,17 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters, que
 
   return (
     <div className="page product-page">
-      <Crumbs items={['Operations', 'Operational reviews']} />
+      <Crumbs items={['Operations', 'Detection']} />
       <div className="h1row product-heading">
         <div>
           <h1 className="display">Operational reviews</h1>
           <div className="h1sub">Reconcile customer data or determine hardship and best-offer action.</div>
         </div>
-        <button className="btn-orange" onClick={() => filtered[0] && openCase(filtered[0].id)} disabled={!filtered.length}>Review next case <Icon name="chevR" size={13} /></button>
+        <div className="rv-actions">
+          <button className="rv-btn" onClick={() => setApproveAll(true)}>Approve hardship transitions</button>
+          <button className="rv-btn" onClick={() => setReviewAll(true)}>Review entire customer cases</button>
+          <button className="btn-orange" onClick={() => filtered[0] && setSingleReview({ id: filtered[0].id, customer: filtered[0].customer })} disabled={!filtered.length}>Review next case <Icon name="chevR" size={13} /></button>
+        </div>
       </div>
 
       <div className="queue-summary">
@@ -99,7 +113,10 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters, que
             <span className="prio"><i style={{ background: PRIO[item.priority] }} />{item.priority}</span>
             <span><span className={`schip ${decisions[item.id]?.approved ? 'ready' : SCHIP[item.status]}`}>{decisions[item.id]?.approved ? 'Completed' : item.status}</span></span>
             <span className="sub">{item.action}</span>
-            <span><button className="row-action" onClick={(event) => { event.stopPropagation(); openCase(item.id); }}>{decisions[item.id]?.approved ? 'View' : 'Review'}</button></span>
+            <span className="rv-actions">
+              <button className="rv-btn small" onClick={(event) => { event.stopPropagation(); setSingleReview({ id: item.id, customer: item.customer }); }}>Run review</button>
+              <button className="row-action" onClick={(event) => { event.stopPropagation(); openCase(item.id); }}>{decisions[item.id]?.approved ? 'View' : 'Open'}</button>
+            </span>
           </div>
         ))}
         {filtered.length === 0 && (
@@ -112,6 +129,34 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters, que
       </div>
 
       <AskBar />
+
+      {singleReview && (
+        <SingleReview
+          customerId={singleReview.id}
+          customerName={singleReview.customer}
+          actorId={actorId}
+          openCase={openCase}
+          onReviewed={onLedgerChanged}
+          onClose={() => setSingleReview(null)}
+        />
+      )}
+      {reviewAll && (
+        <ReviewAllSummary
+          actorId={actorId}
+          openCase={(customerId) => { setReviewAll(false); openCase(customerId); }}
+          onApproveAll={() => { setReviewAll(false); setApproveAll(true); }}
+          onFinished={onLedgerChanged}
+          onClose={() => setReviewAll(false)}
+        />
+      )}
+      {approveAll && (
+        <BulkApproval
+          actorId={actorId}
+          openCase={openCase}
+          onApproved={onLedgerChanged}
+          onClose={() => setApproveAll(false)}
+        />
+      )}
     </div>
   );
 }

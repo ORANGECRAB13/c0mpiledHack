@@ -74,7 +74,18 @@ export async function persistEvaluationBundle(bundle) {
       const decisionId = id();
       decision = (await client.query(`INSERT INTO decision (id,decision_key,customer_id,policy_id,policy_version,snapshot_id,snapshot_hash,outcome,evidence,supersedes_decision_id,created_at)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`, [decisionId, bundle.decisionKey, bundle.customerId, bundle.policyId, bundle.policyVersion, snapshotId, bundle.snapshotHash, bundle.outcome, json(bundle.reasons), previous?.id || null, bundle.evaluatedAt])).rows[0];
-      if (previous) await client.query('UPDATE decision SET superseded_by_decision_id=$2 WHERE id=$1 AND superseded_by_decision_id IS NULL', [previous.id, decisionId]);
+      if (previous) {
+        await client.query('UPDATE decision SET superseded_by_decision_id=$2 WHERE id=$1 AND superseded_by_decision_id IS NULL', [previous.id, decisionId]);
+        // Withdraw the superseded decision's un-actioned request. Without this
+        // it stays in the approval queue, and a bulk approve would execute a
+        // plan switch justified by evidence this evaluation has just replaced.
+        // Only untouched requests are retired — anything already approved,
+        // rejected or executing is left exactly as it is.
+        await client.query(
+          "UPDATE action SET status='SUPERSEDED' WHERE decision_id=$1 AND status IN ('AWAITING_APPROVAL','PENDING')",
+          [previous.id],
+        );
+      }
     }
     return { evaluationId, snapshotId, decision };
   });
@@ -156,6 +167,9 @@ export async function listActionsAwaitingApproval({ limit = 50, offset = 0, stat
     JOIN decision d ON d.id = a.decision_id
     JOIN customer c ON c.id = d.customer_id
     WHERE a.status = $1::action_status
+      -- Belt and braces: even if an action were somehow left open against a
+      -- superseded decision, it must never be offered for approval.
+      AND d.superseded_by_decision_id IS NULL
     ORDER BY a.created_at, a.id
     LIMIT $2 OFFSET $3`, [status, limit, offset]);
   return { total: rows[0] ? Number(rows[0].total) : 0, rows };
