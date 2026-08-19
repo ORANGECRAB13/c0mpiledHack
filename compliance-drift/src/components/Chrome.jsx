@@ -27,23 +27,9 @@ export function Sidebar({ page, go }) {
 
       <div className="sb-sec">
         <div className="sb-h">Work</div>
-        <button className={`sb-item ${page === 'home' ? 'on' : ''}`} onClick={() => go('home')}><Icon name="home" size={16} /> Home</button>
-        <button className={`sb-item ${['queue','case'].includes(page) ? 'on' : ''}`} onClick={() => go('queue')}><Icon name="zap" size={16} /> Operational reviews</button>
-        <button className={`sb-item ${page === 'customers' ? 'on' : ''}`} onClick={() => go('customers')}><Icon name="people" size={16} /> Customers</button>
-        <button className={`sb-item ${page === 'monitoring' ? 'on' : ''}`} onClick={() => go('monitoring')}><Icon name="activity" size={16} /> Continuous monitoring</button>
-        <button className={`sb-item ${page === 'audit' ? 'on' : ''}`} onClick={() => go('audit')}><Icon name="check" size={16} /> Decision audit</button>
-      </div>
-
-      <div className="sb-sec">
-        <div className="sb-h">Knowledge</div>
-        <button className={`sb-item ${page === 'mgmt' ? 'on' : ''}`} onClick={() => go('mgmt')}><Icon name="layers" size={16} /> Management system</button>
-        <button className={`sb-item ${page === 'assistant' ? 'on' : ''}`} onClick={() => go('assistant')}><Icon name="search" size={16} /> Compliance assistant</button>
-        <button className={`sb-item ${page === 'systems' ? 'on' : ''}`} onClick={() => go('systems')}><Icon name="plug" size={16} /> Connected systems</button>
-      </div>
-
-      <div className="sb-sec">
-        <div className="sb-h">Reporting</div>
-        <button className={`sb-item ${page === 'analytics' ? 'on' : ''}`} onClick={() => go('analytics')}><Icon name="grid" size={16} /> Outcomes</button>
+        <button className={`sb-item ${page === 'home' ? 'on' : ''}`} onClick={() => go('home')}><Icon name="home" size={16} /> Dashboard</button>
+        <button className={`sb-item ${['queue','case'].includes(page) ? 'on' : ''}`} onClick={() => go('queue')}><Icon name="zap" size={16} /> Detection</button>
+        <button className={`sb-item ${['monitoring','customers'].includes(page) ? 'on' : ''}`} onClick={() => go('monitoring')}><Icon name="activity" size={16} /> Monitoring</button>
       </div>
 
       <div className="sb-foot">
@@ -149,7 +135,7 @@ export function IconRail({ go }) {
 export function Crumbs({ items }) {
   return (
     <div className="crumbs">
-      <a><Icon name="home" size={14} /> Home</a>
+      <a><Icon name="home" size={14} /> Dashboard</a>
       {items.map((it, i) => (
         <React.Fragment key={it}>
           <span className="sep"><Icon name="chevR" size={11} /></span>

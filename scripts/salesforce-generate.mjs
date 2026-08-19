@@ -30,6 +30,13 @@ const rand = () => {
 const pick = (list) => list[Math.floor(rand() * list.length)];
 const between = (lo, hi) => lo + Math.floor(rand() * (hi - lo + 1));
 
+/** Stable per-customer randomness that does not disturb the main stream. */
+const idHash = (id) => {
+  let h = 2166136261;
+  for (const ch of `sensitive:${id}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  return (h >>> 0);
+};
+
 const FIRST = ['Amelia','Daniel','Priya','Marcus','Sofia','Grace','Tom','Leila','Ravi','Jia','Liam','Rosa','Ken','Hana','Noah','Mia','Ethan','Zara','Oliver','Aisha','Lucas','Chloe','Arjun','Isla','Mateo','Freya','Sione','Nina','Caleb','Yuki','Omar','Elena','Jack','Fatima','Hugo','Ruby','Dev','Anika','Felix','Talia','Cooper','Maya','Enzo','Sara','Blake','Leilani','Rohan','Ivy','Angus','Nadia'];
 const LAST = ['Hart','Okonkwo','Raman','Webb','Nguyen','Muller','Castellano','Haddad','Patel','Chen','Forsyth','Silva','Watanabe','Kim','Brennan','Kaur','Moretti','Abbas','Donnelly','Fraser','Okafor','Lombardi','Sharma','Whitlock','Vargas','Nakamura','Ellis','Bashir','Tupou','Kovac','Reyes','Mercer','Dube','Salib','Hoang','Barlow','Iyer','Novak','Camilleri','Adeyemi','Quinn','Rossi','Bui','Mahmoud','Sutton','Faletau','Deng','Larsen','Marsh','Petrov'];
 const PLANS = ['Everyday Saver','Standard Flexi','Time-of-Use Plus','Solar Saver','Assisted Essentials','Hardship Saver'];
@@ -102,7 +109,15 @@ for (let i = 0; i < COUNT; i++) {
       entered_at: enteredDays ? daysAgo(enteredDays) : null,
       review_due_at: s.hardship === 'active' ? daysAhead(between(-30, 120)) : null,
     },
-    crm: { financial_stress_signal: s.stress, reason: s.stress ? pick(REASONS) : null },
+    crm: {
+      financial_stress_signal: s.stress,
+      reason: s.stress ? pick(REASONS) : null,
+      // Family violence / life support: rare, and concentrated where there is
+      // already hardship, because that is where it actually shows up. Derived
+      // from the id rather than the shared stream — drawing from rand() here
+      // would shift every later draw and silently regenerate the whole book.
+      sensitive_customer: idHash(id) % 100 < (s.hardship === 'active' ? 18 : 4),
+    },
     preferences: { best_offer_opt_out: s.optOut },
   });
 }
@@ -122,6 +137,7 @@ const COLUMNS = [
   ['Financial_Stress_Signal__c', (c) => c.crm.financial_stress_signal],
   ['Financial_Stress_Reason__c', (c) => c.crm.reason ?? ''],
   ['Best_Offer_Opt_Out__c', (c) => c.preferences.best_offer_opt_out],
+  ['Sensitive_Customer__c', (c) => c.crm.sensitive_customer],
 ];
 
 const escape = (v) => {
@@ -144,3 +160,4 @@ console.log(`${customers.length} customers · ids ${START_ID}-${START_ID + COUNT
 console.log('segments:', tally);
 console.log(`over the $1,000 floor: ${overFloor}`);
 console.log(`mandatory best-offer switch (>=$1,000, 90+ days, not opted out): ${bothRules}`);
+console.log(`sensitive customers (disconnection blocked outright): ${customers.filter((c) => c.crm.sensitive_customer).length}`);

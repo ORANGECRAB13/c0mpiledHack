@@ -63,4 +63,9 @@
         <field>Account.Best_Offer_Opt_Out__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.Sensitive_Customer__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
 </PermissionSet>

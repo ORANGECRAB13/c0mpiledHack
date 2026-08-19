@@ -140,6 +140,10 @@
                 <behavior>Edit</behavior>
                 <field>Best_Offer_Opt_Out__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Sensitive_Customer__c</field>
+            </layoutItems>
         </layoutColumns>
         <style>OneColumn</style>
     </layoutSections>

@@ -19,7 +19,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -45,7 +46,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -71,7 +73,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -97,7 +100,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": true
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -123,7 +127,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "rental stress"
+      "reason": "rental stress",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -149,7 +154,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -175,7 +181,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -201,7 +208,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -227,7 +235,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -253,7 +262,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -279,7 +289,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -305,7 +316,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "reduced work hours"
+      "reason": "reduced work hours",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -331,7 +343,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -357,7 +370,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -383,7 +397,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "rental stress"
+      "reason": "rental stress",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -409,7 +424,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -435,7 +451,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -461,7 +478,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -487,7 +505,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -513,7 +532,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -539,7 +559,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -565,7 +586,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -591,7 +613,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -617,7 +640,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -643,7 +667,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -669,7 +694,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -695,7 +721,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "business downturn"
+      "reason": "business downturn",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -721,7 +748,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -747,7 +775,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -773,7 +802,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -799,7 +829,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -825,7 +856,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -851,7 +883,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -877,7 +910,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -903,7 +937,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -929,7 +964,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "carer responsibilities"
+      "reason": "carer responsibilities",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -955,7 +991,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -981,7 +1018,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "reduced work hours"
+      "reason": "reduced work hours",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1007,7 +1045,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "reduced work hours"
+      "reason": "reduced work hours",
+      "sensitive_customer": true
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1033,7 +1072,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -1059,7 +1099,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1085,7 +1126,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1111,7 +1153,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1137,7 +1180,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "rental stress"
+      "reason": "rental stress",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1163,7 +1207,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1189,7 +1234,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "business downturn"
+      "reason": "business downturn",
+      "sensitive_customer": true
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1215,7 +1261,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1241,7 +1288,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1267,7 +1315,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1293,7 +1342,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "reduced work hours"
+      "reason": "reduced work hours",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1319,7 +1369,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -1345,7 +1396,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": true
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1371,7 +1423,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1397,7 +1450,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1423,7 +1477,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1449,7 +1504,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1475,7 +1531,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "rental stress"
+      "reason": "rental stress",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1501,7 +1558,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1527,7 +1585,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1553,7 +1612,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1579,7 +1639,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -1605,7 +1666,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1631,7 +1693,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "business downturn"
+      "reason": "business downturn",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1657,7 +1720,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "reduced work hours"
+      "reason": "reduced work hours",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1683,7 +1747,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": true
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1709,7 +1774,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1735,7 +1801,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -1761,7 +1828,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1787,7 +1855,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1813,7 +1882,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1839,7 +1909,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": true
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1865,7 +1936,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1891,7 +1963,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1917,7 +1990,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1943,7 +2017,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -1969,7 +2044,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -1995,7 +2071,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2021,7 +2098,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2047,7 +2125,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "rental stress"
+      "reason": "rental stress",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -2073,7 +2152,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2099,7 +2179,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2125,7 +2206,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2151,7 +2233,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "carer responsibilities"
+      "reason": "carer responsibilities",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -2177,7 +2260,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2203,7 +2287,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2229,7 +2314,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2255,7 +2341,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2281,7 +2368,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2307,7 +2395,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -2333,7 +2422,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": true
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -2359,7 +2449,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2385,7 +2476,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2411,7 +2503,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2437,7 +2530,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2463,7 +2557,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2489,7 +2584,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2515,7 +2611,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2541,7 +2638,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2567,7 +2665,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2593,7 +2692,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2619,7 +2719,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2645,7 +2746,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2671,7 +2773,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -2697,7 +2800,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "rental stress"
+      "reason": "rental stress",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2723,7 +2827,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2749,7 +2854,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2775,7 +2881,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "business downturn"
+      "reason": "business downturn",
+      "sensitive_customer": true
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2801,7 +2908,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2827,7 +2935,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2853,7 +2962,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "carer responsibilities"
+      "reason": "carer responsibilities",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2879,7 +2989,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -2905,7 +3016,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "carer responsibilities"
+      "reason": "carer responsibilities",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2931,7 +3043,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2957,7 +3070,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -2983,7 +3097,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "carer responsibilities"
+      "reason": "carer responsibilities",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3009,7 +3124,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": true
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3035,7 +3151,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3061,7 +3178,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3087,7 +3205,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "business downturn"
+      "reason": "business downturn",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3113,7 +3232,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3139,7 +3259,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3165,7 +3286,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3191,7 +3313,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "rental stress"
+      "reason": "rental stress",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3217,7 +3340,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3243,7 +3367,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "job loss"
+      "reason": "job loss",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3269,7 +3394,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "carer responsibilities"
+      "reason": "carer responsibilities",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3295,7 +3421,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "rental stress"
+      "reason": "rental stress",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3321,7 +3448,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3347,7 +3475,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3373,7 +3502,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3399,7 +3529,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3425,7 +3556,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3451,7 +3583,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3477,7 +3610,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "carer responsibilities"
+      "reason": "carer responsibilities",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3503,7 +3637,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3529,7 +3664,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "rental stress"
+      "reason": "rental stress",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3555,7 +3691,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3581,7 +3718,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "carer responsibilities"
+      "reason": "carer responsibilities",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3607,7 +3745,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3633,7 +3772,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3659,7 +3799,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "business downturn"
+      "reason": "business downturn",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3685,7 +3826,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3711,7 +3853,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3737,7 +3880,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "separation"
+      "reason": "separation",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3763,7 +3907,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "medical costs"
+      "reason": "medical costs",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3789,7 +3934,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3815,7 +3961,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "bereavement"
+      "reason": "bereavement",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3841,7 +3988,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false
@@ -3867,7 +4015,8 @@
     },
     "crm": {
       "financial_stress_signal": true,
-      "reason": "business downturn"
+      "reason": "business downturn",
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": true
@@ -3893,7 +4042,8 @@
     },
     "crm": {
       "financial_stress_signal": false,
-      "reason": null
+      "reason": null,
+      "sensitive_customer": false
     },
     "preferences": {
       "best_offer_opt_out": false

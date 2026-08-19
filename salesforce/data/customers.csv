@@ -1,151 +1,151 @@
-External_Customer_Id__c,Name,Arrears_Balance__c,Oldest_Debt_Days__c,Current_Plan__c,Missed_Payments_90d__c,Partial_Payments_90d__c,Hardship_Status__c,Hardship_Entered_At__c,Hardship_Review_Due_At__c,Financial_Stress_Signal__c,Financial_Stress_Reason__c,Best_Offer_Opt_Out__c
-1001,Maya Donnelly,849,38,Solar Saver,2,0,none,,,true,job loss,false
-1002,Rohan Kim,300,49,Solar Saver,2,0,requested,,,true,medical costs,false
-1003,Sofia Bashir,214,41,Time-of-Use Plus,0,0,exited,2025-11-08,,false,,false
-1004,Ruby Camilleri,462,214,Hardship Saver,1,2,active,2026-05-11,2026-10-04,true,separation,false
-1005,Zara Deng,194,80,Everyday Saver,1,1,none,,,true,rental stress,false
-1006,Isla Webb,2032,186,Time-of-Use Plus,2,2,none,,,false,,true
-1007,Freya Haddad,475,25,Solar Saver,1,0,none,,,true,bereavement,false
-1008,Grace Whitlock,3,7,Standard Flexi,0,1,none,,,false,,false
-1009,Nadia Donnelly,1881,212,Time-of-Use Plus,2,3,none,,,false,,false
-1010,Marcus Quinn,1049,245,Everyday Saver,2,1,none,,,false,,false
-1011,Aisha Nakamura,154,20,Solar Saver,0,1,exited,2025-08-01,,false,,false
-1012,Leilani Forsyth,1513,95,Assisted Essentials,0,1,active,2026-07-12,2026-08-26,true,reduced work hours,false
-1013,Ethan Bashir,305,80,Time-of-Use Plus,1,1,requested,,,true,medical costs,false
-1014,Aisha Vargas,1487,149,Everyday Saver,3,1,none,,,false,,true
-1015,Caleb Forsyth,167,29,Solar Saver,2,2,none,,,true,rental stress,true
-1016,Elena Haddad,2211,126,Time-of-Use Plus,3,0,none,,,true,job loss,true
-1017,Mateo Mahmoud,1110,84,Hardship Saver,0,2,active,2026-07-07,2026-09-26,true,job loss,false
-1018,Sofia Donnelly,535,54,Standard Flexi,2,1,requested,,,false,,true
-1019,Elena Vargas,1946,116,Standard Flexi,3,2,none,,,true,bereavement,false
-1020,Leila Haddad,26,15,Standard Flexi,0,1,none,,,false,,false
-1021,Felix Silva,1978,218,Time-of-Use Plus,4,1,none,,,true,medical costs,false
-1022,Enzo Rossi,21,15,Everyday Saver,0,0,none,,,false,,false
-1023,Blake Sharma,55,11,Standard Flexi,0,1,none,,,false,,false
-1024,Enzo Brennan,1944,182,Time-of-Use Plus,2,0,none,,,true,bereavement,true
-1025,Noah Adeyemi,348,81,Time-of-Use Plus,1,0,none,,,false,,false
-1026,Blake Fraser,413,39,Solar Saver,2,1,none,,,true,separation,false
-1027,Ken Camilleri,614,43,Solar Saver,1,1,none,,,true,business downturn,false
-1028,Jia Larsen,966,297,Hardship Saver,2,1,active,2026-07-24,2026-09-17,true,bereavement,false
-1029,Leila Haddad,2283,204,Hardship Saver,0,1,active,2026-04-02,2026-12-08,true,job loss,false
-1030,Ken Lombardi,716,26,Everyday Saver,2,1,requested,,,false,,false
-1031,Fatima Nakamura,72,20,Solar Saver,0,1,none,,,false,,false
-1032,Marcus Larsen,1069,241,Solar Saver,3,0,none,,,true,separation,false
-1033,Ethan Brennan,88,15,Standard Flexi,0,1,none,,,false,,true
-1034,Liam Tupou,107,15,Everyday Saver,0,0,none,,,false,,false
-1035,Leila Faletau,247,26,Standard Flexi,0,1,exited,2025-09-12,,false,,false
-1036,Yuki Raman,2958,157,Time-of-Use Plus,4,2,none,,,true,carer responsibilities,false
-1037,Ken Larsen,623,32,Everyday Saver,2,1,none,,,false,,false
-1038,Lucas Fraser,509,59,Everyday Saver,1,0,none,,,true,reduced work hours,false
-1039,Noah Muller,638,109,Assisted Essentials,0,3,active,2026-03-08,2026-12-15,true,reduced work hours,false
-1040,Rosa Novak,2257,99,Solar Saver,3,0,none,,,true,job loss,true
-1041,Blake Okafor,109,11,Everyday Saver,0,1,none,,,false,,false
-1042,Dev Patel,789,75,Time-of-Use Plus,1,2,none,,,true,medical costs,false
-1043,Leila Salib,53,8,Everyday Saver,0,1,none,,,false,,false
-1044,Ruby Watanabe,436,48,Solar Saver,2,2,none,,,true,rental stress,false
-1045,Enzo Nguyen,262,43,Everyday Saver,1,1,none,,,true,medical costs,false
-1046,Angus Novak,1792,179,Assisted Essentials,2,2,active,2026-03-02,2026-09-01,true,business downturn,false
-1047,Marcus Quinn,38,12,Time-of-Use Plus,0,1,none,,,false,,false
-1048,Jack Whitlock,814,83,Everyday Saver,1,1,none,,,false,,false
-1049,Leila Nakamura,4,6,Solar Saver,0,0,none,,,false,,false
-1050,Jack Okonkwo,1890,188,Hardship Saver,1,2,active,2026-06-10,2026-11-24,true,reduced work hours,false
-1051,Jia Sharma,101,32,Everyday Saver,0,0,exited,2025-10-05,,false,,true
-1052,Isla Lombardi,65,3,Everyday Saver,0,1,none,,,false,,false
-1053,Felix Raman,833,55,Standard Flexi,1,0,none,,,true,job loss,false
-1054,Rohan Deng,35,0,Solar Saver,0,1,none,,,false,,false
-1055,Oliver Haddad,50,11,Time-of-Use Plus,0,1,none,,,false,,false
-1056,Maya Mercer,34,16,Time-of-Use Plus,0,1,none,,,false,,false
-1057,Leila Faletau,1893,142,Solar Saver,3,1,none,,,true,rental stress,false
-1058,Ken Donnelly,2079,134,Solar Saver,2,1,none,,,true,separation,false
-1059,Lucas Adeyemi,40,1,Standard Flexi,0,1,none,,,false,,false
-1060,Mateo Haddad,81,15,Time-of-Use Plus,0,1,none,,,false,,false
-1061,Freya Hoang,2460,155,Time-of-Use Plus,3,0,none,,,true,job loss,true
-1062,Isla Kim,2640,196,Standard Flexi,5,1,none,,,true,job loss,false
-1063,Elena Iyer,606,292,Hardship Saver,0,3,active,2026-05-11,2026-11-05,true,business downturn,false
-1064,Leilani Bashir,834,43,Hardship Saver,0,4,active,2026-04-14,2026-12-14,true,reduced work hours,false
-1065,Zara Deng,494,72,Hardship Saver,1,4,active,2026-03-28,2026-09-22,true,job loss,false
-1066,Liam Lombardi,26,3,Solar Saver,0,1,none,,,false,,false
-1067,Ruby Watanabe,1693,209,Assisted Essentials,3,1,active,2026-03-13,2026-08-07,true,separation,true
-1068,Arjun Watanabe,108,20,Solar Saver,0,1,exited,2025-11-24,,false,,false
-1069,Yuki Nakamura,101,14,Time-of-Use Plus,0,1,none,,,false,,false
-1070,Leilani Vargas,1045,106,Hardship Saver,0,2,active,2026-02-01,2026-11-10,true,bereavement,false
-1071,Rohan Mahmoud,23,16,Everyday Saver,0,0,exited,2025-08-29,,false,,false
-1072,Anika Webb,242,12,Solar Saver,0,1,exited,2025-08-05,,false,,false
-1073,Cooper Donnelly,1508,271,Hardship Saver,3,4,active,2026-02-22,2026-08-26,true,separation,false
-1074,Zara Faletau,258,72,Standard Flexi,1,1,none,,,false,,false
-1075,Ravi Mahmoud,50,8,Solar Saver,0,0,none,,,false,,false
-1076,Lucas Donnelly,1688,127,Solar Saver,4,2,none,,,false,,true
-1077,Noah Muller,551,66,Standard Flexi,1,2,none,,,false,,false
-1078,Hugo Nguyen,1804,170,Time-of-Use Plus,2,3,none,,,true,job loss,false
-1079,Sofia Okafor,1082,195,Solar Saver,4,2,none,,,true,rental stress,true
-1080,Dev Dube,6,5,Everyday Saver,0,1,none,,,false,,false
-1081,Rohan Muller,571,76,Standard Flexi,2,0,none,,,true,medical costs,false
-1082,Rosa Whitlock,6,14,Time-of-Use Plus,0,1,none,,,false,,false
-1083,Oliver Iyer,1115,279,Assisted Essentials,3,3,active,2026-05-22,2026-09-10,true,carer responsibilities,true
-1084,Sara Nakamura,247,142,Hardship Saver,1,2,active,2026-07-18,2026-08-22,true,separation,false
-1085,Felix Marsh,323,49,Time-of-Use Plus,1,2,none,,,false,,false
-1086,Ravi Petrov,844,61,Standard Flexi,2,0,none,,,false,,false
-1087,Sara Mahmoud,754,66,Time-of-Use Plus,1,1,none,,,true,bereavement,false
-1088,Tom Watanabe,113,20,Everyday Saver,0,0,none,,,false,,false
-1089,Dev Reyes,2479,165,Standard Flexi,2,1,none,,,false,,true
-1090,Hana Haddad,54,2,Solar Saver,0,0,none,,,false,,true
-1091,Amelia Faletau,833,78,Standard Flexi,1,1,none,,,true,separation,false
-1092,Omar Donnelly,66,28,Everyday Saver,0,2,exited,2025-08-28,,false,,false
-1093,Ivy Watanabe,782,47,Time-of-Use Plus,2,0,none,,,false,,false
-1094,Cooper Kovac,76,16,Standard Flexi,0,1,none,,,false,,false
-1095,Fatima Watanabe,653,88,Solar Saver,2,2,requested,,,false,,false
-1096,Leilani Sutton,615,55,Everyday Saver,1,1,none,,,true,bereavement,false
-1097,Arjun Kovac,114,17,Solar Saver,0,1,none,,,false,,false
-1098,Maya Barlow,2330,116,Hardship Saver,0,3,active,2026-03-02,2026-08-23,true,bereavement,false
-1099,Fatima Watanabe,217,47,Solar Saver,1,1,none,,,false,,false
-1100,Freya Abbas,1233,182,Assisted Essentials,0,4,active,2026-04-18,2026-08-31,true,medical costs,false
-1101,Hugo Quinn,720,57,Everyday Saver,2,2,none,,,false,,false
-1102,Zara Sharma,70,11,Time-of-Use Plus,0,0,none,,,false,,false
-1103,Enzo Watanabe,73,11,Solar Saver,0,1,none,,,false,,true
-1104,Marcus Kovac,275,295,Hardship Saver,2,1,active,2026-07-10,2026-10-27,true,rental stress,false
-1105,Dev Vargas,1264,275,Assisted Essentials,2,4,active,2026-06-12,2026-11-15,true,job loss,false
-1106,Ethan Mahmoud,1538,147,Solar Saver,2,2,none,,,true,separation,false
-1107,Isla Deng,1008,62,Hardship Saver,2,1,active,2026-05-15,2026-08-15,true,business downturn,false
-1108,Talia Okafor,576,34,Everyday Saver,2,0,none,,,true,bereavement,false
-1109,Mia Quinn,1472,218,Assisted Essentials,1,1,active,2026-06-02,2026-08-26,true,medical costs,false
-1110,Hugo Silva,1898,257,Solar Saver,4,3,none,,,true,carer responsibilities,false
-1111,Lucas Okonkwo,2143,117,Solar Saver,4,0,none,,,true,job loss,true
-1112,Hana Iyer,1044,73,Hardship Saver,3,4,active,2026-03-01,2026-10-18,true,carer responsibilities,false
-1113,Sione Faletau,100,3,Everyday Saver,0,0,none,,,false,,false
-1114,Liam Webb,42,8,Solar Saver,0,1,none,,,false,,false
-1115,Isla Quinn,1800,262,Assisted Essentials,0,1,active,2026-07-27,2026-10-17,true,carer responsibilities,false
-1116,Felix Novak,2414,140,Time-of-Use Plus,4,1,none,,,true,bereavement,false
-1117,Oliver Larsen,266,42,Time-of-Use Plus,2,1,none,,,false,,false
-1118,Sofia Quinn,575,38,Everyday Saver,1,0,none,,,false,,false
-1119,Rosa Vargas,1101,157,Hardship Saver,2,1,active,2026-04-02,2026-08-14,true,business downturn,false
-1120,Ken Camilleri,296,26,Solar Saver,0,0,exited,2025-11-08,,false,,false
-1121,Leilani Mahmoud,1394,247,Standard Flexi,5,3,none,,,true,separation,false
-1122,Dev Kim,1859,104,Solar Saver,4,0,none,,,false,,true
-1123,Elena Iyer,2410,164,Everyday Saver,2,1,none,,,true,rental stress,false
-1124,Caleb Quinn,1367,96,Assisted Essentials,2,4,active,2026-03-01,2026-11-28,true,bereavement,false
-1125,Leilani Silva,701,35,Time-of-Use Plus,1,0,none,,,true,job loss,false
-1126,Yuki Iyer,1447,133,Solar Saver,2,0,none,,,true,carer responsibilities,false
-1127,Hana Muller,1734,95,Time-of-Use Plus,2,1,none,,,true,rental stress,true
-1128,Ethan Marsh,241,231,Assisted Essentials,1,2,active,2026-03-12,2026-11-12,true,separation,false
-1129,Caleb Deng,99,10,Time-of-Use Plus,0,0,none,,,false,,false
-1130,Oliver Whitlock,100,9,Time-of-Use Plus,0,1,none,,,false,,true
-1131,Talia Haddad,547,49,Standard Flexi,2,1,none,,,true,medical costs,false
-1132,Tom Marsh,835,80,Everyday Saver,2,1,none,,,false,,false
-1133,Ethan Novak,68,18,Time-of-Use Plus,0,1,none,,,false,,true
-1134,Freya Kovac,2416,176,Solar Saver,2,0,none,,,true,carer responsibilities,true
-1135,Sara Reyes,608,83,Solar Saver,2,2,none,,,false,,false
-1136,Ethan Kaur,1809,179,Standard Flexi,4,1,none,,,true,rental stress,false
-1137,Hugo Okafor,27,5,Solar Saver,0,1,none,,,false,,true
-1138,Ravi Haddad,1227,219,Solar Saver,5,1,none,,,true,carer responsibilities,false
-1139,Nadia Rossi,247,78,Standard Flexi,1,0,none,,,false,,false
-1140,Daniel Iyer,97,3,Everyday Saver,0,1,none,,,false,,false
-1141,Mia Salib,642,63,Solar Saver,1,0,requested,,,true,business downturn,false
-1142,Liam Fraser,560,246,Assisted Essentials,0,3,active,2026-06-27,2026-11-08,true,bereavement,false
-1143,Chloe Mahmoud,152,69,Everyday Saver,2,2,none,,,true,medical costs,false
-1144,Ruby Kovac,1018,228,Assisted Essentials,1,1,active,2026-05-23,2026-11-11,true,separation,false
-1145,Tom Camilleri,2037,95,Assisted Essentials,0,3,active,2026-04-09,2026-11-03,true,medical costs,false
-1146,Marcus Marsh,736,77,Solar Saver,2,1,requested,,,false,,true
-1147,Sofia Fraser,2574,190,Everyday Saver,2,3,none,,,true,bereavement,false
-1148,Zara Faletau,22,6,Everyday Saver,0,1,none,,,false,,false
-1149,Omar Dube,364,45,Everyday Saver,1,0,requested,,,true,business downturn,true
-1150,Enzo Hart,721,49,Time-of-Use Plus,2,0,requested,,,false,,false
+External_Customer_Id__c,Name,Arrears_Balance__c,Oldest_Debt_Days__c,Current_Plan__c,Missed_Payments_90d__c,Partial_Payments_90d__c,Hardship_Status__c,Hardship_Entered_At__c,Hardship_Review_Due_At__c,Financial_Stress_Signal__c,Financial_Stress_Reason__c,Best_Offer_Opt_Out__c,Sensitive_Customer__c
+1001,Maya Donnelly,849,38,Solar Saver,2,0,none,,,true,job loss,false,false
+1002,Rohan Kim,300,49,Solar Saver,2,0,requested,,,true,medical costs,false,false
+1003,Sofia Bashir,214,41,Time-of-Use Plus,0,0,exited,2025-11-08,,false,,false,false
+1004,Ruby Camilleri,462,214,Hardship Saver,1,2,active,2026-05-11,2026-10-04,true,separation,false,true
+1005,Zara Deng,194,80,Everyday Saver,1,1,none,,,true,rental stress,false,false
+1006,Isla Webb,2032,186,Time-of-Use Plus,2,2,none,,,false,,true,false
+1007,Freya Haddad,475,25,Solar Saver,1,0,none,,,true,bereavement,false,false
+1008,Grace Whitlock,3,7,Standard Flexi,0,1,none,,,false,,false,false
+1009,Nadia Donnelly,1881,212,Time-of-Use Plus,2,3,none,,,false,,false,false
+1010,Marcus Quinn,1049,245,Everyday Saver,2,1,none,,,false,,false,false
+1011,Aisha Nakamura,154,20,Solar Saver,0,1,exited,2025-08-01,,false,,false,false
+1012,Leilani Forsyth,1513,95,Assisted Essentials,0,1,active,2026-07-12,2026-08-26,true,reduced work hours,false,false
+1013,Ethan Bashir,305,80,Time-of-Use Plus,1,1,requested,,,true,medical costs,false,false
+1014,Aisha Vargas,1487,149,Everyday Saver,3,1,none,,,false,,true,false
+1015,Caleb Forsyth,167,29,Solar Saver,2,2,none,,,true,rental stress,true,false
+1016,Elena Haddad,2211,126,Time-of-Use Plus,3,0,none,,,true,job loss,true,false
+1017,Mateo Mahmoud,1110,84,Hardship Saver,0,2,active,2026-07-07,2026-09-26,true,job loss,false,false
+1018,Sofia Donnelly,535,54,Standard Flexi,2,1,requested,,,false,,true,false
+1019,Elena Vargas,1946,116,Standard Flexi,3,2,none,,,true,bereavement,false,false
+1020,Leila Haddad,26,15,Standard Flexi,0,1,none,,,false,,false,false
+1021,Felix Silva,1978,218,Time-of-Use Plus,4,1,none,,,true,medical costs,false,false
+1022,Enzo Rossi,21,15,Everyday Saver,0,0,none,,,false,,false,false
+1023,Blake Sharma,55,11,Standard Flexi,0,1,none,,,false,,false,false
+1024,Enzo Brennan,1944,182,Time-of-Use Plus,2,0,none,,,true,bereavement,true,false
+1025,Noah Adeyemi,348,81,Time-of-Use Plus,1,0,none,,,false,,false,false
+1026,Blake Fraser,413,39,Solar Saver,2,1,none,,,true,separation,false,false
+1027,Ken Camilleri,614,43,Solar Saver,1,1,none,,,true,business downturn,false,false
+1028,Jia Larsen,966,297,Hardship Saver,2,1,active,2026-07-24,2026-09-17,true,bereavement,false,false
+1029,Leila Haddad,2283,204,Hardship Saver,0,1,active,2026-04-02,2026-12-08,true,job loss,false,false
+1030,Ken Lombardi,716,26,Everyday Saver,2,1,requested,,,false,,false,false
+1031,Fatima Nakamura,72,20,Solar Saver,0,1,none,,,false,,false,false
+1032,Marcus Larsen,1069,241,Solar Saver,3,0,none,,,true,separation,false,false
+1033,Ethan Brennan,88,15,Standard Flexi,0,1,none,,,false,,true,false
+1034,Liam Tupou,107,15,Everyday Saver,0,0,none,,,false,,false,false
+1035,Leila Faletau,247,26,Standard Flexi,0,1,exited,2025-09-12,,false,,false,false
+1036,Yuki Raman,2958,157,Time-of-Use Plus,4,2,none,,,true,carer responsibilities,false,false
+1037,Ken Larsen,623,32,Everyday Saver,2,1,none,,,false,,false,false
+1038,Lucas Fraser,509,59,Everyday Saver,1,0,none,,,true,reduced work hours,false,false
+1039,Noah Muller,638,109,Assisted Essentials,0,3,active,2026-03-08,2026-12-15,true,reduced work hours,false,true
+1040,Rosa Novak,2257,99,Solar Saver,3,0,none,,,true,job loss,true,false
+1041,Blake Okafor,109,11,Everyday Saver,0,1,none,,,false,,false,false
+1042,Dev Patel,789,75,Time-of-Use Plus,1,2,none,,,true,medical costs,false,false
+1043,Leila Salib,53,8,Everyday Saver,0,1,none,,,false,,false,false
+1044,Ruby Watanabe,436,48,Solar Saver,2,2,none,,,true,rental stress,false,false
+1045,Enzo Nguyen,262,43,Everyday Saver,1,1,none,,,true,medical costs,false,false
+1046,Angus Novak,1792,179,Assisted Essentials,2,2,active,2026-03-02,2026-09-01,true,business downturn,false,true
+1047,Marcus Quinn,38,12,Time-of-Use Plus,0,1,none,,,false,,false,false
+1048,Jack Whitlock,814,83,Everyday Saver,1,1,none,,,false,,false,false
+1049,Leila Nakamura,4,6,Solar Saver,0,0,none,,,false,,false,false
+1050,Jack Okonkwo,1890,188,Hardship Saver,1,2,active,2026-06-10,2026-11-24,true,reduced work hours,false,false
+1051,Jia Sharma,101,32,Everyday Saver,0,0,exited,2025-10-05,,false,,true,false
+1052,Isla Lombardi,65,3,Everyday Saver,0,1,none,,,false,,false,true
+1053,Felix Raman,833,55,Standard Flexi,1,0,none,,,true,job loss,false,false
+1054,Rohan Deng,35,0,Solar Saver,0,1,none,,,false,,false,false
+1055,Oliver Haddad,50,11,Time-of-Use Plus,0,1,none,,,false,,false,false
+1056,Maya Mercer,34,16,Time-of-Use Plus,0,1,none,,,false,,false,false
+1057,Leila Faletau,1893,142,Solar Saver,3,1,none,,,true,rental stress,false,false
+1058,Ken Donnelly,2079,134,Solar Saver,2,1,none,,,true,separation,false,false
+1059,Lucas Adeyemi,40,1,Standard Flexi,0,1,none,,,false,,false,false
+1060,Mateo Haddad,81,15,Time-of-Use Plus,0,1,none,,,false,,false,false
+1061,Freya Hoang,2460,155,Time-of-Use Plus,3,0,none,,,true,job loss,true,false
+1062,Isla Kim,2640,196,Standard Flexi,5,1,none,,,true,job loss,false,false
+1063,Elena Iyer,606,292,Hardship Saver,0,3,active,2026-05-11,2026-11-05,true,business downturn,false,false
+1064,Leilani Bashir,834,43,Hardship Saver,0,4,active,2026-04-14,2026-12-14,true,reduced work hours,false,false
+1065,Zara Deng,494,72,Hardship Saver,1,4,active,2026-03-28,2026-09-22,true,job loss,false,true
+1066,Liam Lombardi,26,3,Solar Saver,0,1,none,,,false,,false,false
+1067,Ruby Watanabe,1693,209,Assisted Essentials,3,1,active,2026-03-13,2026-08-07,true,separation,true,false
+1068,Arjun Watanabe,108,20,Solar Saver,0,1,exited,2025-11-24,,false,,false,false
+1069,Yuki Nakamura,101,14,Time-of-Use Plus,0,1,none,,,false,,false,false
+1070,Leilani Vargas,1045,106,Hardship Saver,0,2,active,2026-02-01,2026-11-10,true,bereavement,false,false
+1071,Rohan Mahmoud,23,16,Everyday Saver,0,0,exited,2025-08-29,,false,,false,true
+1072,Anika Webb,242,12,Solar Saver,0,1,exited,2025-08-05,,false,,false,false
+1073,Cooper Donnelly,1508,271,Hardship Saver,3,4,active,2026-02-22,2026-08-26,true,separation,false,false
+1074,Zara Faletau,258,72,Standard Flexi,1,1,none,,,false,,false,false
+1075,Ravi Mahmoud,50,8,Solar Saver,0,0,none,,,false,,false,false
+1076,Lucas Donnelly,1688,127,Solar Saver,4,2,none,,,false,,true,false
+1077,Noah Muller,551,66,Standard Flexi,1,2,none,,,false,,false,false
+1078,Hugo Nguyen,1804,170,Time-of-Use Plus,2,3,none,,,true,job loss,false,false
+1079,Sofia Okafor,1082,195,Solar Saver,4,2,none,,,true,rental stress,true,false
+1080,Dev Dube,6,5,Everyday Saver,0,1,none,,,false,,false,false
+1081,Rohan Muller,571,76,Standard Flexi,2,0,none,,,true,medical costs,false,false
+1082,Rosa Whitlock,6,14,Time-of-Use Plus,0,1,none,,,false,,false,false
+1083,Oliver Iyer,1115,279,Assisted Essentials,3,3,active,2026-05-22,2026-09-10,true,carer responsibilities,true,false
+1084,Sara Nakamura,247,142,Hardship Saver,1,2,active,2026-07-18,2026-08-22,true,separation,false,false
+1085,Felix Marsh,323,49,Time-of-Use Plus,1,2,none,,,false,,false,false
+1086,Ravi Petrov,844,61,Standard Flexi,2,0,none,,,false,,false,false
+1087,Sara Mahmoud,754,66,Time-of-Use Plus,1,1,none,,,true,bereavement,false,false
+1088,Tom Watanabe,113,20,Everyday Saver,0,0,none,,,false,,false,false
+1089,Dev Reyes,2479,165,Standard Flexi,2,1,none,,,false,,true,false
+1090,Hana Haddad,54,2,Solar Saver,0,0,none,,,false,,true,true
+1091,Amelia Faletau,833,78,Standard Flexi,1,1,none,,,true,separation,false,false
+1092,Omar Donnelly,66,28,Everyday Saver,0,2,exited,2025-08-28,,false,,false,false
+1093,Ivy Watanabe,782,47,Time-of-Use Plus,2,0,none,,,false,,false,false
+1094,Cooper Kovac,76,16,Standard Flexi,0,1,none,,,false,,false,false
+1095,Fatima Watanabe,653,88,Solar Saver,2,2,requested,,,false,,false,false
+1096,Leilani Sutton,615,55,Everyday Saver,1,1,none,,,true,bereavement,false,false
+1097,Arjun Kovac,114,17,Solar Saver,0,1,none,,,false,,false,false
+1098,Maya Barlow,2330,116,Hardship Saver,0,3,active,2026-03-02,2026-08-23,true,bereavement,false,false
+1099,Fatima Watanabe,217,47,Solar Saver,1,1,none,,,false,,false,false
+1100,Freya Abbas,1233,182,Assisted Essentials,0,4,active,2026-04-18,2026-08-31,true,medical costs,false,false
+1101,Hugo Quinn,720,57,Everyday Saver,2,2,none,,,false,,false,false
+1102,Zara Sharma,70,11,Time-of-Use Plus,0,0,none,,,false,,false,false
+1103,Enzo Watanabe,73,11,Solar Saver,0,1,none,,,false,,true,false
+1104,Marcus Kovac,275,295,Hardship Saver,2,1,active,2026-07-10,2026-10-27,true,rental stress,false,false
+1105,Dev Vargas,1264,275,Assisted Essentials,2,4,active,2026-06-12,2026-11-15,true,job loss,false,false
+1106,Ethan Mahmoud,1538,147,Solar Saver,2,2,none,,,true,separation,false,false
+1107,Isla Deng,1008,62,Hardship Saver,2,1,active,2026-05-15,2026-08-15,true,business downturn,false,true
+1108,Talia Okafor,576,34,Everyday Saver,2,0,none,,,true,bereavement,false,false
+1109,Mia Quinn,1472,218,Assisted Essentials,1,1,active,2026-06-02,2026-08-26,true,medical costs,false,false
+1110,Hugo Silva,1898,257,Solar Saver,4,3,none,,,true,carer responsibilities,false,false
+1111,Lucas Okonkwo,2143,117,Solar Saver,4,0,none,,,true,job loss,true,false
+1112,Hana Iyer,1044,73,Hardship Saver,3,4,active,2026-03-01,2026-10-18,true,carer responsibilities,false,false
+1113,Sione Faletau,100,3,Everyday Saver,0,0,none,,,false,,false,false
+1114,Liam Webb,42,8,Solar Saver,0,1,none,,,false,,false,false
+1115,Isla Quinn,1800,262,Assisted Essentials,0,1,active,2026-07-27,2026-10-17,true,carer responsibilities,false,false
+1116,Felix Novak,2414,140,Time-of-Use Plus,4,1,none,,,true,bereavement,false,true
+1117,Oliver Larsen,266,42,Time-of-Use Plus,2,1,none,,,false,,false,false
+1118,Sofia Quinn,575,38,Everyday Saver,1,0,none,,,false,,false,false
+1119,Rosa Vargas,1101,157,Hardship Saver,2,1,active,2026-04-02,2026-08-14,true,business downturn,false,false
+1120,Ken Camilleri,296,26,Solar Saver,0,0,exited,2025-11-08,,false,,false,false
+1121,Leilani Mahmoud,1394,247,Standard Flexi,5,3,none,,,true,separation,false,false
+1122,Dev Kim,1859,104,Solar Saver,4,0,none,,,false,,true,false
+1123,Elena Iyer,2410,164,Everyday Saver,2,1,none,,,true,rental stress,false,false
+1124,Caleb Quinn,1367,96,Assisted Essentials,2,4,active,2026-03-01,2026-11-28,true,bereavement,false,false
+1125,Leilani Silva,701,35,Time-of-Use Plus,1,0,none,,,true,job loss,false,false
+1126,Yuki Iyer,1447,133,Solar Saver,2,0,none,,,true,carer responsibilities,false,false
+1127,Hana Muller,1734,95,Time-of-Use Plus,2,1,none,,,true,rental stress,true,false
+1128,Ethan Marsh,241,231,Assisted Essentials,1,2,active,2026-03-12,2026-11-12,true,separation,false,false
+1129,Caleb Deng,99,10,Time-of-Use Plus,0,0,none,,,false,,false,false
+1130,Oliver Whitlock,100,9,Time-of-Use Plus,0,1,none,,,false,,true,false
+1131,Talia Haddad,547,49,Standard Flexi,2,1,none,,,true,medical costs,false,false
+1132,Tom Marsh,835,80,Everyday Saver,2,1,none,,,false,,false,false
+1133,Ethan Novak,68,18,Time-of-Use Plus,0,1,none,,,false,,true,false
+1134,Freya Kovac,2416,176,Solar Saver,2,0,none,,,true,carer responsibilities,true,false
+1135,Sara Reyes,608,83,Solar Saver,2,2,none,,,false,,false,false
+1136,Ethan Kaur,1809,179,Standard Flexi,4,1,none,,,true,rental stress,false,false
+1137,Hugo Okafor,27,5,Solar Saver,0,1,none,,,false,,true,false
+1138,Ravi Haddad,1227,219,Solar Saver,5,1,none,,,true,carer responsibilities,false,false
+1139,Nadia Rossi,247,78,Standard Flexi,1,0,none,,,false,,false,false
+1140,Daniel Iyer,97,3,Everyday Saver,0,1,none,,,false,,false,false
+1141,Mia Salib,642,63,Solar Saver,1,0,requested,,,true,business downturn,false,false
+1142,Liam Fraser,560,246,Assisted Essentials,0,3,active,2026-06-27,2026-11-08,true,bereavement,false,false
+1143,Chloe Mahmoud,152,69,Everyday Saver,2,2,none,,,true,medical costs,false,false
+1144,Ruby Kovac,1018,228,Assisted Essentials,1,1,active,2026-05-23,2026-11-11,true,separation,false,false
+1145,Tom Camilleri,2037,95,Assisted Essentials,0,3,active,2026-04-09,2026-11-03,true,medical costs,false,false
+1146,Marcus Marsh,736,77,Solar Saver,2,1,requested,,,false,,true,false
+1147,Sofia Fraser,2574,190,Everyday Saver,2,3,none,,,true,bereavement,false,false
+1148,Zara Faletau,22,6,Everyday Saver,0,1,none,,,false,,false,false
+1149,Omar Dube,364,45,Everyday Saver,1,0,requested,,,true,business downturn,true,false
+1150,Enzo Hart,721,49,Time-of-Use Plus,2,0,requested,,,false,,false,false
