@@ -1,4 +1,5 @@
 import React from 'react';
+import { Chip, Disclosure, toneForSeverity } from './ui.jsx';
 
 // Pulls the recommended plan out of a live case record. Nothing here invents a
 // value: if the pricing provider returned no cheaper offer, or a limb of the
@@ -32,10 +33,10 @@ function Evidence({ items }) {
       {items.map((item, index) => (
         <li key={`${item.rule}-${index}`}>
           <span className="r">{item.rule}</span>
-          <span className={`rv-sev ${item.severity || 'ATTENTION'}`}>{item.severity || 'ATTENTION'}</span>
+          <Chip tone={toneForSeverity(item.severity || 'ATTENTION')}>{item.severity || 'ATTENTION'}</Chip>
           <div>{item.explanation}</div>
           {item.citation && <div className="cite">{item.citation}</div>}
-          {item.penaltyProvision && <div className="cite" style={{ color: 'var(--red)' }}>Civil penalty exposure · {item.penaltyProvision}</div>}
+          {item.penaltyProvision && <div className="cite penalty">Civil penalty exposure · {item.penaltyProvision}</div>}
         </li>
       ))}
     </ul>
@@ -49,14 +50,16 @@ export default function RecommendedPlan({ caseData, result }) {
   const plan = readPlan(caseData);
   const category = result?.categoryLabel || caseData.outcome;
   const meta = (
+    <Disclosure label="Decision record" count={6}>
     <dl className="rv-kv">
       <dt>Outcome</dt><dd>{caseData.outcome}{result?.lineageOutcome && result.lineageOutcome !== caseData.outcome ? ` · lineage ${result.lineageOutcome}` : ''}</dd>
       <dt>Category</dt><dd>{category}</dd>
       <dt>Policy</dt><dd>{caseData.policyVersion || result?.policyVersion || 'not recorded'}</dd>
       <dt>Decision</dt><dd>{caseData.decisionId || result?.decisionId || 'none written'}</dd>
       <dt>Action</dt><dd>{caseData.actionId ? `${caseData.action} · ${caseData.actionStatus}` : 'no approval-gated action'}</dd>
-      <dt>Snapshot hash</dt><dd style={{ fontFamily: 'monospace', fontSize: 11 }}>{(caseData.snapshotHash || '').slice(0, 24) || 'not recorded'}</dd>
+      <dt>Snapshot hash</dt><dd className="mono">{(caseData.snapshotHash || '').slice(0, 24) || 'not recorded'}</dd>
     </dl>
+    </Disclosure>
   );
 
   if (plan.kind === 'plan') {
@@ -64,7 +67,7 @@ export default function RecommendedPlan({ caseData, result }) {
       <div className="rv-plan has">
         <h3>Recommended plan · {caseData.recommendation}</h3>
         <p>{plan.offer.explanation}</p>
-        <p style={{ color: 'var(--t3)' }}>{plan.offer.citation}</p>
+        <p className="rv-cite">{plan.offer.citation}</p>
         {caseData.actionStatus === 'AWAITING_APPROVAL' && <div className="rv-note warn">This switch is queued and <b>awaiting officer approval</b>. It has not been executed.</div>}
         {meta}
         <Evidence items={(caseData.evidence || []).filter((item) => item.severity === 'BLOCKING' || item.severity === 'ATTENTION')} />
@@ -81,7 +84,7 @@ export default function RecommendedPlan({ caseData, result }) {
           ? <Evidence items={plan.blocking} />
           : <p>The evaluation returned {plan.outcome} without naming a blocking rule. Nothing further is recorded.</p>}
         {!!caseData.missing?.length && (
-          <div className="rv-note bad" style={{ marginTop: 12 }}>Missing inputs:<ul>{caseData.missing.map((item) => <li key={item}>{item}</li>)}</ul></div>
+          <div className="rv-note bad">Missing inputs:<ul>{caseData.missing.map((item) => <li key={item}>{item}</li>)}</ul></div>
         )}
         {meta}
       </div>
@@ -93,7 +96,7 @@ export default function RecommendedPlan({ caseData, result }) {
       <div className="rv-plan none">
         <h3>No cheaper offer could be determined</h3>
         <p>{plan.offer.explanation}</p>
-        <p style={{ color: 'var(--t3)' }}>{plan.offer.citation}</p>
+        <p className="rv-cite">{plan.offer.citation}</p>
         <div className="rv-note">This is <b>not</b> a recommendation to switch. A negative best-offer check carries its own notice obligation; it does not produce a plan.</div>
         {meta}
       </div>

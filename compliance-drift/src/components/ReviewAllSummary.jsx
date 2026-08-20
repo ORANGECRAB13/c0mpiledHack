@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReviewModal from './ReviewModal.jsx';
+import { Chip } from './ui.jsx';
 import RecommendedPlan from './RecommendedPlan.jsx';
 import { decisionLayerApi } from '../api/decisionLayerApi.js';
 
@@ -131,15 +132,14 @@ export default function ReviewAllSummary({ actorId, onClose, openCase, onApprove
                 </span>
                 <span className="num">
                   {customer.balance != null ? `$${customer.balance}` : 'balance not recorded'}
-                  <div style={{ fontSize: 11, color: 'var(--t3)' }}>{customer.hardshipStatus || 'no hardship status'}</div>
+                  <div className="meta">{customer.hardshipStatus || 'no hardship status'}</div>
                 </span>
                 <span>
-                  <span className={`rv-pill ${customer.actionable ? 'act' : ''}`}>{customer.categoryLabel}</span>
-                  {customer.pipelineHalted && <span className="rv-pill block" style={{ marginLeft: 4 }}>halted</span>}
+                  <Chip tone={customer.actionable ? 'attention' : 'neutral'}>{customer.categoryLabel}</Chip>
+                  {customer.pipelineHalted && <Chip tone="blocking">halted</Chip>}
                 </span>
                 <span className="rv-actions">
                   <button className="rv-btn small" onClick={(event) => { event.stopPropagation(); showPlan(customer); }}>Plan</button>
-                  <button className="rv-btn small" onClick={(event) => { event.stopPropagation(); openCase(customer.customerId); }}>Profile</button>
                 </span>
               </div>
             ))}
@@ -147,8 +147,8 @@ export default function ReviewAllSummary({ actorId, onClose, openCase, onApprove
           </div>
 
           {plan && (
-            <div style={{ marginTop: 16 }}>
-              <div className="secheading" style={{ marginBottom: 8 }}>{plan.customer.name}</div>
+            <div className="rv-planwrap">
+              <div className="secheading">{plan.customer.name}</div>
               {plan.loading && <div className="rv-progress"><span className="rv-spinner" /> Loading case…</div>}
               {plan.error && <div className="rv-note bad">Could not load the case: {plan.error}</div>}
               {plan.caseData && <RecommendedPlan caseData={plan.caseData} />}

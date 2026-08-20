@@ -1,45 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { AskBar } from '../components/Chrome.jsx';
 import EvidenceOverlay from '../components/EvidenceOverlay.jsx';
-
-/* Debt-trend bar chart: 12 monthly bars against a dashed regulatory threshold.
-   The y-axis tops out at the threshold so "how far from disconnection" is the
-   first thing the chart says. */
-function TrendChart({ trend }) {
-  const W = 560, H = 190, padL = 46, padR = 8, padT = 26, padB = 22;
-  const max = Math.max(trend.threshold, ...trend.values);
-  const innerW = W - padL - padR, innerH = H - padT - padB;
-  const barW = innerW / trend.values.length - 8;
-  const y = (v) => padT + innerH - (v / max) * innerH;
-  const ticks = [0, max / 2, max];
-  const fmt = (v) => `$${v >= 1000 ? `${v / 1000}k` : v}`;
-  const last = trend.values.length - 1;
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="trend-chart" role="img" aria-label={trend.caption}>
-      {ticks.map((t) => (
-        <g key={t}>
-          <text x={padL - 8} y={y(t) + 3} textAnchor="end" fontSize="10" fill="var(--t4)">{fmt(t)}</text>
-          {t > 0 && t < max && <line x1={padL} y1={y(t)} x2={W - padR} y2={y(t)} stroke="var(--line)" strokeWidth="1" />}
-        </g>
-      ))}
-      <line x1={padL} y1={y(max)} x2={W - padR} y2={y(max)} stroke="#C97A2B" strokeWidth="1" strokeDasharray="3 4" />
-      <text x={W - padR} y={y(max) - 6} textAnchor="end" fontSize="10" fontWeight="600" fill="#C97A2B">{trend.thresholdLabel}</text>
-      {trend.values.map((v, i) => {
-        const x = padL + (innerW / trend.values.length) * i + 4;
-        const fill = i === last ? '#B4531F' : i === last - 1 ? '#D9A05B' : i === last - 2 ? '#E4B87E' : '#E7E3DB';
-        const h = Math.max(2, (v / max) * innerH);
-        return (
-          <g key={i}>
-            <rect x={x} y={padT + innerH - h} width={barW} height={h} rx="2" fill={fill} />
-            <text x={x + barW / 2} y={H - 8} textAnchor="middle" fontSize="9.5" fill="var(--t4)">{trend.months[i]}</text>
-          </g>
-        );
-      })}
-      <line x1={padL} y1={padT + innerH} x2={W - padR} y2={padT + innerH} stroke="var(--line)" strokeWidth="1" />
-    </svg>
-  );
-}
+import { Chip, Disclosure, toneForSeverity } from '../components/ui.jsx';
+import '../styles/review.css';
 
 function PlanCard({ plan, best = false }) {
   return (
@@ -59,67 +23,16 @@ function PlanCard({ plan, best = false }) {
   );
 }
 
-/* Cases without curated profile data still get the same view, synthesised from
-   what the case already knows about itself. */
-function buildProfile(c) {
-  if (c.profile) return c.profile;
-  const seed = [...String(c.id || c.customer || 'case')].reduce((a, ch) => a + ch.charCodeAt(0), 0);
-  const snapshot = Array.isArray(c.snapshot) ? c.snapshot : [];
-  const sources = Array.isArray(c.sources) ? c.sources : [];
-  const rules = Array.isArray(c.rules) ? c.rules : [];
-  const decisionInputs = Array.isArray(c.decisionInputs) ? c.decisionInputs : [];
-  const context = Array.isArray(c.context) && c.context.length
-    ? c.context
-    : [
-        c.action || c.recommendation,
-        decisionInputs[0] && `${decisionInputs[0][0]}: ${decisionInputs[0][1]}`,
-        rules[0] && rules[0][3],
-      ].filter(Boolean);
-  const balanceText = snapshot.find(([label]) => label === 'Balance')?.[1] || '$0';
-  const balance = Number(String(balanceText).replace(/[^0-9.]/g, '')) || 0;
-  const endValue = Math.min(Math.max(balance, 40), 1400);
-  const values = Array.from({ length: 12 }, (_, i) => {
-    const progress = Math.max(0, i - 5) / 6;
-    return Math.round(Math.max(4, endValue * progress + ((seed + i) % 12)));
-  });
-  const titles = ['What changed', 'Current position', 'What the evidence shows'];
+/* The only synthesised structure left on this screen: the plan comparison,
+   read straight from the case's switchTrace. Returns null when the case has no
+   switch — in which case no plan comparison is shown at all. */
+function readDecision(c) {
+  if (!c.switchTrace) return null;
   return {
-    trendAnalysis: Array.from({ length: 3 }, (_, i) => [
-      titles[i],
-      context[i] || context[0] || 'The available connected-system evidence is ready for officer review.',
-    ]),
-    trend: {
-      months: ['O', 'N', 'D', 'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S'],
-      values,
-      threshold: 1000,
-      thresholdLabel: '$1,000 threshold',
-      caption: 'Account exposure, 12 months',
-    },
-    decision: c.switchTrace ? {
-      effective: c.switchTrace.effective || 'Effective 1 October',
-      current: { label: 'Current plan', name: c.switchTrace.from, price: '', per: '', rows: [] },
-      best: { label: 'Best available', name: c.switchTrace.to, price: '', per: '', delta: c.switchTrace.saving, recommended: true, rows: [] },
-      savings: ['', c.switchTrace.saving || '', ` — ${c.switchTrace.trigger || c.action}.`],
-    } : null,
-    metrics: [
-      ['Current balance', balanceText],
-      ['Evidence completeness', c.evidenceCompletion || 'Review'],
-      ['Evidence sources', String(sources.length)],
-      ['Policy version', c.policyVersion || 'Current'],
-    ],
-    evidence: Object.fromEntries((sources.length ? sources : [['Case record', c.recommendationSummary || c.action || 'Review required']])
-      .slice(0, 6)
-      .map(([name, detail]) => [name, {
-        synced: 'just now',
-        rows: [
-          ['Record', detail || 'Available'],
-          ...decisionInputs
-            .filter(([, , authority]) => !authority || authority.toLowerCase().includes(String(name).toLowerCase().split(' ')[0]))
-            .slice(0, 2)
-            .map(([label, value]) => [label, value]),
-        ],
-        note: `Included in the ${c.workflow || 'customer'} review and frozen when the officer approves the decision.`,
-      }])),
+    effective: c.switchTrace.effective || 'Effective 1 October',
+    current: { label: 'Current plan', name: c.switchTrace.from, price: '', per: '', rows: [] },
+    best: { label: 'Best available', name: c.switchTrace.to, price: '', per: '', delta: c.switchTrace.saving, recommended: true, rows: [] },
+    savings: ['', c.switchTrace.saving || '', ` — ${c.switchTrace.trigger || c.action}.`],
   };
 }
 
@@ -133,24 +46,22 @@ export default function CaseWorkspace({
 }) {
   const [modal, setModal] = useState(false);
   // The compliance evidence view: live audit trail + the two systems of record.
+  // This overlay is the single owner of the connected-system rendering; the
+  // workspace links to it rather than re-rendering the same payload inline.
   const [evidenceOpen, setEvidenceOpen] = useState(false);
-  // The left half of the top card cross-fades: 'recommendation' (default)
-  // ⇄ 'trend'. The chart on the right never moves (per the design reference).
-  const [view, setView] = useState('recommendation');
   const customer = caseData;
-  const profile = buildProfile(customer);
-  const systems = Object.keys(profile.evidence);
-  const [activeSystem, setActiveSystem] = useState(systems[0]);
-  const decisionRef = useRef(null);
+  const decision = readDecision(customer);
+  // P2/P3: rules that could block or change the officer's next move stay
+  // visible; passes and informational limbs are demoted behind one disclosure.
+  // Nothing is dropped — every evaluated rule is still on the page.
+  const rules = Array.isArray(customer.rules) ? customer.rules : [];
+  const liveRules = rules.filter(([, , , , severity]) => ['BLOCKING', 'ATTENTION'].includes(String(severity || '').toUpperCase()));
+  const quietRules = rules.filter((rule) => !liveRules.includes(rule));
 
   useEffect(() => {
     setModal(false);
     setEvidenceOpen(false);
-    setView('recommendation');
-    setActiveSystem(Object.keys(buildProfile(customer).evidence)[0]);
   }, [customer.id]);
-
-  const active = profile.evidence[activeSystem] || { synced: '', rows: [] };
 
   return (
     <div className="page product-page case-profile">
@@ -166,9 +77,6 @@ export default function CaseWorkspace({
           <div className="h1sub">{customer.id} · {customer.workflow} · {customer.stateLabel}</div>
         </div>
         <div className="case-actions">
-          <button className="btn-ghost" onClick={() => setEvidenceOpen(true)}>
-            Compliance evidence
-          </button>
           <button className="btn-dark" onClick={() => setModal(true)} disabled={approved}>
             {approved ? 'Approved' : 'Approve'}
           </button>
@@ -183,116 +91,77 @@ export default function CaseWorkspace({
         </div>
       )}
 
-      {/* ── top card: recommendation ⇄ trend narrative on the left, chart fixed right ── */}
-      <section className="profile-card reco-card">
-        <div className="reco-left">
-          <div className={`reco-face ${view === 'trend' ? 'hidden' : ''}`}>
-            <div className="reco-topline">
-              <span className="decision-label">Recommendation</span>
-              <span className="schip wait">Human review required</span>
-            </div>
-            <h2 className="reco-title">{customer.recommendation}</h2>
-            <p className="reco-summary">{customer.recommendationSummary}</p>
-            <div className="reco-meta">
-              <span><b>{customer.confidence}</b> confidence</span>
-              <span><b>{customer.sources.length}</b> evidence sources</span>
-              <span><b>{customer.policyVersion}</b> policy</span>
-            </div>
-          </div>
-
-          <div className={`reco-face ${view === 'trend' ? '' : 'hidden'}`}>
-            <div className="reco-topline">
-              <span className="decision-label">Debt trend analysis</span>
-              <span className="schip wait">12 months</span>
-            </div>
-            <div className="trend-points">
-              {profile.trendAnalysis.map(([title, body], i) => (
-                <div className="trend-point" key={title}>
-                  <span className="trend-n">{String(i + 1).padStart(2, '0')}</span>
-                  <div><b>{title}</b><p>{body}</p></div>
-                </div>
-              ))}
-            </div>
-            {profile.metrics && (
-              <div className="reco-meta trend-metrics">
-                {profile.metrics.map(([k, v, tone]) => (
-                  <span key={k}><b className={tone === 'hot' ? 'hot' : ''}>{v}</b> {k}</span>
-                ))}
-              </div>
-            )}
-          </div>
+      {/* ── hero: what the system concluded ── */}
+      <section className="profile-card reco-hero">
+        <div className="reco-topline">
+          <span className="decision-label">Recommendation</span>
+          <Chip tone="attention">Human review required</Chip>
         </div>
-
-        <div className="reco-chart">
-          <div className="trend-viz-h"><span>Debt trend</span><small>{profile.trend.caption}</small></div>
-          <TrendChart trend={profile.trend} />
-          <button className="btn-ghost" onClick={() => setView(view === 'trend' ? 'recommendation' : 'trend')}>
-            {view === 'trend' ? 'Back to recommendation' : 'Debt trend analysis'}
-          </button>
+        <h2 className="reco-title">{customer.recommendation}</h2>
+        <p className="reco-summary">{customer.recommendationSummary}</p>
+        <div className="recommendation-next"><span>Next action</span>{customer.action}</div>
+        <div className="reco-meta">
+          <span><b>{customer.confidence}</b> confidence</span>
+          <span><b>{customer.sources.length}</b> evidence sources</span>
+          <span><b>{customer.policyVersion}</b> policy</span>
         </div>
       </section>
 
-      {/* ── the decision ── */}
-      <section className="profile-card decision-card" ref={decisionRef}>
-        <div className="profile-card-h serif">The decision <small>{profile.decision?.effective || ''}</small></div>
-        {profile.decision ? (
-          <>
-            <div className="plan-compare">
-              <PlanCard plan={profile.decision.current} />
-              <span className="plan-arrow"><Icon name="chevR" size={18} /></span>
-              <PlanCard plan={profile.decision.best} best />
-            </div>
-            <div className="savings-banner">
-              <Icon name="chevD" size={13} />
-              <span>{profile.decision.savings[0]}<b>{profile.decision.savings[1]}</b>{profile.decision.savings[2]}</span>
-            </div>
-          </>
-        ) : (
-          <div className="decision-fallback">
-            <h2>{customer.recommendation}</h2>
-            <p>{customer.recommendationSummary}</p>
-            <div className="recommendation-next"><span>Next action</span>{customer.action}</div>
-          </div>
-        )}
-      </section>
-
+      {/* ── was the regulation applied correctly ── */}
       <section className="profile-card regulatory-controls">
-        <div className="profile-card-h serif">Regulatory controls <small>{customer.rules.length} evaluated</small></div>
+        <div className="profile-card-h serif">Regulatory controls <small>{rules.length} evaluated</small></div>
         <div className="regulatory-control-grid">
-          {customer.rules.map(([name, result, tone, explanation]) => (
+          {liveRules.map(([name, result, , explanation, severity]) => (
             <div className="regulatory-control" key={name}>
-              <div><b>{name}</b><span className={`schip ${tone === 'ok' ? 'ready' : 'wait'}`}>{result}</span></div>
+              <div><b>{name}</b><Chip tone={toneForSeverity(severity)}>{result}</Chip></div>
               <p>{explanation}</p>
             </div>
           ))}
         </div>
+        {!rules.length && (
+          <p className="rv-quiet">This customer has not been evaluated against the policy yet, so no rule has been applied and no finding exists. Run a review from the decision queue to produce one.</p>
+        )}
+        {!!rules.length && !liveRules.length && (
+          <p className="rv-quiet">No rule raised a blocking or attention finding. Every evaluated limb is listed below.</p>
+        )}
+        {!!quietRules.length && (
+          <Disclosure label="Rules that passed or were informational" count={quietRules.length}>
+            <div className="regulatory-control-grid">
+              {quietRules.map(([name, result, , explanation, severity]) => (
+                <div className="regulatory-control" key={name}>
+                  <div><b>{name}</b><Chip tone={toneForSeverity(severity)}>{result}</Chip></div>
+                  <p>{explanation}</p>
+                </div>
+              ))}
+            </div>
+          </Disclosure>
+        )}
       </section>
 
-      {/* ── evidence: connected-system browser ── */}
-      <section className="profile-card evidence-browser">
-        <div className="profile-card-h serif">Evidence <small>{systems.length} systems connected</small></div>
-        <p className="evidence-sub">Select a system to see the records pulled into this recommendation.</p>
-        <div className="evidence-split">
-          <div className="evidence-tabs">
-            {systems.map((name) => (
-              <button key={name} className={name === activeSystem ? 'on' : ''} onClick={() => setActiveSystem(name)}>
-                <i /> {name}
-              </button>
-            ))}
+      {/* ── the switch, shown only when the case actually proposes one ── */}
+      {decision && (
+        <section className="profile-card decision-card">
+          <div className="profile-card-h serif">The switch <small>{decision.effective}</small></div>
+          <div className="plan-compare">
+            <PlanCard plan={decision.current} />
+            <span className="plan-arrow"><Icon name="chevR" size={18} /></span>
+            <PlanCard plan={decision.best} best />
           </div>
-          <div className="evidence-window">
-            <div className="evidence-window-h">
-              <span className="win-dots"><i /><i /><i /></span>
-              <b>{activeSystem}</b>
-              <small>Synced {active.synced}</small>
-            </div>
-            {active.rows.map(([k, v]) => (
-              <div className="evidence-row" key={k}><span>{k}</span><b>{v}</b></div>
-            ))}
-            {active.note && <p className="evidence-note">{active.note}</p>}
+          <div className="savings-banner">
+            <Icon name="chevD" size={13} />
+            <span>{decision.savings[0]}<b>{decision.savings[1]}</b>{decision.savings[2]}</span>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Evidence lives in one place only — the compliance evidence overlay. */}
+      <button className="rv-evidence-link" onClick={() => setEvidenceOpen(true)}>
+        <span>
+          <b>Compliance evidence</b>
+          <small>{customer.sources.length} connected-system sources, the audit trail and the frozen snapshot for this decision.</small>
+        </span>
+        <Icon name="chevR" size={14} />
+      </button>
 
       {modal && (
         <div className="modalveil" onClick={() => setModal(false)}>

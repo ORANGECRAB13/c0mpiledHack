@@ -1,6 +1,11 @@
 /* ============================================================================
- * evidence.css — EvidenceOverlay only.
- * Owned by EvidenceOverlay. Nothing else may depend on these class names.
+ * evidence.css — EvidenceOverlay only: the shell, and the audit trail.
+ *
+ * The right-hand pane's Salesforce/Stripe rendering used to live here too;
+ * it now belongs to SystemsOfRecord and is styled by ui.css (P6). The field,
+ * chip, disclosure and "unavailable" treatments are the shared primitives —
+ * this file no longer defines its own (P5).
+ *
  * Every selector is namespaced `.ev-` to keep it out of styles.css's way.
  * ========================================================================== */
 
@@ -36,7 +41,7 @@
   color: var(--t3); font-weight: 600;
 }
 .ev-head-meta { font-size: 11.5px; color: var(--t3); }
-.ev-head-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.ev-head-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .ev-close {
   background: none; border: 1px solid var(--line); border-radius: 6px;
   width: 28px; height: 28px; display: grid; place-items: center;
@@ -50,10 +55,7 @@
   font-size: 11px; color: var(--t2);
   border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px;
 }
-.ev-live i {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--green); display: inline-block;
-}
+.ev-live i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
 .ev-live.ev-live-busy i { background: var(--orange); animation: ev-pulse .9s infinite; }
 .ev-live.ev-live-stale i { background: var(--red); animation: none; }
 @keyframes ev-pulse { 0%,100% { opacity: 1 } 50% { opacity: .25 } }
@@ -76,7 +78,7 @@
 }
 .ev-pane-left .ev-pane-h { background: var(--side); }
 .ev-pane-right .ev-pane-h { background: var(--card, #fff); }
-.ev-pane-h b { font-size: 13px; }
+.ev-pane-h b { font-size: 12.5px; }
 .ev-pane-h small { font-size: 11px; color: var(--t3); margin-left: auto; }
 
 /* ── audit trail ────────────────────────────────────────────────────────── */
@@ -86,7 +88,7 @@
   width: 1px; background: var(--line2);
 }
 .ev-entry {
-  position: relative; margin-bottom: 12px;
+  position: relative; margin-bottom: 10px;
   background: var(--card, #fff); border: 1px solid var(--line);
   border-radius: 8px; padding: 11px 12px;
 }
@@ -95,23 +97,22 @@
   width: 9px; height: 9px; border-radius: 50%;
   background: var(--t4); border: 2px solid var(--side);
 }
-.ev-entry.ev-tone-action::before { background: var(--orange); }
+.ev-entry.ev-tone-action::before { background: var(--amber); }
 .ev-entry.ev-tone-block::before { background: var(--red); }
 .ev-entry.ev-tone-ok::before { background: var(--green); }
 
 .ev-entry-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.ev-entry-top b { font-size: 12.5px; }
-.ev-when { margin-left: auto; font-size: 10.5px; color: var(--t3); white-space: nowrap; }
-.ev-entry-sub { font-size: 11.5px; color: var(--t2); margin-top: 4px; line-height: 1.45; }
-.ev-actor { font-size: 11px; color: var(--t2); margin-top: 6px; }
-.ev-actor b { color: var(--t1); }
+.ev-entry-top b { font-size: 13.5px; font-weight: 650; }
+.ev-when { margin-left: auto; font-size: 10px; color: var(--t4); white-space: nowrap; }
+.ev-entry-sub { font-size: 11px; color: var(--t3); margin-top: 3px; line-height: 1.45; }
 .ev-override {
-  margin-top: 6px; font-size: 11px; color: var(--t1);
-  background: #FDF6E7; border-left: 2px solid var(--amber);
+  margin-top: 7px; font-size: 11px; color: var(--t1);
+  background: rgba(229, 168, 51, .12); border-left: 2px solid var(--amber);
   padding: 5px 8px; border-radius: 0 4px 4px 0;
 }
 
-.ev-reasons { margin-top: 9px; border-top: 1px dashed var(--line2); padding-top: 8px; }
+.ev-reasons { margin-top: 9px; border-top: 1px solid var(--line); padding-top: 8px; }
+.ev-reasons-quiet { margin-top: 0; border-top: 0; padding-top: 0; opacity: .85; }
 .ev-reason { display: flex; gap: 8px; padding: 5px 0; font-size: 11.5px; }
 .ev-reason + .ev-reason { border-top: 1px solid var(--line); }
 .ev-reason-main { min-width: 0; }
@@ -121,106 +122,23 @@
   display: inline-block; margin-top: 4px; font-size: 10.5px;
   color: var(--orange); font-variant-numeric: tabular-nums;
 }
-.ev-penalty {
-  display: inline-block; margin-left: 8px; font-size: 10px;
-  color: var(--red); font-weight: 600;
-}
-.ev-status {
-  font-size: 9.5px; letter-spacing: .05em; font-weight: 700;
-  border: 1px solid var(--line2); border-radius: 4px;
-  padding: 2px 5px; color: var(--t2); white-space: nowrap; height: fit-content;
-}
-.ev-status.hot { border-color: var(--red); color: var(--red); }
-.ev-status.warm { border-color: var(--amber); color: #9A6C10; }
-.ev-status.cool { border-color: var(--green); color: var(--green); }
+.ev-penalty { display: inline-block; margin-left: 8px; font-size: 10px; color: var(--red); font-weight: 600; }
 
+/* integrity anchor — retained, deliberately quiet */
 .ev-hash {
   margin-top: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px; color: var(--t3); word-break: break-all;
+  font-size: 9.5px; color: var(--t4); word-break: break-all;
   display: flex; gap: 6px; align-items: baseline;
 }
 .ev-hash span { font-family: inherit; }
-.ev-hash em { font-style: normal; color: var(--t4); font-family: system-ui, sans-serif; }
+.ev-hash em { font-style: normal; font-family: system-ui, sans-serif; }
 
-/* ── right pane: the two systems ────────────────────────────────────────── */
-.ev-recon {
-  display: flex; gap: 10px; align-items: flex-start;
-  border: 1px solid var(--line); border-radius: 8px;
-  padding: 11px 12px; margin-bottom: 14px;
-}
-.ev-recon b { display: block; font-size: 12.5px; }
-.ev-recon small { display: block; font-size: 11px; color: var(--t2); margin-top: 3px; }
-.ev-recon-ok { border-color: rgba(63, 156, 92, .45); background: rgba(63, 156, 92, .07); }
-.ev-recon-ok > svg { color: var(--green); }
-.ev-recon-unknown { background: var(--side); }
-.ev-recon-off {
-  border: 2px solid var(--red); background: rgba(214, 69, 69, .07);
-  box-shadow: 0 0 0 4px rgba(214, 69, 69, .09);
-}
-.ev-recon-off > svg { color: var(--red); }
-.ev-recon-off b { color: var(--red); }
-.ev-recon-delta {
-  margin-top: 6px; display: flex; gap: 14px; flex-wrap: wrap;
-  font-size: 11.5px; font-variant-numeric: tabular-nums;
-}
-.ev-recon-delta span { color: var(--t2); }
-.ev-recon-delta b { display: inline; color: var(--t1); }
+.ev-pane > .u-state { margin-bottom: 12px; }
 
-.ev-sys { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.ev-card {
-  border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-width: 0;
-}
-.ev-card-h { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-.ev-badge {
-  font-size: 9.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  border-radius: 4px; padding: 3px 6px; color: #fff;
-}
-.ev-badge-sf { background: #1B7FC4; }
-.ev-badge-stripe { background: #635BFF; }
-.ev-card-h b { font-size: 12.5px; }
-.ev-card-h small { margin-left: auto; font-size: 10.5px; color: var(--t3); }
-
-.ev-fields { display: grid; gap: 1px; background: var(--line); border-radius: 6px; overflow: hidden; }
-.ev-f { background: var(--card, #fff); padding: 7px 9px; }
-.ev-f-k { font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: var(--t3); }
-.ev-f-v { font-size: 12.5px; color: var(--t1); margin-top: 2px; font-variant-numeric: tabular-nums; }
-.ev-f-missing { color: var(--t4); font-style: italic; font-size: 11.5px; }
-/* decision-driving fields read differently from merely informative ones */
-.ev-f-key { background: #FFFBF2; box-shadow: inset 3px 0 0 var(--amber); padding-left: 12px; }
-.ev-f-key .ev-f-k { color: #9A6C10; font-weight: 700; }
-.ev-f-key .ev-f-v { font-weight: 600; font-size: 13.5px; }
-.ev-key-legend { font-size: 10.5px; color: var(--t3); margin: 0 0 10px; display: flex; align-items: center; gap: 6px; }
-.ev-key-legend i { width: 10px; height: 10px; border-radius: 2px; background: #FFFBF2; box-shadow: inset 3px 0 0 var(--amber); }
-
-.ev-sub-h { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--t3); margin: 12px 0 6px; }
-
-.ev-inv { display: grid; gap: 1px; background: var(--line); border-radius: 6px; overflow: hidden; }
-.ev-inv-row {
-  background: var(--card, #fff); display: grid;
-  grid-template-columns: 1.5fr .9fr .9fr auto; gap: 8px;
-  padding: 7px 9px; font-size: 11.5px; align-items: center;
-}
-.ev-inv-row.ev-inv-h { background: var(--side); font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: var(--t3); }
-.ev-inv-row.ev-inv-open { background: #FFFBF2; box-shadow: inset 3px 0 0 var(--amber); }
-.ev-inv-row a { color: var(--orange); text-decoration: none; }
-.ev-inv-row a:hover { text-decoration: underline; }
-.ev-inv-row small { display: block; color: var(--t3); font-size: 10px; }
-.ev-inv-empty, .ev-empty { font-size: 11.5px; color: var(--t3); padding: 10px 0; }
-
-.ev-state {
-  font-size: 12px; color: var(--t2); background: var(--side);
-  border: 1px solid var(--line); border-radius: 6px; padding: 10px 11px;
-}
-.ev-state-error {
-  display: flex; gap: 8px; align-items: flex-start;
-  color: var(--red); background: rgba(214, 69, 69, .07);
-  border-color: rgba(214, 69, 69, .4);
-}
+/* the disclosure inside an entry sits flush with the card */
+.ev-entry .u-disc-b { padding: 8px 0 2px; font-size: 11px; }
 
 /* ── narrower ───────────────────────────────────────────────────────────── */
-@media (max-width: 1180px) {
-  .ev-sys { grid-template-columns: 1fr; }
-}
 @media (max-width: 900px) {
   .ev-veil { padding: 0; }
   .ev-panel { border-radius: 0; max-width: none; }

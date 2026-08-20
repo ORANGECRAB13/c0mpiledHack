@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { AskBar, Crumbs } from '../components/Chrome.jsx';
+import { Chip } from '../components/ui.jsx';
+import '../styles/review.css';
 
+/* Queue status → chip tone. P4: colour only where it changes what the officer
+   does next. "Monitoring" and "Evidence assembling" are states of the world, not
+   findings, so they stay neutral. */
 const STATUS_TONE = {
-  'Ready for review': 'ready',
-  'Evidence assembling': 'mon',
-  'Exception found': 'issue',
-  'Data issue': 'amber',
-  'Monitoring': 'mon',
-  'Investigation open': 'wait',
+  'Ready for review': 'attention',
+  'Exception found': 'blocking',
+  'Data issue': 'blocking',
+  'Investigation open': 'attention',
+  'Evidence assembling': 'neutral',
+  Monitoring: 'neutral',
+  Completed: 'pass',
 };
 
 export default function Customers({ openCase, decisions, initialQuery = '', queue = [] }) {
@@ -35,11 +41,11 @@ export default function Customers({ openCase, decisions, initialQuery = '', queu
             <span className="customer-avatar">{item.customer.split(' ').slice(0, 2).map((part) => part[0]).join('')}</span>
             <span className="customer-identity"><b>{item.customer}</b><small>{item.id} · {item.state} · {item.team}</small></span>
             <span className="customer-work"><b>{item.workflow}</b><small>{item.action}</small></span>
-            <span className={`schip ${decisions[item.id]?.approved ? 'ready' : (STATUS_TONE[item.status] || 'wait')}`}>{decisions[item.id]?.approved ? 'Completed' : item.status}</span>
+            <Chip tone={decisions[item.id]?.approved ? 'pass' : (STATUS_TONE[item.status] || 'neutral')}>{decisions[item.id]?.approved ? 'Completed' : item.status}</Chip>
             <Icon name="chevR" size={14} />
           </button>
         ))}
-        {!matches.length && <div className="queue-empty"><Icon name="search" size={18} /><span>No customers match “{query}”.</span></div>}
+        {!matches.length && <div className="rv-empty">No customers match “{query}”.</div>}
       </div>
       <AskBar />
     </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icon } from '../icons.jsx';
 import { Crumbs, AskBar } from '../components/Chrome.jsx';
+import '../styles/review.css';
 
 export default function AuditHistory({ latestDecision, sessionDecisions = [], records: persisted = [] }) {
   const backend = persisted.map((row) => ({ id: row.id, case: `${row.customer_id} · ${row.name}`, workflow: 'Hardship & Best Offer', outcome: row.outcome, evidence: row.evidence?.length || 0, rules: row.evidence?.length || 0, policy: `${row.policy_id}@${row.policy_version}`, officer: row.actor_id || 'Awaiting approval', ts: new Date(row.created_at).toLocaleString('en-AU'), trigger: row.action_type || null }));
@@ -44,6 +45,7 @@ export default function AuditHistory({ latestDecision, sessionDecisions = [], re
           <span>Decision ID</span><span>Case</span><span>Workflow</span><span>Outcome</span>
           <span>Evidence</span><span>Approver</span><span>Timestamp</span>
         </div>
+        {!records.length && <div className="rv-empty">No decisions have been recorded yet.</div>}
         {records.map((record) => (
           <div className={`q-row ${record.id === latestDecision?.id ? 'new-audit-row' : ''}`} key={record.id}>
             <span className="mono" style={{ fontSize: 12, color: '#3B6FE0' }}>{record.id}</span>
@@ -56,8 +58,8 @@ export default function AuditHistory({ latestDecision, sessionDecisions = [], re
           </div>
         ))}
       </div>
-      <div style={{ fontSize: 12.5, color: 'var(--t3)', padding: '12px 4px' }}>
-        {records.length} persisted decisions · each record preserves the evidence used, rules evaluated, policy version, approver and timestamp
+      <div className="rv-countline" style={{ padding: '12px 4px' }}>
+        <b>{records.length}</b> persisted decisions · each record preserves the evidence used, rules evaluated, policy version, approver and timestamp
       </div>
 
       <AskBar />

@@ -4,12 +4,21 @@ import { Crumbs, AskBar } from '../components/Chrome.jsx';
 import SingleReview from '../components/SingleReview.jsx';
 import ReviewAllSummary from '../components/ReviewAllSummary.jsx';
 import BulkApproval from '../components/BulkApproval.jsx';
+import { Chip } from '../components/ui.jsx';
 import '../styles/review.css';
 
 const PRIO = { High: '#D64545', Medium: '#E5A833', Low: '#C4C4CA' };
-const SCHIP = {
-  'Ready for review': 'ready', 'Evidence assembling': 'wait', 'Exception found': 'issue',
-  'Investigation open': 'wait', Monitoring: 'mon', 'Data issue': 'issue',
+/* Queue status → chip tone. P4: colour only where it changes what the officer
+   does next. "Monitoring" and "Evidence assembling" are states of the world, not
+   findings, so they stay neutral. */
+const STATUS_TONE = {
+  'Ready for review': 'attention',
+  'Exception found': 'blocking',
+  'Data issue': 'blocking',
+  'Investigation open': 'attention',
+  'Evidence assembling': 'neutral',
+  Monitoring: 'neutral',
+  Completed: 'pass',
 };
 
 export default function OpsQueue({ openCase, decisions, filters, setFilters, queue = [], actorId = 'Priya N.', onLedgerChanged }) {
@@ -42,21 +51,16 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters, que
           <h1 className="display">Operational reviews</h1>
           <div className="h1sub">Reconcile customer data or determine hardship and best-offer action.</div>
         </div>
-        <div className="rv-actions">
-          <button className="rv-btn" onClick={() => setApproveAll(true)}>Approve hardship transitions</button>
-          <button className="rv-btn" onClick={() => setReviewAll(true)}>Review entire customer cases</button>
-          <button className="btn-orange" onClick={() => filtered[0] && setSingleReview({ id: filtered[0].id, customer: filtered[0].customer })} disabled={!filtered.length}>Review next case <Icon name="chevR" size={13} /></button>
-        </div>
-      </div>
-
-      <div className="queue-summary">
-        <div><b>{readyCount}</b><span>Ready for review</span></div>
-        <div><b>{evidenceCount}</b><span>Awaiting evidence</span></div>
-        <div><b>{completedCount}</b><span>Completed this session</span></div>
+        <button className="btn-orange" onClick={() => filtered[0] && setSingleReview({ id: filtered[0].id, customer: filtered[0].customer })} disabled={!filtered.length}>Review next case <Icon name="chevR" size={13} /></button>
       </div>
 
       <div className="queue-toolbar">
-        <div className="secheading">Open cases</div>
+        <div>
+          <div className="secheading">Open cases</div>
+          <div className="rv-countline">
+            <b>{readyCount}</b> ready for review · <b>{evidenceCount}</b> awaiting evidence · <b>{completedCount}</b> completed this session
+          </div>
+        </div>
         <div>
           <label className="queue-search">
             <Icon name="search" size={13} />
@@ -99,6 +103,12 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters, que
         </div>
       </div>
 
+      <div className="rv-batchbar">
+        <span>Batch operations</span>
+        <button className="rv-btn small" onClick={() => setReviewAll(true)}>Review entire customer book</button>
+        <button className="rv-btn small" onClick={() => setApproveAll(true)}>Approve hardship transitions</button>
+      </div>
+
       <div className="qtable product-queue">
         <div className="q-head">
           <span>Customer</span><span>Workflow</span><span>Priority</span><span>Status</span><span>Next action</span><span />
@@ -111,19 +121,18 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters, que
             </span>
             <span>{item.workflow}</span>
             <span className="prio"><i style={{ background: PRIO[item.priority] }} />{item.priority}</span>
-            <span><span className={`schip ${decisions[item.id]?.approved ? 'ready' : SCHIP[item.status]}`}>{decisions[item.id]?.approved ? 'Completed' : item.status}</span></span>
+            <span><Chip tone={decisions[item.id]?.approved ? 'pass' : (STATUS_TONE[item.status] || 'neutral')}>{decisions[item.id]?.approved ? 'Completed' : item.status}</Chip></span>
             <span className="sub">{item.action}</span>
             <span className="rv-actions">
               <button className="rv-btn small" onClick={(event) => { event.stopPropagation(); setSingleReview({ id: item.id, customer: item.customer }); }}>Run review</button>
-              <button className="row-action" onClick={(event) => { event.stopPropagation(); openCase(item.id); }}>{decisions[item.id]?.approved ? 'View' : 'Open'}</button>
+              <Icon name="chevR" size={13} />
             </span>
           </div>
         ))}
         {filtered.length === 0 && (
-          <div className="queue-empty">
-            <Icon name="search" size={18} />
-            <span>No cases match these filters.</span>
-            <button onClick={() => setFilters({ priority: 'All', workflow: 'All', status: 'All', team: 'All', query: '' })}>Clear filters</button>
+          <div className="rv-empty">
+            No cases match these filters.
+            <button className="rv-btn small" onClick={() => setFilters({ priority: 'All', workflow: 'All', status: 'All', team: 'All', query: '' })}>Clear filters</button>
           </div>
         )}
       </div>

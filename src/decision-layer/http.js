@@ -47,9 +47,9 @@ router.get('/customers', asyncRoute(async (_req, res) => {
     state: row.jurisdiction,
     team: teamFor(row.current_state),
     workflow: 'Hardship & Best Offer',
-    priority: priorityFor(row.current_state),
+    priority: priorityFor(row.current_state, row),
     status: queueStatus(row),
-    action: row.action_type === 'REQUEST_PLAN_SWITCH' ? 'Approve switch to the best available offer' : (row.action_type || 'No action required'),
+    action: nextActionFor(row),
     actionId: row.action_id || null,
     outcome: row.evaluation_outcome || null,
     policy: row.policy_version ? `${row.policy_id}@${row.policy_version}` : 'Not yet evaluated',
@@ -469,6 +469,16 @@ async function buildCase(customerId) {
   const customer = (await ledgerPool().query('SELECT * FROM customer WHERE id=$1', [customerId])).rows[0];
   if (!customer) return null;
   const decision = (await ledgerPool().query(`SELECT d.*,a.id action_id,a.type action_type,a.status action_status FROM decision d LEFT JOIN action a ON a.decision_id=d.id WHERE d.customer_id=$1 ORDER BY d.created_at DESC LIMIT 1`, [customerId])).rows[0];
+  // A NO_CHANGE evaluation writes no decision row (I4 — it is stored thin and
+  // rolled up). Reading only `decision` therefore makes an evaluated customer
+  // look as though the engine had never run on them. The latest evaluation is
+  // the truth about whether we have looked.
+  const evaluation = (await ledgerPool().query(
+    'SELECT outcome, evaluated_at, policy_id, policy_version FROM evaluation WHERE customer_id=$1 ORDER BY evaluated_at DESC LIMIT 1',
+    [customerId],
+  )).rows[0];
+  const evaluated = Boolean(decision || evaluation);
+  const latestOutcome = decision?.outcome || evaluation?.outcome || null;
   const events = (await ledgerPool().query('SELECT * FROM event WHERE customer_id=$1 ORDER BY occurred_at DESC LIMIT 20', [customerId])).rows;
   const snapshot = Object.entries(customer.current_state).filter(([key]) => key !== 'asOf').map(([field, value]) => [field, formatValue(field, value), ['balance','hardshipStatus','sensitiveCustomer'].includes(field) ? 'hot' : null]);
   const sources = customer.current_sources.map((item) => [item.source, `${item.field}: ${formatValue(item.field, item.value)}`, true]);
@@ -488,13 +498,16 @@ async function buildCase(customerId) {
   }));
   return {
     id: customer.id, externalCustomerId: customer.external_customer_id, customer: customer.name, team: teamFor(customer.current_state), meta: `${customer.external_customer_id} · ${customer.jurisdiction} · Salesforce`, workflow: 'Hardship & Best Offer', stateLabel: `${customer.jurisdiction} Residential`,
-    recommendation: decision?.action_type === 'REQUEST_PLAN_SWITCH' ? 'Switch to the best available offer' : 'Review current hardship position', recommendationSummary: decision ? `Latest deterministic outcome: ${decision.outcome}.` : 'Run the first evaluation to create a regulator-grade evidence snapshot.', confidence: 'Evidence-backed', policyVersion: decision ? `${decision.policy_id}@${decision.policy_version}` : 'Not evaluated',
+    recommendation: decision?.action_type === 'REQUEST_PLAN_SWITCH' ? 'Switch to the best available offer' : 'Review current hardship position', recommendationSummary: evaluated ? `Latest deterministic outcome: ${latestOutcome}.` : 'Run the first evaluation to create a regulator-grade evidence snapshot.', confidence: 'Evidence-backed', policyVersion: decision ? `${decision.policy_id}@${decision.policy_version}` : (evaluation ? `${evaluation.policy_id}@${evaluation.policy_version}` : 'Not evaluated'),
     snapshot, events: events.map((event) => [new Date(event.occurred_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }), `${event.type} · ${event.origin}`]), sources,
     rules, evidence, penaltyExposure: [...new Set(evidence.map((item) => item.penaltyProvision).filter(Boolean))],
     blockingEvidence: evidence.filter((item) => item.severity === 'BLOCKING').map((item) => item.rule),
-    context: decision?.evidence?.map((item) => item.explanation) || [], readiness: [['Decision readiness', decision ? 'High' : 'Not evaluated'], ['Evidence completeness', `${sources.length} sources`], ['Human review', 'Required']],
-    missing: decision ? [] : ['Initial deterministic evaluation has not run'], actions: [[decision?.action_type || 'Run evaluation', true]], approvalEffects: ['Record the accountable officer', 'Freeze evidence and policy version', 'Queue the approved operational action'],
-    action: decision?.action_type || 'Evaluate customer', actionId: decision?.action_id || null, actionStatus: decision?.action_status || null, decisionId: decision?.id || null, snapshotHash: decision?.snapshot_hash || null,
+    context: decision?.evidence?.map((item) => item.explanation) || [], readiness: [['Decision readiness', decision ? 'High' : (evaluation ? 'No change since last decision' : 'Not evaluated')], ['Evidence completeness', `${sources.length} sources`], ['Human review', 'Required']],
+    missing: evaluated ? [] : ['Initial deterministic evaluation has not run'], actions: [[decision?.action_type || 'Run evaluation', true]], approvalEffects: ['Record the accountable officer', 'Freeze evidence and policy version', 'Queue the approved operational action'],
+    // Officer vocabulary, never a raw enum — this string is rendered directly
+    // in the queue and monitoring "next action" columns.
+    action: nextActionFor({ action_type: decision?.action_type, evaluation_outcome: latestOutcome }),
+    actionId: decision?.action_id || null, actionStatus: decision?.action_status || null, decisionId: decision?.id || null, snapshotHash: decision?.snapshot_hash || null,
     outcome: decision?.outcome || 'Evaluation pending', evidenceCompletion: `${sources.length} sources`, sourceQuery: rules[0]?.[3] || 'Energy Retail Code of Practice — Division 2A (cl 132A–132G) and cl 187(2)',
     synthetic: true, pipelineHalted: customer.pipeline_halted
   };
@@ -526,14 +539,51 @@ export const severityFor = (status) => REASON_SEVERITY[status] || 'ATTENTION';
 
 // Routing team, derived from the CRM's own hardship status — a label over real
 // data, not an invented attribute. There is no Team field in the org.
-function priorityFor(state = {}) {
-  // The Victorian thresholds the policy itself reasons about: $1,000 is the
-  // disconnection floor, 90 days is "3 months behind".
-  const balance = Number(state.balance || 0);
-  if (state.sensitiveCustomer) return 'High';
-  if (balance >= 1000 || Number(state.oldestDebtDays || 0) >= 90) return 'High';
-  if (balance > 300) return 'Medium';
-  return 'Low';
+/**
+ * What the officer does next, in their vocabulary.
+ *
+ * "No action required" was previously shown whenever no action row existed —
+ * including for INSUFFICIENT_EVIDENCE, where action very much IS required: the
+ * evidence gap is blocking a penalty-bearing obligation. Saying nothing is
+ * needed beside a High priority flag reads as a bug and trains officers to
+ * distrust the column.
+ */
+function nextActionFor(row = {}) {
+  if (row.action_type === 'REQUEST_PLAN_SWITCH') return 'Approve switch to the best available offer';
+  if (row.action_type) return row.action_type;
+  if (row.pipeline_halted) return 'Pipeline halted — resume to continue';
+  switch (row.evaluation_outcome) {
+    case 'INSUFFICIENT_EVIDENCE': return 'Complete the missing evidence';
+    case 'ESCALATION_REQUIRED': return 'Escalate for review';
+    case null:
+    case undefined: return 'Not yet evaluated';
+    default: return 'No action required';
+  }
+}
+
+/**
+ * Priority answers "where should the officer look first", so it is derived from
+ * whether there is anything to DO — not from how large the debt is.
+ *
+ * Sizing it by arrears alone marked 65 of 151 customers High, of which only 12
+ * were actionable and 40 needed nothing at all (superseded or no change). A
+ * queue where High means nothing is a queue nobody triages.
+ *
+ * Exposure still breaks ties, but it cannot manufacture urgency on its own.
+ */
+function priorityFor(state = {}, row = {}) {
+  const outcome = row.evaluation_outcome || null;
+  const actionable = row.action_status === 'AWAITING_APPROVAL' || outcome === 'ACTION_REQUIRED';
+  const exposed = state.sensitiveCustomer
+    || Number(state.balance || 0) >= 1000
+    || Number(state.oldestDebtDays || 0) >= 90;
+
+  if (row.pipeline_halted) return 'High';          // nothing can proceed until cleared
+  if (actionable) return 'High';                   // a decision is waiting on a human
+  if (outcome === 'INSUFFICIENT_EVIDENCE') return exposed ? 'High' : 'Medium';
+  if (outcome === 'ESCALATION_REQUIRED') return 'High';
+  // NO_CHANGE, superseded, not-yet-evaluated: real records, but not work.
+  return exposed ? 'Medium' : 'Low';
 }
 
 // Queue status in the officer's vocabulary, never a raw enum.

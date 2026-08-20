@@ -91,14 +91,6 @@
 .rv-row .num { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--t2); }
 .rv-empty { padding: 26px; text-align: center; color: var(--t3); font-size: 13px; }
 
-.rv-pill {
-  display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 999px;
-  border: 1px solid var(--line2); color: var(--t2); background: var(--side);
-}
-.rv-pill.act { border-color: var(--amber); color: #8A6114; background: #FDF6E7; }
-.rv-pill.block { border-color: var(--red); color: var(--red); background: #FCEDED; }
-.rv-pill.ok { border-color: var(--green); color: var(--green); background: #EEF7F0; }
-
 /* ---- recommended plan ---- */
 .rv-plan {
   border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--card);
@@ -118,14 +110,11 @@
 }
 .rv-evlist .r { font-weight: 500; color: var(--t1); }
 .rv-evlist .cite { color: var(--orange); font-size: 11.5px; }
-.rv-sev { font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; margin-left: 6px; }
-.rv-sev.BLOCKING { color: var(--red); }
-.rv-sev.ATTENTION { color: var(--amber); }
-.rv-sev.INFO, .rv-sev.PASS { color: var(--t4); }
-
 /* ---- approval table ---- */
-.rv-appr { display: grid; grid-template-columns: 1.4fr .8fr auto 1.4fr; gap: 10px; align-items: center;
-  padding: 10px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
+.rv-appr { display: grid; grid-template-columns: 1.5fr 1.15fr 122px 1.25fr; gap: 12px; align-items: start;
+  padding: 11px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
+.rv-appr > span { min-width: 0; }
+.rv-appr .num { line-height: 1.4; }
 .rv-appr select, .rv-appr input {
   font: inherit; border: 1px solid var(--line2); border-radius: 6px; padding: 5px 7px;
   background: var(--card); color: var(--t1); width: 100%;
@@ -133,3 +122,58 @@
 .rv-appr input.missing { border-color: var(--red); }
 .rv-appr-head { color: var(--t3); font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; border-top: 0; }
 .rv-scroll { max-height: 46vh; overflow-y: auto; }
+
+/* ---- shared, quiet treatments (one of each — P5) ---- */
+
+/* The one small-print line. Replaces the three-tile metric strips that used to
+   sit above OpsQueue and Monitoring and out-shouted the queue itself. */
+.rv-countline { font-size: 12.5px; color: var(--t3); margin-top: 4px; }
+.rv-countline b { color: var(--t2); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Batch operations, demoted out of the page header so the queue leads. */
+.rv-batchbar {
+  display: flex; align-items: center; gap: 8px;
+  margin: 6px 0 12px; font-size: 12px; color: var(--t3);
+}
+.rv-batchbar > span { text-transform: uppercase; letter-spacing: .05em; font-size: 10.5px; }
+
+.rv-quiet { font-size: 12.5px; color: var(--t3); margin: 0 0 10px; }
+.rv-notreq { color: var(--t4); font-size: 11.5px; }
+.rv-cite { color: var(--t3); }
+.rv-planwrap { margin-top: 16px; }
+.rv-planwrap .secheading { margin-bottom: 8px; }
+.rv-kv dd.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+.rv-note li.bad { color: var(--red); }
+.rv-row .meta { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.rv-row .rv-actions { justify-content: flex-end; }
+
+/* Name-as-link inside the approval table: one affordance per row instead of a
+   separate Open button competing with the verdict control. */
+.rv-linkname {
+  border: 0; background: none; padding: 0; font: inherit; font-weight: 500;
+  color: var(--t1); cursor: pointer; text-align: left;
+}
+.rv-linkname:hover { text-decoration: underline; }
+
+/* Case workspace: the single hero card, and the single evidence affordance. */
+.reco-hero .reco-topline { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.reco-hero .reco-title { margin: 0 0 6px; }
+.reco-hero .reco-summary { margin: 0 0 14px; max-width: 68ch; }
+.reco-hero .recommendation-next { margin-bottom: 14px; }
+.reco-hero .reco-meta { display: flex; flex-wrap: wrap; gap: 18px; }
+
+.rv-evidence-link {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+  padding: 14px 18px;
+}
+.rv-evidence-link:hover { background: var(--side); }
+.rv-evidence-link b { display: block; font-size: 13.5px; font-weight: 600; }
+.rv-evidence-link small { display: block; font-size: 12.5px; color: var(--t3); margin-top: 3px; }
+
+/* The one empty state. Used by the queues, the directory, the audit table and
+   the review modals so there is a single treatment for "nothing here". */
+.rv-empty b { display: block; color: var(--t1); font-weight: 600; margin-bottom: 4px; }
+.rv-empty > div { max-width: 46ch; margin: 0 auto; line-height: 1.5; }
+.rv-empty .rv-btn { margin-top: 12px; display: inline-flex; }

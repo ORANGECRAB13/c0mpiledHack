@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icon } from '../icons.jsx';
 import { AskBar } from '../components/Chrome.jsx';
+import '../styles/review.css';
 
 export default function Home({ openCase, goQueue, goWorkflow, goMonitoring, decisions, queue = [] }) {
   const urgent = queue.filter((item) => item.priority === 'High' && !decisions[item.id]?.approved);
@@ -14,19 +15,16 @@ export default function Home({ openCase, goQueue, goWorkflow, goMonitoring, deci
           <div className="eyebrow">Saturday, 8 August</div>
           <h1 className="display">Good morning, Priya</h1>
           <div className="h1sub">Here is the work that needs your attention.</div>
+          <div className="rv-countline">
+            <b>{urgent.length}</b> high priority · <b>{ready}</b> ready for review · <b>{completed}</b> completed this session
+          </div>
         </div>
         <button className="btn-orange" onClick={() => urgent[0] && openCase(urgent[0].id)}>Review highest priority <Icon name="chevR" size={13} /></button>
       </div>
 
-      <div className="home-metrics">
-        <button onClick={goQueue}><b>{urgent.length}</b><span>High-priority cases</span><Icon name="chevR" size={13} /></button>
-        <button onClick={goQueue}><b>{ready}</b><span>Ready for review</span><Icon name="chevR" size={13} /></button>
-        <button onClick={goQueue}><b>{completed}</b><span>Completed this session</span><Icon name="chevR" size={13} /></button>
-      </div>
-
       <section className="lifecycle-section">
         <div className="home-section-head">
-          <div><h2>Three operational workflows</h2><p>Consistent work queues with reproducible decisions and evidence.</p></div>
+          <div><h2>Operational workflows</h2><p>Consistent work queues with reproducible decisions and evidence.</p></div>
         </div>
         <div className="lifecycle-grid">
           {[
@@ -51,6 +49,9 @@ export default function Home({ openCase, goQueue, goWorkflow, goMonitoring, deci
           <button className="text-button primary" onClick={goQueue}>View decision queue</button>
         </div>
         <div className="home-case-list">
+          {/* Only once the queue has actually loaded — an empty state shown while
+              data is still in flight would read as "nothing to do", which is a lie. */}
+          {!urgent.length && queue.length > 0 && <div className="rv-empty">No high-priority cases are open.</div>}
           {urgent.map((item) => (
             <button key={item.id} onClick={() => openCase(item.id)}>
               <span className="home-priority-dot" />

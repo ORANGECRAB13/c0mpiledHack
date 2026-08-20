@@ -1,16 +1,20 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { Crumbs, AskBar } from '../components/Chrome.jsx';
+import '../styles/review.css';
 import CustomerProfile from './CustomerProfile.jsx';
+import { Chip } from '../components/ui.jsx';
 
 /* Monitoring reuses the Operational reviews (OpsQueue) treatment verbatim:
- * queue-summary strip, queue-toolbar search + filter-selects, and the
- * .qtable.product-queue list with the same row density, priority rail,
- * status chips and row-action button. Selecting a row opens the customer
- * profile, which reads live Salesforce + Stripe data. */
+ * one hero action, the .rv-countline summary line, queue-toolbar search +
+ * filter-selects, and the .qtable.product-queue list with the same row density,
+ * priority rail and status chips. The row itself is the affordance — there is no
+ * per-row button duplicating it. Selecting a row opens the customer profile,
+ * which reads live Salesforce + Stripe data. */
 
 const RISK = { High: '#D64545', Medium: '#E5A833', Low: '#C4C4CA' };
-const SCHIP = { Stable: 'ready', 'On track': 'ready', Watch: 'wait', 'At risk': 'issue', Monitoring: 'mon' };
+/* Monitoring status → chip tone. Same vocabulary as the detection queue. */
+const STATUS_TONE = { Stable: 'pass', 'On track': 'pass', Watch: 'attention', 'At risk': 'blocking', Monitoring: 'neutral' };
 
 const EMPTY_FILTERS = { status: 'All', risk: 'All', review: 'All', query: '' };
 
@@ -80,14 +84,13 @@ export default function Monitoring({ decisions = {}, onDecision, openCase, openC
         <button className="btn-orange" onClick={() => filtered[0] && setSelectedId(filtered[0].id)} disabled={!filtered.length}>Review next account <Icon name="chevR" size={13} /></button>
       </div>
 
-      <div className="queue-summary">
-        <div><b>{dueCount}</b><span>Reviews due</span></div>
-        <div><b>{atRiskCount}</b><span>At risk</span></div>
-        <div><b>{recordedCount}</b><span>Decisions recorded</span></div>
-      </div>
-
       <div className="queue-toolbar">
-        <div className="secheading">Supported accounts</div>
+        <div>
+          <div className="secheading">Supported accounts</div>
+          <div className="rv-countline">
+            <b>{dueCount}</b> reviews due · <b>{atRiskCount}</b> at risk · <b>{recordedCount}</b> decisions recorded
+          </div>
+        </div>
         <div>
           <label className="queue-search">
             <Icon name="search" size={13} />
@@ -168,24 +171,22 @@ export default function Monitoring({ decisions = {}, onDecision, openCase, openC
               </span>
               <span className="sub">{reviewLabel(item)}</span>
               <span className="prio"><i style={{ background: RISK[risk] }} />{risk}</span>
-              <span><span className={`schip ${recorded ? 'ready' : SCHIP[item.status] || 'mon'}`}>{recorded ? 'Decision recorded' : item.status}</span></span>
+              <span><Chip tone={recorded ? 'pass' : (STATUS_TONE[item.status] || 'neutral')}>{recorded ? 'Decision recorded' : item.status}</Chip></span>
               <span className="sub">{item.nextAction || item.rec || 'Reassess current support'}</span>
-              <span><button className="row-action" onClick={(event) => { event.stopPropagation(); setSelectedId(item.id); }}>{recorded ? 'View' : 'Review'}</button></span>
+              <span className="rv-actions"><Icon name="chevR" size={13} /></span>
             </div>
           );
         })}
         {filtered.length === 0 && monitoring.length > 0 && (
-          <div className="queue-empty">
-            <Icon name="search" size={18} />
-            <span>No monitored accounts match these filters.</span>
-            <button onClick={() => setFilters(EMPTY_FILTERS)}>Clear filters</button>
+          <div className="rv-empty">
+            No monitored accounts match these filters.
+            <button className="rv-btn small" onClick={() => setFilters(EMPTY_FILTERS)}>Clear filters</button>
           </div>
         )}
         {monitoring.length === 0 && (
-          <div className="queue-empty mon-empty">
-            <Icon name="activity" size={20} />
+          <div className="rv-empty">
             <b>No accounts under continuous monitoring</b>
-            <span>Accounts appear here once Salesforce records a hardship status other than NONE. Nothing is shown until the CRM says so.</span>
+            <div>Accounts appear here once Salesforce records a hardship status other than NONE. Nothing is shown until the CRM says so.</div>
           </div>
         )}
       </div>

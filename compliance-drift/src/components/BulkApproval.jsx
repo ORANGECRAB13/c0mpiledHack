@@ -94,10 +94,10 @@ export default function BulkApproval({ actorId, onClose, onApproved, openCase })
           <b>{outcome.batch.approved} of {outcome.batch.requested} recorded</b> by {outcome.batch.actorId} at {new Date(outcome.batch.decidedAt).toLocaleString('en-AU')}.
           <ul>
             {Object.entries(outcome.batch.byVerdict || {}).map(([verdict, count]) => <li key={verdict}>{verdict}: {count}</li>)}
-            {outcome.batch.failed ? <li style={{ color: 'var(--red)' }}>Failed: {outcome.batch.failed}</li> : null}
+            {outcome.batch.failed ? <li className="bad">Failed: {outcome.batch.failed}</li> : null}
           </ul>
           {!!outcome.failures?.length && (
-            <ul>{outcome.failures.map((failure, index) => <li key={index} style={{ color: 'var(--red)' }}>{failure.actionId}: {failure.error}</li>)}</ul>
+            <ul>{outcome.failures.map((failure, index) => <li key={index} className="bad">{failure.actionId}: {failure.error}</li>)}</ul>
           )}
         </div>
       )}
@@ -112,14 +112,13 @@ export default function BulkApproval({ actorId, onClose, onApproved, openCase })
             {items.map(({ action, verdict, overrideReason }) => (
               <div className="rv-appr" key={action.actionId}>
                 <span>
-                  <button className="rv-btn small" style={{ marginRight: 6 }} onClick={() => { onClose(); openCase?.(action.customerId); }}>Open</button>
-                  {action.customer}
-                  <div className="meta" style={{ fontSize: 11, color: 'var(--t3)' }}>
+                  <button className="rv-linkname" onClick={() => { onClose(); openCase?.(action.customerId); }}>{action.customer}</button>
+                  <div className="meta">
                     {action.customerId} · {action.jurisdiction} · balance {action.balance != null ? `$${action.balance}` : 'not recorded'} · {action.hardshipStatus || 'no hardship status'}
                     {action.sensitiveCustomer ? ' · sensitive' : ''}{action.pipelineHalted ? ' · pipeline halted' : ''}
                   </div>
                 </span>
-                <span className="num">{action.actionType}<div style={{ fontSize: 11, color: 'var(--t3)' }}>{action.policy}</div></span>
+                <span className="num">{action.actionType}<div className="meta">{action.policy}</div></span>
                 <span>
                   <select aria-label={`Verdict for ${action.customer}`} value={verdict} onChange={(event) => setRow(action.actionId, { verdict: event.target.value })} disabled={!!outcome?.ok}>
                     {VERDICTS.map((option) => <option key={option} value={option}>{option}</option>)}
@@ -127,7 +126,7 @@ export default function BulkApproval({ actorId, onClose, onApproved, openCase })
                 </span>
                 <span>
                   {verdict === 'AGREED'
-                    ? <span style={{ color: 'var(--t4)', fontSize: 11.5 }}>Not required</span>
+                    ? <span className="rv-notreq">Not required</span>
                     : <input
                         className={overrideReason.trim() ? '' : 'missing'}
                         aria-label={`Override reason for ${action.customer}`}
