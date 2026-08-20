@@ -332,7 +332,10 @@
 
 /* ── page frame ───────────────────────────────────────────────────────── */
 .main { background: var(--page); }
-.page { padding: 40px 48px 120px; max-width: 1276px; margin-inline: 0; }
+/* Centred, not left-pinned: at 1276px hard-left on a 1804px main area this left
+   a 500px+ dead gutter down the right of every screen. Wider cap too, so the
+   three detection columns and the oversight cards use the space they are given. */
+.page { padding: 40px 48px 120px; max-width: 1520px; margin-inline: auto; }
 
 h1.display { font-family: var(--serif); font-size: var(--fs6); font-weight: 400; line-height: 1.1; letter-spacing: 0; }
 .eyebrow { font-size: var(--fs1); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
@@ -388,7 +391,7 @@ h1.display { font-family: var(--serif); font-size: var(--fs6); font-weight: 400;
 /* dark hero band */
 .ov-band { background: var(--band); color: #FFF; padding: 44px 48px 40px; }
 .ov-band-in {
-  max-width: 1180px;
+  max-width: 1520px; margin-inline: auto;
   display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: 56px; align-items: end;
 }
@@ -411,7 +414,8 @@ h1.display { font-family: var(--serif); font-size: var(--fs6); font-weight: 400;
 .ov-stat span { display: block; font-size: var(--fs2); color: var(--faint); margin-top: var(--s2); line-height: 1.4; }
 .ov-stat .u-field-missing { font-size: var(--fs2); }
 
-.ov-body { padding: var(--s6) 48px 64px; max-width: 1276px; }
+/* Centred and matched to .page, so Oversight and Detection share one measure. */
+.ov-body { padding: var(--s6) 48px 64px; max-width: 1520px; margin-inline: auto; }
 .ov-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 20px; }
 
 /* the one card treatment */

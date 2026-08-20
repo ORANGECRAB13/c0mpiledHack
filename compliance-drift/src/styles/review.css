@@ -579,10 +579,6 @@
   color: var(--green, #1D5C4F); background: var(--green-wash, rgba(29, 92, 79, .08));
   padding: 3px 8px; border-radius: 999px;
 }
-.sw-col-note {
-  font-size: 11.5px; line-height: 1.55; color: var(--muted, #6E767E);
-  margin: 10px 0 14px;
-}
 .sw-col-body { display: grid; gap: 8px; }
 
 .sw-card {
@@ -597,7 +593,6 @@
 .sw-card-top b { font-size: 13px; font-weight: 600; color: var(--ink, #09090B); }
 .sw-prio { font-size: 10.5px; font-weight: 600; color: var(--muted, #6E767E); }
 .sw-prio.p-high { color: var(--rust, #B4532A); }
-.sw-card-meta { font-size: 10.5px; color: var(--faint, #AEB5BC); }
 .sw-card-reason { font-size: 12px; line-height: 1.5; color: var(--body, #454B52); }
 .sw-card-flags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
 
@@ -666,3 +661,9 @@
   .vs-star.is-spinning .vs-spin,
   .vs-star.is-spinning .vs-arm { animation: none; }
 }
+
+/* Card identity: name and id on one line — priority and team were dropped from
+   the card because priority is derived from outcome (constant within a column)
+   and team is not a field the org actually holds. */
+.sw-card-id { font-size: var(--fs1, 10px); color: var(--faint, #AEB5BC); font-variant-numeric: tabular-nums; }
+.sw-card-top { display: flex; align-items: baseline; gap: var(--s2, 8px); }

@@ -21,20 +21,17 @@ const COLUMNS = [
     key: 'needs',
     label: 'Needs a decision',
     tone: 'rust',
-    note: 'A better hardship arrangement is available than the one in force. These are the cases waiting on an officer.',
   },
   {
     key: 'evidence',
     label: 'Blocked on evidence',
     tone: 'amber',
-    note: 'Evaluated, but a limb of the eligibility test could not be proven, so no plan is proposed. Open a case to see which limb is unresolved.',
   },
   {
     key: 'cleared',
     label: 'Cleared',
     tone: 'green',
     audit: true,
-    note: 'Evaluated and recorded for audit only. These customers never enter the operations queue and are not work.',
   },
 ];
 
@@ -65,7 +62,6 @@ export default function SweepColumns({ sweep, queue, openCase, animate }) {
               <span className="n">{rows.length}</span>
             </header>
             {column.audit && <div className="sw-audit">Audit only</div>}
-            <p className="sw-col-note">{column.note}</p>
 
             <div className="sw-col-body">
               {shown.map((row, index) => {
@@ -81,12 +77,7 @@ export default function SweepColumns({ sweep, queue, openCase, animate }) {
                   >
                     <span className="sw-card-top">
                       <b>{row.name || row.customerId}</b>
-                      {item?.priority && <span className={`sw-prio p-${item.priority.toLowerCase()}`}>{item.priority}</span>}
-                    </span>
-                    <span className="sw-card-meta">
-                      {row.customerId}
-                      {item?.state ? ` · ${item.state}` : ''}
-                      {item?.team ? ` · ${item.team}` : ''}
+                      <span className="sw-card-id">{row.customerId}</span>
                     </span>
                     <span className="sw-card-reason">{reasonOfResult(row)}</span>
                     {(!!flags.length || item?.pipelineHalted) && (
