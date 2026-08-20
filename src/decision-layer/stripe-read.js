@@ -26,9 +26,15 @@ const iso = (seconds) => (seconds ? new Date(seconds * 1000).toISOString() : nul
 /** Mirrors the address scheme scripts/stripe-seed.mjs writes. */
 const emailFor = (externalCustomerId) => `customer.${externalCustomerId}@vocare-demo.invalid`;
 
+/**
+ * Returns { customer, denied }. `denied` is true ONLY when every lookup we
+ * attempted completed successfully and none matched — a positive denial. If a
+ * lookup errored we do not know whether the customer exists, and saying "no
+ * such customer" on that basis would be a false claim made during an outage.
+ */
 async function findCustomer(externalCustomerId) {
   const byEmail = await stripe().customers.list({ email: emailFor(externalCustomerId), limit: 1 });
-  if (byEmail.data.length) return byEmail.data[0];
+  if (byEmail.data.length) return { customer: byEmail.data[0], denied: false };
   // Fall back to the search index for customers written by something other
   // than our seeder (different email scheme, same metadata contract).
   try {
@@ -36,9 +42,12 @@ async function findCustomer(externalCustomerId) {
       query: `metadata['external_customer_id']:'${String(externalCustomerId).replaceAll("'", "")}'`,
       limit: 1,
     });
-    return found.data[0] || null;
-  } catch {
-    return null;
+    // Both the email lookup and the search completed and matched nothing.
+    return { customer: found.data[0] || null, denied: !found.data[0] };
+  } catch (error) {
+    // The search could not be performed. The email lookup's miss is not enough
+    // on its own to deny the customer, so this is unknown, not absent.
+    return { customer: null, denied: false, lookupError: error.message };
   }
 }
 
@@ -78,12 +87,14 @@ function trendFrom(invoices, points = 6) {
  */
 export async function readStripeBilling(externalCustomerId) {
   if (!stripeConfigured()) {
-    return { available: false, error: 'Stripe is not configured (STRIPE_API_KEY unset).', invoices: [], trend: [] };
+    return { available: false, denied: false, error: 'Stripe is not configured (STRIPE_API_KEY unset).', invoices: [], trend: [] };
   }
   try {
-    const customer = await findCustomer(externalCustomerId);
+    const { customer, denied, lookupError } = await findCustomer(externalCustomerId);
     if (!customer) {
-      return { available: false, error: `No Stripe customer mirrors ${externalCustomerId}.`, invoices: [], trend: [] };
+      return denied
+        ? { available: false, denied: true, error: `No Stripe customer mirrors ${externalCustomerId}.`, invoices: [], trend: [] }
+        : { available: false, denied: false, error: `Could not determine whether ${externalCustomerId} has a Stripe mirror${lookupError ? `: ${lookupError}` : '.'}`, invoices: [], trend: [] };
     }
     const list = await stripe().invoices.list({ customer: customer.id, limit: 100 });
     const raw = list.data || [];
@@ -131,6 +142,7 @@ export async function readStripeBilling(externalCustomerId) {
       trend: trendFrom(raw),
     };
   } catch (error) {
-    return { available: false, error: error.message, invoices: [], trend: [] };
+    // Transport/auth/etc — we never learned whether this customer exists.
+    return { available: false, denied: false, error: error.message, invoices: [], trend: [] };
   }
 }

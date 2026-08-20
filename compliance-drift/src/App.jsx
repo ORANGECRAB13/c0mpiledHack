@@ -25,6 +25,7 @@ const loadDecisions = () => {
 // drill-in routes reachable from those tabs, but are not sidebar entries.
 export default function App() {
   const [queue, setQueue] = useState([]);
+  const [actionableCount, setActionableCount] = useState(undefined);
   const [cases, setCases] = useState({});
   const [auditRecords, setAuditRecords] = useState([]);
   const [monitoringAccounts, setMonitoringAccounts] = useState([]);
@@ -46,6 +47,14 @@ export default function App() {
 
   const refreshProduct = async () => {
     try {
+      // The nav badge must agree with the screens behind it. actionableCount is
+      // the same figure Detection headlines and Oversight leads with, so all
+      // three come from one source rather than three local tallies.
+      decisionLayerApi.loadReviewSummary({ limit: 500, includeCustomers: false })
+        .then((result) => setActionableCount(result.summary.actionableCount))
+        // Undefined hides the badge. A stale count is worse than none.
+        .catch(() => setActionableCount(undefined));
+
       const product = await decisionLayerApi.loadProduct();
       setQueue(product.queue);
       setCases(product.cases);
@@ -205,6 +214,10 @@ export default function App() {
         outcome: caseData.outcome,
         officer: response.approval.actor_id,
         ts: new Date(response.approval.decided_at).toLocaleString('en-AU'),
+        // The raw instant as well as the display string: the audit timeline
+        // groups by day, and parsing a localised string back into a date is
+        // brittle enough that those rows fell into a "this session" bucket.
+        at: response.approval.decided_at,
         policy: caseData.policyVersion,
         evidence: caseData.sources.length,
         rules: caseData.rules.length,
@@ -302,7 +315,11 @@ export default function App() {
   return (
     <AssistantProvider value={assistantValue}>
       <div className="app">
-      <Sidebar page={page} go={go} />
+      {/* `counts` decorates the nav. Detection's badge is deliberately left
+          unset until it can be sourced from the same figure the Detection
+          screen itself shows — a nav count that disagreed with the screen
+          behind it would be worse than no count at all. */}
+      <Sidebar page={page} go={go} counts={{ detection: actionableCount }} />
 
       <div className="main">
         {dataError && <div className="okbanner compact-banner" style={{ margin: 20, borderColor: '#D64545' }}><span>Decision ledger unavailable: {dataError}</span><button onClick={refreshProduct}>Retry</button></div>}
@@ -310,10 +327,13 @@ export default function App() {
           <Home
             openCase={(caseId) => openCase(caseId)}
             goQueue={() => go('queue')}
+            goAudit={() => go('audit')}
             goWorkflow={(workflow) => { setQueueFilters((current) => ({ ...current, workflow })); go('queue'); }}
             goMonitoring={() => go('monitoring')}
             decisions={decisions}
             queue={queue}
+            cases={cases}
+            auditRecords={auditRecords}
           />
         )}
         {page === 'customers' && <Customers key={customersQuery} openCase={(caseId) => openCase(caseId)} decisions={decisions} initialQuery={customersQuery} queue={queue} />}

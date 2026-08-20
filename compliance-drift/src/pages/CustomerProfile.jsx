@@ -3,6 +3,7 @@ import { Icon } from '../icons.jsx';
 import { decisionLayerApi } from '../api/decisionLayerApi.js';
 import SystemsOfRecord from '../components/SystemsOfRecord.jsx';
 import { StateNote } from '../components/ui.jsx';
+import '../styles/evidence.css';
 
 /* ============================================================================
  * CustomerProfile — the detail panel opened from Monitoring.
@@ -54,11 +55,11 @@ export default function CustomerProfile({ account, onClose, onOpenCase }) {
 
   return (
     <aside className="cp-panel" aria-label={`Customer profile for ${account.customer}`}>
-      <div className="cp-head">
+      <div className="cp-head ov-cp-h">
         <div>
-          <div className="cp-eyebrow">Customer profile</div>
+          <div className="ov-eyebrow">Customer profile</div>
           <h2>{profile?.name || account.customer}</h2>
-          <div className="cp-meta">
+          <div className="ov-cp-meta">
             {[profile?.externalCustomerId || account.externalCustomerId, profile?.jurisdiction, account.id].filter(Boolean).join(' · ')}
           </div>
         </div>

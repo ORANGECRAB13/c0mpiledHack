@@ -15,6 +15,7 @@ import { buildCustomerProfile } from './profile.js';
 import { syncFromSalesforce } from './sync.js';
 import { readStripeBilling, stripeConfigured } from './stripe-read.js';
 import { salesforceAuth } from './salesforce-auth.js';
+import { TARIFF_VERSION, TARIFF_PROVENANCE, MIN_BILLING_MONTHS } from './tariffs.js';
 
 const router = express.Router();
 const asyncRoute = (handler) => async (req, res, next) => { try { await handler(req, res); } catch (error) { next(error); } };
@@ -456,9 +457,10 @@ router.get('/integrations', asyncRoute(async (_req, res) => {
       salesforce,
       stripe: { configured: stripeConfigured(), mode: (process.env.STRIPE_API_KEY || '').startsWith('sk_test') ? 'test' : 'unknown' },
       ledger: { customers: rows[0].customers },
-      // No real pricing/tariff source exists in this repo yet — the best-offer
-      // figures come from MockBestOfferProvider and are NOT real market offers.
-      pricing: { configured: false, provider: (process.env.PRICING_PROVIDER || 'mock').toLowerCase(), note: 'No tariff/pricing API is wired; best-offer savings are placeholder values.' },
+      // What the best-offer figures actually are. This endpoint is what people
+      // read to decide which numbers are trustworthy, so it must describe the
+      // provider that is really selected rather than a stale assumption.
+      pricing: pricingStatus(),
     },
   });
 }));
@@ -571,6 +573,35 @@ function nextActionFor(row = {}) {
  *
  * Exposure still breaks ties, but it cannot manufacture urgency on its own.
  */
+// Best-offer pricing provenance. `quoted` is the field that matters: a saving
+// modelled from the customer's own paid invoices against a declared table is
+// real arithmetic over real billing, but it is NOT a retailer quote, and the
+// two must never be reported as the same thing.
+function pricingStatus() {
+  const provider = (process.env.PRICING_PROVIDER || 'none').toLowerCase();
+  if (provider === 'tariff-table') {
+    return {
+      configured: true,
+      provider,
+      live: false,
+      modelled: true,
+      quoted: false,
+      tariffTableVersion: TARIFF_VERSION,
+      minBillingMonths: MIN_BILLING_MONTHS,
+      provenance: TARIFF_PROVENANCE,
+      note: `Savings are MODELLED, not quoted: derived from each customer's own paid Stripe invoices re-priced against the declared tariff table ${TARIFF_VERSION}. No retailer pricing API is connected. A customer with fewer than ${MIN_BILLING_MONTHS} distinct paid billing months returns no offer rather than a guess.`,
+    };
+  }
+  return {
+    configured: false,
+    provider,
+    live: false,
+    modelled: false,
+    quoted: false,
+    note: 'No pricing source is selected (PRICING_PROVIDER unset or "none"); best-offer comparisons report unavailable rather than guessing.',
+  };
+}
+
 function priorityFor(state = {}, row = {}) {
   const outcome = row.evaluation_outcome || null;
   const actionable = row.action_status === 'AWAITING_APPROVAL' || outcome === 'ACTION_REQUIRED';

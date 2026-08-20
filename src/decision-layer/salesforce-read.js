@@ -15,7 +15,15 @@ const escape = (value) => String(value).replaceAll("'", "\\'");
 export async function readSalesforceAccount(externalCustomerId) {
   const query = `SELECT ${ACCOUNT_FIELDS.join(',')} FROM Account WHERE External_Customer_Id__c='${escape(externalCustomerId)}' LIMIT 1`;
   const body = await soql(query);
-  if (!body.records?.length) throw new Error(`No Salesforce Account for ${externalCustomerId}`);
+  if (!body.records?.length) {
+    // The query SUCCEEDED and returned nothing: the org positively denies this
+    // customer. Distinct from soql() throwing, which means we never got to ask.
+    // Flagged on the error object rather than expressed in the message, so the
+    // distinction survives anyone rewording the prose.
+    const error = new Error(`No Salesforce Account for ${externalCustomerId}`);
+    error.notFound = true;
+    throw error;
+  }
   return body.records[0];
 }
 

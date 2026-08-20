@@ -148,7 +148,7 @@ export default function ReviewAllSummary({ actorId, onClose, openCase, onApprove
 
           {plan && (
             <div className="rv-planwrap">
-              <div className="secheading">{plan.customer.name}</div>
+              <div className="dq-eyebrow">{plan.customer.name}</div>
               {plan.loading && <div className="rv-progress"><span className="rv-spinner" /> Loading case…</div>}
               {plan.error && <div className="rv-note bad">Could not load the case: {plan.error}</div>}
               {plan.caseData && <RecommendedPlan caseData={plan.caseData} />}

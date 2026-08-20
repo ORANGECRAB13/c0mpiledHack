@@ -4,13 +4,52 @@ import { useProductAssistant } from '../product/AssistantContext.jsx';
 import { startLiveVoice, stopLiveVoice, sendToolResult, isLive } from '../voice/liveVoice.js';
 import { apiUrl } from '../data/apiBase.js';
 
-/* ── expanded workspace sidebar (Frameworks / Requires attention / etc.) ── */
-export function Sidebar({ page, go }) {
+/* ── the paper grain that gives the sidebar its warmth in the source design ── */
+function PaperGrain() {
+  return (
+    <>
+      <svg aria-hidden="true" className="sb-grain sb-grain-1">
+        <filter id="vocarePaperGrain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="5" stitchTiles="stitch" />
+          <feColorMatrix type="saturate" values="0.15" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#vocarePaperGrain)" />
+      </svg>
+      <svg aria-hidden="true" className="sb-grain sb-grain-2">
+        <filter id="vocarePaperFibre">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02 0.75" numOctaves="3" stitchTiles="stitch" />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#vocarePaperFibre)" />
+      </svg>
+    </>
+  );
+}
+
+/**
+ * App shell sidebar. `counts` is optional and only decorates the nav — a count
+ * that has not loaded yet is simply not rendered rather than shown as a zero,
+ * because "0 cases waiting" is a claim we would not yet be entitled to make.
+ */
+export function Sidebar({ page, go, counts = {} }) {
+  const item = (key, label, active, count) => (
+    <button
+      className={`sb-item ${active ? 'on' : ''}`}
+      onClick={() => go(key)}
+      aria-label={label}
+      aria-current={active ? 'page' : undefined}
+    >
+      <span>{label}</span>
+      {typeof count === 'number' && <span className="sb-count">{count}</span>}
+    </button>
+  );
+
   return (
     <div className="sidebar">
+      <PaperGrain />
       <div className="sb-top">
         <div className="sb-logo">
-          <Mark size={26} />
+          <span className="sb-mark"><Mark size={17} /></span>
           <span>
             <span className="word">Vocare</span>
             <span className="sb-product">Operational decision layer</span>
@@ -18,25 +57,19 @@ export function Sidebar({ page, go }) {
         </div>
       </div>
 
-      <button className="sb-search" onClick={() => document.querySelector('[aria-label="Ask or command the product"]')?.focus()}>
-        <Icon name="search" size={15} />
-        Find or ask anything…
-        <span className="kbd">⌘K</span>
-      </button>
-
-      <div className="sb-sec">
-        <div className="sb-h">Work</div>
-        <button className={`sb-item ${page === 'home' ? 'on' : ''}`} onClick={() => go('home')}><Icon name="home" size={16} /> Dashboard</button>
-        <button className={`sb-item ${['queue','case'].includes(page) ? 'on' : ''}`} onClick={() => go('queue')}><Icon name="zap" size={16} /> Detection</button>
-        <button className={`sb-item ${['monitoring','customers'].includes(page) ? 'on' : ''}`} onClick={() => go('monitoring')}><Icon name="activity" size={16} /> Monitoring</button>
+      <div className="sb-nav">
+        {item('home', 'Oversight', page === 'home')}
+        {item('queue', 'Detection', ['queue', 'case'].includes(page), counts.detection)}
+        {item('audit', 'Decision audit', page === 'audit', counts.audit)}
+        {item('monitoring', 'Monitoring', ['monitoring', 'customers'].includes(page))}
       </div>
 
       <div className="sb-foot">
         <div className="sb-account">
-          <span className="av"><Icon name="user" size={16} /></span>
+          <span className="av">PN</span>
           <span>
             <div className="nm">Priya N.</div>
-            <div className="rl">Senior hardship officer</div>
+            <div className="rl">Compliance officer</div>
           </span>
         </div>
       </div>

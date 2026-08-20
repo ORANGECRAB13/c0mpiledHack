@@ -4,6 +4,7 @@ import {
   Disclosure, FieldRow, Fields, Section, StateNote,
   NOT_SET, aud, count, days, isoDate, money, plain,
 } from './ui.jsx';
+import '../styles/evidence.css';
 
 /* ============================================================================
  * SystemsOfRecord — the ONE rendering of Salesforce CRM + Stripe billing.
@@ -49,7 +50,7 @@ function TrendLine({ trend }) {
   return (
     <div className="u-trend">
       <svg width="180" height="38" viewBox="0 0 180 38" role="img" aria-label="Invoiced amount by month">
-        <polyline points={path} fill="none" stroke={rising ? 'var(--red)' : 'var(--green)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points={path} fill="none" stroke={rising ? 'var(--rust)' : 'var(--green)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <div className="u-trend-axis"><span>{points[0].month}</span><span>{points[points.length - 1].month}</span></div>
     </div>
@@ -230,6 +231,14 @@ export default function SystemsOfRecord({ profile }) {
           )}
         </Section>
       )}
+
+      {/* The design's caveat under the systems table, restated for what we
+          actually render: a field with no value says so by name, and no
+          absent figure is ever drawn as a zero. */}
+      <p className="ov-sor-note">
+        Read live from Salesforce and Stripe. A field the system holds no value for is named as
+        not recorded — it is never shown as zero.
+      </p>
     </div>
   );
 }

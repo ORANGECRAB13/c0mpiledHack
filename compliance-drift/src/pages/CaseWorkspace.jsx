@@ -2,8 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { AskBar } from '../components/Chrome.jsx';
 import EvidenceOverlay from '../components/EvidenceOverlay.jsx';
-import { Chip, Disclosure, toneForSeverity } from '../components/ui.jsx';
+import { Disclosure, toneForSeverity } from '../components/ui.jsx';
 import '../styles/review.css';
+import '../styles/evidence.css';
+
+/* ============================================================================
+ * CaseWorkspace — the case detail, in the Vocare Oversight language.
+ *
+ * The design's expanded case row is the template: a rust "RECOMMENDATION"
+ * eyebrow, a serif headline, a prose summary, the two actions (Approve /
+ * Open evidence) and a hairline-separated right rail carrying Confidence,
+ * Evidence sources and Policy. Every one of those five values comes off the
+ * case record the ledger already produced; none is computed here.
+ *
+ * The rail renders a value only when the case carries one. A missing
+ * confidence says "not recorded", never a default grade.
+ *
+ * Everything the previous cleanup established survives: blocking/attention
+ * rules lead, passes and informational limbs sit behind one counted
+ * disclosure, nothing is dropped, and evidence has exactly one home — the
+ * compliance evidence overlay.
+ * ========================================================================== */
 
 function PlanCard({ plan, best = false }) {
   return (
@@ -13,12 +32,7 @@ function PlanCard({ plan, best = false }) {
         {plan.recommended && <span className="plan-recommended">Recommended</span>}
       </div>
       <div className="plan-name">{plan.name}</div>
-      <div className="plan-price">{plan.price}<small>{plan.per}</small>{plan.delta && <em>{plan.delta}</em>}</div>
-      {plan.rows?.length > 0 && (
-        <div className="plan-rows">
-          {plan.rows.map(([k, v]) => <div key={k}><span>{k}</span><b>{v}</b></div>)}
-        </div>
-      )}
+      {plan.delta && <div className="plan-price"><em>{plan.delta}</em></div>}
     </div>
   );
 }
@@ -30,10 +44,23 @@ function readDecision(c) {
   if (!c.switchTrace) return null;
   return {
     effective: c.switchTrace.effective || 'Effective 1 October',
-    current: { label: 'Current plan', name: c.switchTrace.from, price: '', per: '', rows: [] },
-    best: { label: 'Best available', name: c.switchTrace.to, price: '', per: '', delta: c.switchTrace.saving, recommended: true, rows: [] },
-    savings: ['', c.switchTrace.saving || '', ` — ${c.switchTrace.trigger || c.action}.`],
+    current: { label: 'Current plan', name: c.switchTrace.from },
+    best: { label: 'Best available', name: c.switchTrace.to, delta: c.switchTrace.saving, recommended: true },
+    savings: c.switchTrace.saving || null,
+    trigger: c.switchTrace.trigger || c.action,
   };
+}
+
+/** A rail value, or an honest blank. Never a substituted default. */
+function RailValue({ label, value }) {
+  return (
+    <div>
+      <div>{label}</div>
+      {value === null || value === undefined || value === ''
+        ? <b className="ov-na">not recorded</b>
+        : <b>{value}</b>}
+    </div>
+  );
 }
 
 export default function CaseWorkspace({
@@ -57,110 +84,131 @@ export default function CaseWorkspace({
   const rules = Array.isArray(customer.rules) ? customer.rules : [];
   const liveRules = rules.filter(([, , , , severity]) => ['BLOCKING', 'ATTENTION'].includes(String(severity || '').toUpperCase()));
   const quietRules = rules.filter((rule) => !liveRules.includes(rule));
+  const sourceCount = Array.isArray(customer.sources) ? customer.sources.length : null;
 
   useEffect(() => {
     setModal(false);
     setEvidenceOpen(false);
   }, [customer.id]);
 
+  const renderRule = ([name, result, , explanation, severity]) => (
+    <div className="ov-rule" key={name}>
+      <span className={`ov-rule-status ov-t-${toneForSeverity(severity)}`}>{result}</span>
+      <div>
+        <b>{name}</b>
+        {explanation && <p>{explanation}</p>}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="page product-page case-profile">
+    <div className="page ov-audit case-profile">
       <div className="crumbs">
-        <a onClick={back}><Icon name="back" size={14} /> Decision queue</a>
+        <a onClick={back}><Icon name="back" size={14} /> Detection</a>
         <span className="sep"><Icon name="chevR" size={11} /></span>
         <span className="here">{customer.id}</span>
       </div>
 
-      <div className="h1row product-heading">
+      <div className="ov-case-head">
         <div>
-          <h1 className="display" style={{ fontSize: 36 }}>{customer.customer}</h1>
-          <div className="h1sub">{customer.id} · {customer.workflow} · {customer.stateLabel}</div>
-        </div>
-        <div className="case-actions">
-          <button className="btn-dark" onClick={() => setModal(true)} disabled={approved}>
-            {approved ? 'Approved' : 'Approve'}
-          </button>
+          <div className="ov-eyebrow">Case</div>
+          <h1 className="ov-display">{customer.customer}</h1>
+          <div className="ov-case-sub">{[customer.id, customer.workflow, customer.stateLabel].filter(Boolean).join(' · ')}</div>
         </div>
       </div>
 
       {approved && (
-        <div className="okbanner compact-banner">
-          <Icon name="check" size={16} />
-          <span>Decision recorded as {decisionRecord?.id}.</span>
-          <button onClick={viewAudit}>View record <Icon name="chevR" size={12} /></button>
+        <div className="ov-banner">
+          <span>Decision recorded as <b>{decisionRecord?.id}</b>.</span>
+          <button onClick={viewAudit}>View record →</button>
         </div>
       )}
 
-      {/* ── hero: what the system concluded ── */}
-      <section className="profile-card reco-hero">
-        <div className="reco-topline">
-          <span className="decision-label">Recommendation</span>
-          <Chip tone="attention">Human review required</Chip>
+      {/* ── hero: what the system concluded, and the two things you can do ── */}
+      <section className="ov-reco">
+        <div className="ov-reco-main">
+          <div className="ov-eyebrow ov-eyebrow-accent">Recommendation</div>
+          <h2 className="ov-reco-title">{customer.recommendation}</h2>
+          {customer.recommendationSummary && <p className="ov-reco-summary">{customer.recommendationSummary}</p>}
+          {customer.action && (
+            <div className="ov-reco-next"><span>Next action</span>{customer.action}</div>
+          )}
+          <div className="ov-reco-actions">
+            <button className="ov-btn-dark ov-btn-sm" onClick={() => setModal(true)} disabled={approved}>
+              {approved ? 'Approved' : 'Approve'}
+            </button>
+            <button className="ov-btn ov-btn-sm" onClick={() => setEvidenceOpen(true)}>Open evidence</button>
+          </div>
         </div>
-        <h2 className="reco-title">{customer.recommendation}</h2>
-        <p className="reco-summary">{customer.recommendationSummary}</p>
-        <div className="recommendation-next"><span>Next action</span>{customer.action}</div>
-        <div className="reco-meta">
-          <span><b>{customer.confidence}</b> confidence</span>
-          <span><b>{customer.sources.length}</b> evidence sources</span>
-          <span><b>{customer.policyVersion}</b> policy</span>
+        <div className="ov-reco-rail">
+          <RailValue label="Confidence" value={customer.confidence} />
+          <RailValue label="Evidence sources" value={sourceCount} />
+          <RailValue label="Policy" value={customer.policyVersion} />
         </div>
       </section>
 
       {/* ── was the regulation applied correctly ── */}
-      <section className="profile-card regulatory-controls">
-        <div className="profile-card-h serif">Regulatory controls <small>{rules.length} evaluated</small></div>
-        <div className="regulatory-control-grid">
-          {liveRules.map(([name, result, , explanation, severity]) => (
-            <div className="regulatory-control" key={name}>
-              <div><b>{name}</b><Chip tone={toneForSeverity(severity)}>{result}</Chip></div>
-              <p>{explanation}</p>
-            </div>
-          ))}
+      <section className="ov-panel">
+        <div className="ov-panel-h">
+          <h2>Why this was flagged</h2>
+          <small>{rules.length} {rules.length === 1 ? 'rule' : 'rules'} evaluated</small>
         </div>
-        {!rules.length && (
-          <p className="rv-quiet">This customer has not been evaluated against the policy yet, so no rule has been applied and no finding exists. Run a review from the decision queue to produce one.</p>
-        )}
-        {!!rules.length && !liveRules.length && (
-          <p className="rv-quiet">No rule raised a blocking or attention finding. Every evaluated limb is listed below.</p>
-        )}
-        {!!quietRules.length && (
-          <Disclosure label="Rules that passed or were informational" count={quietRules.length}>
-            <div className="regulatory-control-grid">
-              {quietRules.map(([name, result, , explanation, severity]) => (
-                <div className="regulatory-control" key={name}>
-                  <div><b>{name}</b><Chip tone={toneForSeverity(severity)}>{result}</Chip></div>
-                  <p>{explanation}</p>
-                </div>
-              ))}
-            </div>
-          </Disclosure>
-        )}
+        <div className="ov-panel-b">
+          {liveRules.map(renderRule)}
+
+          {!rules.length && (
+            <p className="ov-quiet">
+              This customer has not been evaluated against the policy yet, so no rule has been
+              applied and no finding exists. Run a review from the detection queue to produce one.
+            </p>
+          )}
+          {!!rules.length && !liveRules.length && (
+            <p className="ov-quiet">
+              No rule raised a blocking or attention finding. Every evaluated limb is listed below.
+            </p>
+          )}
+          {!!quietRules.length && (
+            <Disclosure label="Rules that passed or were informational" count={quietRules.length}>
+              {quietRules.map(renderRule)}
+            </Disclosure>
+          )}
+        </div>
       </section>
 
       {/* ── the switch, shown only when the case actually proposes one ── */}
       {decision && (
-        <section className="profile-card decision-card">
-          <div className="profile-card-h serif">The switch <small>{decision.effective}</small></div>
-          <div className="plan-compare">
-            <PlanCard plan={decision.current} />
-            <span className="plan-arrow"><Icon name="chevR" size={18} /></span>
-            <PlanCard plan={decision.best} best />
+        <section className="ov-panel">
+          <div className="ov-panel-h">
+            <h2>The switch</h2>
+            <small>{decision.effective}</small>
           </div>
-          <div className="savings-banner">
-            <Icon name="chevD" size={13} />
-            <span>{decision.savings[0]}<b>{decision.savings[1]}</b>{decision.savings[2]}</span>
+          <div className="ov-panel-b">
+            <div className="plan-compare">
+              <PlanCard plan={decision.current} />
+              <span className="plan-arrow"><Icon name="chevR" size={18} /></span>
+              <PlanCard plan={decision.best} best />
+            </div>
+            {(decision.savings || decision.trigger) && (
+              <p className="ov-quiet">
+                {decision.savings && <b>{decision.savings}</b>}
+                {decision.savings && decision.trigger ? ' — ' : ''}
+                {decision.trigger}
+              </p>
+            )}
           </div>
         </section>
       )}
 
       {/* Evidence lives in one place only — the compliance evidence overlay. */}
-      <button className="rv-evidence-link" onClick={() => setEvidenceOpen(true)}>
+      <button className="ov-evidence-link" onClick={() => setEvidenceOpen(true)}>
         <span>
           <b>Compliance evidence</b>
-          <small>{customer.sources.length} connected-system sources, the audit trail and the frozen snapshot for this decision.</small>
+          <small>
+            {sourceCount === null ? 'The' : `${sourceCount} connected-system sources, the`} decision
+            trail, the systems of record and the frozen snapshot for this decision.
+          </small>
         </span>
-        <Icon name="chevR" size={14} />
+        <i>→</i>
       </button>
 
       {modal && (
@@ -175,7 +223,10 @@ export default function CaseWorkspace({
               {customer.approvalEffects.length > 3 && <div className="approval-more">+ {customer.approvalEffects.length - 3} automated follow-up actions</div>}
             </div>
             <textarea placeholder="Add a note (optional)…" />
-            <div className="note">Approving officer: <b>Priya N.</b> · Policy {customer.policyVersion} · {customer.sources.length} evidence sources</div>
+            <div className="note">
+              Approving officer: <b>Priya N.</b> · Policy {customer.policyVersion}
+              {sourceCount !== null && ` · ${sourceCount} evidence sources`}
+            </div>
             <div className="btns">
               <button className="btn-ghost" onClick={() => setModal(false)}>Cancel</button>
               <button className="btn-orange" onClick={() => { setModal(false); onApprove(); }}>Approve decision</button>

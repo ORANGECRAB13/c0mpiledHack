@@ -54,7 +54,10 @@ export async function buildCustomerProfile(reference) {
     account = await readSalesforceAccount(identity.externalCustomerId);
     salesforce = salesforceSection(account);
   } catch (error) {
-    salesforce = { available: false, error: error.message, financialStressSignals: [] };
+    // error.notFound is set only by the zero-rows throw in salesforce-read.js —
+    // the org answered and denied the customer. Anything else (transport, auth,
+    // config) means we never got an answer at all.
+    salesforce = { available: false, denied: error.notFound === true, error: error.message, financialStressSignals: [] };
   }
 
   const stripe = await readStripeBilling(identity.externalCustomerId);
@@ -65,7 +68,47 @@ export async function buildCustomerProfile(reference) {
     ? Math.round((salesforceArrears - stripeOpenAmount) * 100) / 100
     : null;
 
+  // Three findings share one payload shape and must never be conflated:
+  //   the customer exists · the systems of record deny it · we could not ask.
+  //
+  // The last two look identical from here — null identity, both sections
+  // unavailable — but "no such customer" claimed on the strength of an outage
+  // is a false statement about the CRM, shown at the moment an operator is
+  // least able to catch it. A denial is only a denial when something actually
+  // answered, so UNVERIFIED is the default and NOT_FOUND must be earned.
+  const deniedBy = [
+    salesforce.denied ? 'Salesforce' : null,
+    stripe.denied ? 'Stripe' : null,
+  ].filter(Boolean);
+  const unreachable = [
+    !salesforce.available && !salesforce.denied ? 'Salesforce' : null,
+    !stripe.available && !stripe.denied ? 'Stripe' : null,
+  ].filter(Boolean);
+
+  let resolution;
+  if (identity.customerId) resolution = 'LEDGER';
+  else if (salesforce.available || stripe.available) resolution = 'UPSTREAM';
+  else if (deniedBy.length && !unreachable.length) resolution = 'NOT_FOUND';
+  else resolution = 'UNVERIFIED';
+
+  const exists = resolution === 'LEDGER' || resolution === 'UPSTREAM';
+  const notFoundReason = resolution === 'NOT_FOUND'
+    ? `No customer matches "${identity.externalCustomerId}" — ${deniedBy.join(' and ')} ${deniedBy.length > 1 ? 'both' : ''} searched and returned no record.`.replace(/\s+/g, ' ')
+    : null;
+  const resolutionReason = notFoundReason || (resolution === 'UNVERIFIED'
+    ? `Could not verify whether "${identity.externalCustomerId}" exists: ${unreachable.join(' and ')} ${unreachable.length > 1 ? 'are' : 'is'} unreachable, and the customer is not in the decision ledger. This is not a statement that the customer does not exist.`
+    : null);
+
   return {
+    // 'LEDGER' | 'UPSTREAM' | 'NOT_FOUND' | 'UNVERIFIED'.
+    // Branch on this, not on truthiness — `exists` is null when unknown, and
+    // `!exists` would read an outage as a missing customer.
+    resolution,
+    exists: resolution === 'NOT_FOUND' ? false : (exists ? true : null),
+    resolutionReason,
+    notFoundReason,
+    deniedBy,
+    unreachable,
     customerId: identity.customerId,
     externalCustomerId: identity.externalCustomerId,
     name: account?.Name || identity.name || null,

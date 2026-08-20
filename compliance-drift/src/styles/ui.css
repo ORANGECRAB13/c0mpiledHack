@@ -1,111 +1,122 @@
 /* ============================================================================
  * ui.css — the shared primitives. Namespaced `.u-`.
- * Palette is inherited from styles.css custom properties only; nothing new.
- * Type scale is deliberately five steps: 10 / 11 / 12.5 / 13.5 / 15.
+ *
+ * Restyled into the "Vocare Oversight" language. Every value here reads from
+ * the canonical tokens in styles.css (--ink / --body / --muted / --faint /
+ * --card / --line / --line2 / --line3 / --rust / --rust2 / --green / --blue /
+ * --amber / --serif / --sans). Nothing new is defined.
+ *
+ * Component APIs are UNCHANGED — Section, FieldRow, Fields, Chip, Disclosure,
+ * StateNote take exactly the props they always did.
  * ========================================================================== */
 
 /* ── Section ─────────────────────────────────────────────────────────────── */
-.u-section + .u-section { margin-top: 18px; }
+.u-section + .u-section { margin-top: var(--s5); }
 .u-section-h {
   display: flex; align-items: baseline; gap: 10px;
-  margin-bottom: 9px;
+  margin-bottom: var(--s3);
 }
 .u-section-h h3 {
-  margin: 0; font-size: 12.5px; font-weight: 650; color: var(--t1);
-  letter-spacing: 0;
+  margin: 0; font-family: var(--serif); font-size: 17px; font-weight: 500;
+  color: var(--ink); letter-spacing: 0; line-height: 1.25;
 }
-.u-section-meta { font-size: 11px; color: var(--t3); }
+.u-section-meta { font-size: var(--fs2); color: var(--muted); }
 .u-section-actions { margin-left: auto; display: inline-flex; gap: 8px; }
 
 /* ── FieldRow ────────────────────────────────────────────────────────────── */
 .u-fields {
   display: grid; gap: 1px;
-  background: var(--card, #fff);
-  border: 1px solid var(--line);
-  border-radius: 8px; overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line2);
+  border-radius: var(--r2); overflow: hidden;
 }
 .u-fields-1 { grid-template-columns: 1fr; }
 .u-fields-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 
 .u-field {
-  background: var(--card, #fff);
+  background: var(--card);
   /* hairlines are drawn per cell, so a half-empty last row stays white */
-  box-shadow: 0 0 0 1px var(--line);
-  display: flex; align-items: baseline; gap: 12px;
-  padding: 8px 11px; min-width: 0;
+  box-shadow: 0 0 0 1px var(--line3);
+  display: flex; align-items: baseline; gap: var(--s3);
+  padding: 10px 14px; min-width: 0;
 }
+/* The label yields first: it is prose and reads fine over two lines, whereas a
+   value like TAILORED_ASSISTANCE broken mid-word reads as a different token. */
 .u-field-k {
-  font-size: 11px; color: var(--t3); flex: 1 1 auto;
+  font-size: var(--fs2); color: var(--muted); flex: 1 1 40%;
   line-height: 1.35; min-width: 0;
 }
 .u-field-v {
-  font-size: 12.5px; color: var(--t1);
+  font-size: var(--fs3); color: var(--ink);
   flex: 0 1 auto; text-align: right; font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere; min-width: 0; line-height: 1.35;
+  /* break-word, not anywhere: only split a value when it genuinely cannot fit,
+     never merely because a tighter break is available. */
+  overflow-wrap: break-word; hyphens: none; min-width: 0; line-height: 1.35;
 }
 
 /* P2 — weight by consequence. A decision field is the only one that shouts. */
-.u-field-decision .u-field-k { color: var(--t2); font-weight: 600; }
-.u-field-decision .u-field-v { font-size: 15px; font-weight: 650; }
-.u-field-muted .u-field-v { color: var(--t2); font-size: 12px; }
+.u-field-decision .u-field-k { color: var(--body); font-weight: 600; }
+.u-field-decision .u-field-v { font-family: var(--serif); font-size: 18px; font-weight: 500; }
+.u-field-muted .u-field-v { color: var(--body); font-size: var(--fs2); }
 
 /* P7 — the honest missing state. Quiet, but never absent and never a zero. */
 .u-field-missing,
 .u-field-decision .u-field-missing,
 .u-field-muted .u-field-missing {
-  color: var(--t4); font-style: italic; font-weight: 400; font-size: 11px;
+  font-family: var(--sans); color: var(--faint); font-style: italic; font-weight: 400; font-size: var(--fs2);
 }
 
 /* ── Chip ────────────────────────────────────────────────────────────────── */
 /* P4 — colour is regulatory meaning. `info`/`neutral` are deliberately grey. */
 .u-chip {
   display: inline-flex; align-items: center;
-  font-size: 10px; font-weight: 700; letter-spacing: .05em;
+  font-size: var(--fs1); font-weight: 700; letter-spacing: .06em;
   text-transform: uppercase; white-space: nowrap;
-  border: 1px solid var(--line2); border-radius: 4px;
-  padding: 2px 5px; color: var(--t2); height: fit-content;
+  border: 1px solid var(--line2); border-radius: var(--rpill);
+  padding: 3px 9px; color: var(--muted); background: var(--line3);
+  height: fit-content;
 }
-.u-chip-blocking  { border-color: var(--red); color: var(--red); background: rgba(214, 69, 69, .07); }
-.u-chip-attention { border-color: var(--amber); color: #9A6C10; background: rgba(229, 168, 51, .09); }
-.u-chip-pass      { border-color: rgba(63, 156, 92, .5); color: var(--green); }
-.u-chip-info,
-.u-chip-neutral   { border-color: var(--line2); color: var(--t3); }
+.u-chip-blocking  { border-color: rgba(142, 63, 31, .4);  color: var(--rust2); background: var(--rust-wash); }
+.u-chip-attention { border-color: rgba(138, 109, 59, .4); color: var(--amber);  background: var(--amber-wash); }
+.u-chip-pass      { border-color: rgba(29, 92, 79, .35);  color: var(--green);  background: var(--green-wash); }
+.u-chip-info      { border-color: rgba(47, 93, 168, .35); color: var(--blue);   background: var(--blue-wash); }
+.u-chip-neutral   { border-color: var(--line2); color: var(--muted); background: var(--line3); }
 
 /* ── Disclosure ──────────────────────────────────────────────────────────── */
-.u-disc { border-top: 1px solid var(--line); }
+.u-disc { border-top: 1px solid var(--line2); }
 .u-disc:first-child { border-top: 0; }
 .u-disc-b {
   width: 100%; display: flex; align-items: center; gap: 7px;
   background: none; border: 0; cursor: pointer;
-  padding: 9px 2px; text-align: left;
-  font-size: 11.5px; font-weight: 600; color: var(--t2);
+  padding: 11px 2px; text-align: left;
+  font-size: var(--fs3); font-weight: 600; color: var(--muted);
 }
-.u-disc-b:hover { color: var(--t1); }
+.u-disc-b:hover { color: var(--ink); }
 .u-caret {
   flex: 0 0 auto; width: 0; height: 0;
-  border-left: 5px solid var(--t4);
+  border-left: 5px solid var(--faint);
   border-top: 4px solid transparent; border-bottom: 4px solid transparent;
   transition: transform .15s var(--ease, ease);
 }
 .u-disc.is-open .u-caret { transform: rotate(90deg); }
 .u-disc-b em {
-  font-style: normal; font-size: 10px; font-weight: 700; color: var(--t3);
-  background: var(--side); border-radius: 999px; padding: 1px 7px;
+  font-style: normal; font-size: var(--fs1); font-weight: 700; color: var(--muted);
+  background: var(--line3); border-radius: var(--rpill); padding: 2px 8px;
 }
-.u-disc-body { padding: 0 0 12px; }
+.u-disc-body { padding: 0 0 var(--s4); }
 
 /* ── states ──────────────────────────────────────────────────────────────── */
 .u-state {
-  display: flex; gap: 8px; align-items: flex-start;
-  font-size: 11.5px; line-height: 1.45; color: var(--t2);
-  background: var(--side); border: 1px solid var(--line);
-  border-radius: 6px; padding: 9px 10px;
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: var(--fs3); line-height: 1.5; color: var(--body);
+  background: var(--page); border: 1px solid var(--line2);
+  border-radius: var(--r1); padding: 11px 13px;
 }
-.u-state + .u-state { margin-top: 8px; }
+.u-state + .u-state { margin-top: var(--s2); }
 .u-state-error {
-  color: var(--red);
-  background: rgba(214, 69, 69, .07);
-  border-color: rgba(214, 69, 69, .4);
+  color: var(--rust2);
+  background: var(--rust-wash);
+  border-color: rgba(142, 63, 31, .4);
 }
 .u-state-error svg { flex: 0 0 auto; margin-top: 1px; }
 
@@ -119,47 +130,47 @@
 /* the hero: do the two systems agree? */
 .u-recon {
   display: flex; gap: 10px; align-items: flex-start;
-  border: 1px solid var(--line); border-radius: 8px;
-  padding: 12px 13px; margin-bottom: 16px;
+  border: 1px solid var(--line2); border-radius: var(--r2);
+  padding: var(--s4); margin-bottom: var(--s4);
 }
-.u-recon > svg { flex: 0 0 auto; margin-top: 1px; color: var(--t3); }
-.u-recon-t { font-size: 13.5px; font-weight: 650; display: block; }
-.u-recon-s { display: block; font-size: 11.5px; color: var(--t2); margin-top: 3px; line-height: 1.45; }
+.u-recon > svg { flex: 0 0 auto; margin-top: 1px; color: var(--muted); }
+.u-recon-t { font-family: var(--serif); font-size: 17px; font-weight: 500; display: block; color: var(--ink); }
+.u-recon-s { display: block; font-size: var(--fs3); color: var(--body); margin-top: 5px; line-height: 1.5; }
 .u-recon-n {
   margin-top: 7px; display: flex; gap: 16px; flex-wrap: wrap;
-  font-size: 11.5px; color: var(--t3); font-variant-numeric: tabular-nums;
+  font-size: var(--fs3); color: var(--muted); font-variant-numeric: tabular-nums;
 }
-.u-recon-n b { color: var(--t1); font-weight: 650; }
-.u-recon-n .u-na { color: var(--t4); font-style: italic; font-weight: 400; }
-.u-recon-ok { border-color: rgba(63, 156, 92, .45); background: rgba(63, 156, 92, .06); }
+.u-recon-n b { color: var(--ink); font-weight: 600; }
+.u-recon-n .u-na { color: var(--faint); font-style: italic; font-weight: 400; }
+.u-recon-ok { border-color: rgba(29, 92, 79, .35); background: var(--green-wash); }
 .u-recon-ok > svg { color: var(--green); }
-.u-recon-unknown { background: var(--side); }
+.u-recon-unknown { background: var(--page); }
 .u-recon-off {
-  border: 1px solid var(--red); background: rgba(214, 69, 69, .07);
-  box-shadow: 0 0 0 3px rgba(214, 69, 69, .08);
+  border: 1px solid var(--rust2); background: var(--rust-wash);
+  box-shadow: 0 0 0 3px rgba(142, 63, 31, .08);
 }
-.u-recon-off > svg, .u-recon-off .u-recon-t { color: var(--red); }
+.u-recon-off > svg, .u-recon-off .u-recon-t { color: var(--rust2); }
 
-.u-src { font-size: 10px; color: var(--t4); letter-spacing: .04em; text-transform: uppercase; margin-left: 6px; }
+.u-src { font-size: var(--fs1); color: var(--faint); letter-spacing: .06em; text-transform: uppercase; margin-left: 6px; }
 
 /* invoices */
-.u-inv { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.u-inv { display: grid; gap: 1px; background: var(--line3); border: 1px solid var(--line2); border-radius: var(--r2); overflow: hidden; }
 .u-inv-row {
-  background: var(--card, #fff); display: grid;
-  grid-template-columns: 1.4fr .9fr .9fr auto; gap: 10px;
-  padding: 7px 10px; font-size: 11.5px; align-items: center;
+  background: var(--card); display: grid;
+  grid-template-columns: 1.4fr .9fr .9fr auto; gap: var(--s3);
+  padding: 9px 14px; font-size: var(--fs3); align-items: center;
 }
-.u-inv-h { background: var(--side); font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: var(--t3); }
-.u-inv-row a { color: var(--orange); text-decoration: none; }
+.u-inv-h { background: var(--page); font-size: var(--fs1); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.u-inv-row a { color: var(--rust); text-decoration: none; }
 .u-inv-row a:hover { text-decoration: underline; }
-.u-inv-row small { display: block; color: var(--t4); font-size: 10px; }
-.u-inv-na { color: var(--t4); font-style: italic; }
-.u-inv-empty { background: var(--card, #fff); font-size: 11.5px; color: var(--t3); padding: 10px; }
+.u-inv-row small { display: block; color: var(--faint); font-size: var(--fs1); }
+.u-inv-na { color: var(--faint); font-style: italic; }
+.u-inv-empty { background: var(--card); font-size: var(--fs3); color: var(--muted); padding: var(--s3) var(--s4); }
 
 /* trend */
 .u-trend { margin-top: 10px; }
-.u-trend-axis { display: flex; justify-content: space-between; width: 180px; font-size: 10px; color: var(--t4); }
-.u-trend-empty { font-size: 11px; color: var(--t4); font-style: italic; }
+.u-trend-axis { display: flex; justify-content: space-between; width: 180px; font-size: var(--fs1); color: var(--faint); letter-spacing: .04em; text-transform: uppercase; font-weight: 600; }
+.u-trend-empty { font-size: var(--fs2); color: var(--faint); font-style: italic; }
 
 @media (max-width: 720px) {
   .u-fields-2 { grid-template-columns: 1fr; }

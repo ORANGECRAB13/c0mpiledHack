@@ -1,20 +1,20 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AskBar } from '../components/Chrome.jsx';
 import { Icon } from '../icons.jsx';
-import { Crumbs, AskBar } from '../components/Chrome.jsx';
 import '../styles/review.css';
 import CustomerProfile from './CustomerProfile.jsx';
-import { Chip } from '../components/ui.jsx';
 
-/* Monitoring reuses the Operational reviews (OpsQueue) treatment verbatim:
- * one hero action, the .rv-countline summary line, queue-toolbar search +
- * filter-selects, and the .qtable.product-queue list with the same row density,
- * priority rail and status chips. The row itself is the affordance — there is no
+/* Monitoring reuses the Detection treatment verbatim: eyebrow + serif headline,
+ * the same tab strip and search, and the same row (priority rail, name + meta,
+ * reason, next action, state). The row itself is the affordance — there is no
  * per-row button duplicating it. Selecting a row opens the customer profile,
  * which reads live Salesforce + Stripe data. */
 
-const RISK = { High: '#D64545', Medium: '#E5A833', Low: '#C4C4CA' };
-/* Monitoring status → chip tone. Same vocabulary as the detection queue. */
-const STATUS_TONE = { Stable: 'pass', 'On track': 'pass', Watch: 'attention', 'At risk': 'blocking', Monitoring: 'neutral' };
+const RAIL = {
+  High: 'var(--rust, #B4532A)',
+  Medium: 'var(--muted, #6E767E)',
+  Low: 'var(--line, #D2D6DA)',
+};
 
 const EMPTY_FILTERS = { status: 'All', risk: 'All', review: 'All', query: '' };
 
@@ -45,9 +45,25 @@ function reviewLabel(account) {
   return `Next review ${due.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}`;
 }
 
+/* Tabs are cut on the review window, which is a real Salesforce field
+   (Hardship_Review_Due_At__c). "Recorded" holds accounts an officer has already
+   decided in this session — it is not a policy outcome, and says so. */
+const TABS = [
+  { key: 'due', label: 'Reassessment due' },
+  { key: 'later', label: 'Scheduled' },
+  { key: 'unscheduled', label: 'No review scheduled' },
+  { key: 'recorded', label: 'Decision recorded' },
+];
+
+const TAB_NOTE = {
+  unscheduled: 'Salesforce holds no review date for these accounts. That absence is shown as-is — it is never rendered as a date or a zero.',
+  recorded: 'Decisions recorded in this session. They are held in the browser and do not replace the ledger record.',
+};
+
 export default function Monitoring({ decisions = {}, onDecision, openCase, openCustomer, focusId, monitoring = [] }) {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [selectedId, setSelectedId] = useState(null);
+  const [tab, setTab] = useState('due');
 
   useEffect(() => { if (focusId) setSelectedId(focusId); }, [focusId]);
 
@@ -60,74 +76,101 @@ export default function Monitoring({ decisions = {}, onDecision, openCase, openC
 
   const statuses = useMemo(() => [...new Set(monitoring.map((item) => item.status).filter(Boolean))], [monitoring]);
 
-  const filtered = useMemo(() => monitoring.filter((item) => (
-    (filters.status === 'All' || (decisions[item.id] ? 'Decision recorded' : item.status) === filters.status)
+  const bucketOf = (item) => {
+    if (decisions[item.id]) return 'recorded';
+    const window = reviewBucket(item);
+    if (window === 'Overdue' || window === 'Due in 30 days') return 'due';
+    if (window === 'Not scheduled') return 'unscheduled';
+    return 'later';
+  };
+
+  const matches = useMemo(() => monitoring.filter((item) => (
+    (filters.status === 'All' || item.status === filters.status)
     && (filters.risk === 'All' || riskOf(item) === filters.risk)
     && (filters.review === 'All' || reviewBucket(item) === filters.review)
     && (!filters.query || `${item.customer} ${item.id} ${item.nextAction || ''} ${item.rec || ''}`.toLowerCase().includes(filters.query.toLowerCase()))
-  )), [monitoring, filters, decisions]);
+  )), [monitoring, filters]);
 
-  const dueCount = monitoring.filter((item) => ['Overdue', 'Due in 30 days'].includes(reviewBucket(item)) && !decisions[item.id]).length;
-  const atRiskCount = monitoring.filter((item) => riskOf(item) === 'High' && !decisions[item.id]).length;
-  const recordedCount = monitoring.filter((item) => decisions[item.id]).length;
+  const counts = useMemo(() => {
+    const tally = {};
+    matches.forEach((item) => { const b = bucketOf(item); tally[b] = (tally[b] || 0) + 1; });
+    return tally;
+  }, [matches, decisions]);
 
+  const rows = useMemo(() => matches.filter((item) => bucketOf(item) === tab), [matches, tab, decisions]);
+
+  const filtersActive = filters.status !== 'All' || filters.risk !== 'All' || filters.review !== 'All' || !!filters.query;
   const selected = monitoring.find((item) => item.id === selectedId) || null;
 
+  const reviewNext = () => {
+    const next = matches.find((item) => bucketOf(item) === 'due') || matches[0];
+    if (next) { setTab(bucketOf(next)); setSelectedId(next.id); }
+  };
+
   return (
-    <div className="page product-page">
-      <Crumbs items={['Operations', 'Monitoring']} />
-      <div className="h1row product-heading">
+    <div className="page dq">
+      <div className="dq-eyebrow">Monitoring</div>
+      <div className="dq-head">
         <div>
-          <h1 className="display">Continuous monitoring</h1>
-          <div className="h1sub">Reassess whether support still fits as circumstances change — never simply leave customers enrolled indefinitely.</div>
+          <h1>Support that still has to fit</h1>
+          <p>Reassess whether support still fits as circumstances change — never simply leave customers enrolled indefinitely. Removing support always requires human review.</p>
         </div>
-        <button className="btn-orange" onClick={() => filtered[0] && setSelectedId(filtered[0].id)} disabled={!filtered.length}>Review next account <Icon name="chevR" size={13} /></button>
+        <div className="dq-head-actions">
+          <button className="dq-btn solid" onClick={reviewNext} disabled={!matches.length}>Review next account →</button>
+        </div>
       </div>
 
-      <div className="queue-toolbar">
-        <div>
-          <div className="secheading">Supported accounts</div>
-          <div className="rv-countline">
-            <b>{dueCount}</b> reviews due · <b>{atRiskCount}</b> at risk · <b>{recordedCount}</b> decisions recorded
-          </div>
+      <div className="dq-tabbar">
+        <div className="dq-tabs">
+          {TABS.map((item) => (
+            <button key={item.key} className={`dq-tab${item.key === tab ? ' on' : ''}`} onClick={() => setTab(item.key)}>
+              {item.label}<span className="n">{counts[item.key] || 0}</span>
+            </button>
+          ))}
         </div>
-        <div>
-          <label className="queue-search">
-            <Icon name="search" size={13} />
-            <input aria-label="Search monitored accounts" placeholder="Customer or account ID" value={filters.query} onChange={(event) => setFilters((current) => ({ ...current, query: event.target.value }))} />
-          </label>
-          <label className="filter-select">
-            <span className="sr-only">Status</span>
-            <select value={filters.status} onChange={(event) => setFilters((current) => ({ ...current, status: event.target.value }))}>
-              <option value="All">All statuses</option>
-              {statuses.map((status) => <option key={status} value={status}>{status}</option>)}
-              <option value="Decision recorded">Decision recorded</option>
-            </select>
-            <Icon name="chevD" size={12} />
-          </label>
-          <label className="filter-select">
-            <span className="sr-only">Review window</span>
-            <select value={filters.review} onChange={(event) => setFilters((current) => ({ ...current, review: event.target.value }))}>
-              <option value="All">All review windows</option>
-              <option value="Overdue">Overdue</option>
-              <option value="Due in 30 days">Due in 30 days</option>
-              <option value="Later">Later</option>
-              <option value="Not scheduled">Not scheduled</option>
-            </select>
-            <Icon name="chevD" size={12} />
-          </label>
-          <label className="filter-select">
-            <span className="sr-only">Risk</span>
-            <select value={filters.risk} onChange={(event) => setFilters((current) => ({ ...current, risk: event.target.value }))}>
-              <option value="All">All risk bands</option>
-              <option value="High">High risk</option>
-              <option value="Medium">Medium risk</option>
-              <option value="Low">Low risk</option>
-            </select>
-            <Icon name="chevD" size={12} />
-          </label>
-        </div>
+        <label className="dq-search">
+          <span aria-hidden="true" style={{ fontSize: 12 }}>⌕</span>
+          <input
+            aria-label="Search monitored accounts"
+            placeholder="Customer or account ID"
+            value={filters.query}
+            onChange={(event) => setFilters((current) => ({ ...current, query: event.target.value }))}
+          />
+        </label>
       </div>
+
+      <div className="dq-filters">
+        <span className="k">Filter</span>
+        <label>
+          <span className="sr-only">Status</span>
+          <select value={filters.status} onChange={(event) => setFilters((current) => ({ ...current, status: event.target.value }))}>
+            <option value="All">All statuses</option>
+            {statuses.map((status) => <option key={status} value={status}>{status}</option>)}
+          </select>
+        </label>
+        <label>
+          <span className="sr-only">Review window</span>
+          <select value={filters.review} onChange={(event) => setFilters((current) => ({ ...current, review: event.target.value }))}>
+            <option value="All">All review windows</option>
+            <option value="Overdue">Overdue</option>
+            <option value="Due in 30 days">Due in 30 days</option>
+            <option value="Later">Later</option>
+            <option value="Not scheduled">Not scheduled</option>
+          </select>
+        </label>
+        <label>
+          <span className="sr-only">Risk</span>
+          <select value={filters.risk} onChange={(event) => setFilters((current) => ({ ...current, risk: event.target.value }))}>
+            <option value="All">All risk bands</option>
+            <option value="High">High risk</option>
+            <option value="Medium">Medium risk</option>
+            <option value="Low">Low risk</option>
+          </select>
+        </label>
+        {filtersActive && <button className="dq-clear" onClick={() => setFilters(EMPTY_FILTERS)}>Clear filters</button>}
+      </div>
+
+      {TAB_NOTE[tab] && <div className="dq-note audit">{TAB_NOTE[tab]}</div>}
 
       {selected && (
         <div className="mon-detail" ref={panelRef}>
@@ -143,8 +186,8 @@ export default function Monitoring({ decisions = {}, onDecision, openCase, openC
               <>
                 <div className="cp-decision-note">Removal of support always requires human review.</div>
                 <div className="monitor-decision-actions">
-                  <button className="btn-ghost" onClick={() => onDecision?.(selected, 'Support retained · monitoring continues')}>Keep current support</button>
-                  <button className="btn-orange" onClick={() => { onDecision?.(selected, 'Human reassessment opened'); if (selected.caseId) openCase?.(selected.caseId); else openCustomer?.(selected.customer); }}>Start reassessment</button>
+                  <button className="dq-btn md" onClick={() => onDecision?.(selected, 'Support retained · monitoring continues')}>Keep current support</button>
+                  <button className="dq-btn solid md" onClick={() => { onDecision?.(selected, 'Human reassessment opened'); if (selected.caseId) openCase?.(selected.caseId); else openCustomer?.(selected.customer); }}>Start reassessment</button>
                 </div>
               </>
             )}
@@ -152,41 +195,47 @@ export default function Monitoring({ decisions = {}, onDecision, openCase, openC
         </div>
       )}
 
-      <div className="qtable product-queue">
-        <div className="q-head">
-          <span>Customer</span><span>Review</span><span>Risk</span><span>Status</span><span>Next action</span><span />
-        </div>
-        {filtered.map((item) => {
+      <div className="dq-rows">
+        {rows.map((item) => {
           const risk = riskOf(item);
           const recorded = decisions[item.id];
           return (
-            <div
-              className={`q-row ${risk === 'High' ? 'priority-row' : ''} ${selectedId === item.id ? 'q-row-selected' : ''}`}
-              key={item.id}
-              onClick={() => setSelectedId((current) => (current === item.id ? null : item.id))}
-            >
-              <span>
-                <div className="cust">{item.customer}</div>
-                <div className="cid">{item.id}{item.debt ? ` · ${item.debt}` : ''}</div>
-              </span>
-              <span className="sub">{reviewLabel(item)}</span>
-              <span className="prio"><i style={{ background: RISK[risk] }} />{risk}</span>
-              <span><Chip tone={recorded ? 'pass' : (STATUS_TONE[item.status] || 'neutral')}>{recorded ? 'Decision recorded' : item.status}</Chip></span>
-              <span className="sub">{item.nextAction || item.rec || 'Reassess current support'}</span>
-              <span className="rv-actions"><Icon name="chevR" size={13} /></span>
+            <div className={`dq-item${selectedId === item.id ? ' is-open' : ''}`} key={item.id}>
+              <button
+                className="dq-row"
+                aria-expanded={selectedId === item.id}
+                onClick={() => setSelectedId((current) => (current === item.id ? null : item.id))}
+              >
+                <span className="dq-rail" style={{ background: recorded ? 'var(--body, #454B52)' : (RAIL[risk] || RAIL.Low) }} />
+                <span className="dq-name">
+                  <b>{item.customer}</b>
+                  <small>{item.id}{item.debt ? ` · ${item.debt}` : ''}</small>
+                </span>
+                <span className="dq-reason">{reviewLabel(item)}</span>
+                <span className="dq-action">{item.nextAction || item.rec || 'Reassess current support'}</span>
+                <span className={`dq-state ${recorded ? 'dq-fg-green' : risk === 'High' ? 'dq-fg-rust' : 'dq-fg-muted'}`}>
+                  {recorded ? 'Decision recorded' : item.status}
+                </span>
+                <span className="dq-chev" aria-hidden="true">{selectedId === item.id ? '▲' : '▼'}</span>
+              </button>
             </div>
           );
         })}
-        {filtered.length === 0 && monitoring.length > 0 && (
-          <div className="rv-empty">
-            No monitored accounts match these filters.
-            <button className="rv-btn small" onClick={() => setFilters(EMPTY_FILTERS)}>Clear filters</button>
-          </div>
-        )}
-        {monitoring.length === 0 && (
-          <div className="rv-empty">
-            <b>No accounts under continuous monitoring</b>
-            <div>Accounts appear here once Salesforce records a hardship status other than NONE. Nothing is shown until the CRM says so.</div>
+
+        {!rows.length && (
+          <div className="dq-empty">
+            {monitoring.length === 0 ? (
+              <>
+                <b>No accounts under continuous monitoring</b>
+                <div>Accounts appear here once Salesforce records a hardship status other than NONE. Nothing is shown until the CRM says so.</div>
+              </>
+            ) : (
+              <>
+                <b>Nothing in this view</b>
+                <div>No monitored account currently sits in “{TABS.find((t) => t.key === tab)?.label}”{filtersActive ? ' under these filters' : ''}.</div>
+                {filtersActive && <button className="dq-btn sm" onClick={() => setFilters(EMPTY_FILTERS)}>Clear filters</button>}
+              </>
+            )}
           </div>
         )}
       </div>

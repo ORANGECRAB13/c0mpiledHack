@@ -74,15 +74,19 @@ function humanOutcome(record) {
   return outcome ? outcome.charAt(0).toUpperCase() + outcome.slice(1) : 'Evaluation recorded';
 }
 
-function Reason({ reason }) {
+/* The design renders a finding as a mono status in a fixed left column beside
+   the rule and its explanation. The tone vocabulary is unchanged — it is still
+   `reasonTone`, still driven by the backend's BLOCKING/ATTENTION/PASS/INFO —
+   only the shape of the marker differs from the pill used elsewhere. */
+function Reason({ reason, quiet = false }) {
   return (
     <div className="ev-reason">
-      <Chip tone={reasonTone(reason)}>{reason.status || 'no status'}</Chip>
+      <span className={`ev-reason-status ov-t-${reasonTone(reason)}`}>{reason.status || 'no status'}</span>
       <div className="ev-reason-main">
         <b>{reason.rule || 'Unnamed rule'}</b>
-        {reason.explanation && <p>{reason.explanation}</p>}
-        {reason.citation && <span className="ev-cite">{reason.citation}</span>}
-        {reason.penaltyProvision && <span className="ev-penalty">civil penalty · {reason.penaltyProvision}</span>}
+        {!quiet && reason.explanation && <p>{reason.explanation}</p>}
+        {!quiet && reason.citation && <span className="ev-cite">{reason.citation}</span>}
+        {!quiet && reason.penaltyProvision && <span className="ev-penalty">civil penalty · {reason.penaltyProvision}</span>}
       </div>
     </div>
   );
@@ -118,6 +122,15 @@ function AuditEntry({ record }) {
         <div className="ev-override"><b>Override:</b> {record.override_reason}</div>
       )}
 
+      {/* The design's "Why this was flagged" heading, carrying the real count. */}
+      {reasons.length > 0 && (
+        <div className={`ev-findings-h ${findings.length ? '' : 'ev-findings-none'}`}>
+          {findings.length
+            ? `Why this was flagged · ${findings.length} ${findings.length === 1 ? 'finding' : 'findings'}`
+            : 'No blocking or attention finding'}
+        </div>
+      )}
+
       {findings.length > 0 && (
         <div className="ev-reasons">{findings.map((reason, index) => <Reason key={`${record.id}-f-${reason.rule || index}`} reason={reason} />)}</div>
       )}
@@ -125,7 +138,7 @@ function AuditEntry({ record }) {
       {quiet.length > 0 && (
         <Disclosure label="Checks that passed" count={quiet.length}>
           <div className="ev-reasons ev-reasons-quiet">
-            {quiet.map((reason, index) => <Reason key={`${record.id}-q-${reason.rule || index}`} reason={reason} />)}
+            {quiet.map((reason, index) => <Reason key={`${record.id}-q-${reason.rule || index}`} reason={reason} quiet />)}
           </div>
         </Disclosure>
       )}
@@ -197,6 +210,25 @@ export default function EvidenceOverlay({ open, reference, name, subtitle, onClo
     return { records: mine.slice().sort((a, b) => new Date(b.decided_at || b.created_at || 0) - new Date(a.decided_at || a.created_at || 0)), scoped: Boolean(key) };
   }, [audit.records, reference]);
 
+  /* Client-side only: serialise exactly what this panel already loaded. */
+  const exportBundle = () => {
+    const bundle = {
+      exportedAt: new Date().toISOString(),
+      customerReference: reference == null ? null : String(reference),
+      source: 'Vocare decision ledger and connected systems, as read by this panel',
+      decisionRecords: records,
+      systemsOfRecord: profile.data || null,
+      profileError: profile.error || null,
+      auditError: audit.error || null,
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `vocare-evidence-${reference || 'customer'}-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
   if (!open) return null;
 
   const liveClass = busy ? 'ev-live-busy' : (profile.error || audit.error) ? 'ev-live-stale' : '';
@@ -226,7 +258,7 @@ export default function EvidenceOverlay({ open, reference, name, subtitle, onClo
           {/* ── LEFT: the audit trail ─────────────────────────────────────── */}
           <section className="ev-pane ev-pane-left">
             <div className="ev-pane-h">
-              <b>Agent audit trail</b>
+              <b>Decision trail</b>
               <small>{audit.loading ? 'loading' : `${records.length} ledger ${records.length === 1 ? 'record' : 'records'}`}</small>
             </div>
 
@@ -255,6 +287,8 @@ export default function EvidenceOverlay({ open, reference, name, subtitle, onClo
               <b>Systems of record</b>
               <small>Salesforce CRM &amp; Stripe billing, read live</small>
             </div>
+            {/* The design's dash caveat, restated for what we actually render:
+                FieldRow prints "Not recorded in <system>" rather than a zero. */}
 
             {profile.loading && <StateNote>Reading Salesforce and Stripe…</StateNote>}
             {!profile.loading && profile.error && (
@@ -263,6 +297,19 @@ export default function EvidenceOverlay({ open, reference, name, subtitle, onClo
             {!profile.loading && profile.data && <SystemsOfRecord profile={profile.data} />}
           </section>
         </div>
+
+        {/* The design's footer. "Export bundle" is real — it writes the ledger
+            records and the profile payload this panel is already holding to a
+            JSON file. There is no export endpoint and none is implied. */}
+        <footer className="ev-foot">
+          <span>Evidence is frozen at approval and retained with the decision.</span>
+          <div>
+            <button className="ov-btn ov-btn-sm" onClick={exportBundle} disabled={!records.length && !profile.data}>
+              Export bundle
+            </button>
+            <button className="ov-btn-dark ov-btn-sm" onClick={onClose}>Back to case</button>
+          </div>
+        </footer>
       </div>
     </div>
   );
