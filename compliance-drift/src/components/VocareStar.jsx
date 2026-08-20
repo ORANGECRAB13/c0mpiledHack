@@ -24,9 +24,14 @@ import React from 'react';
  * and reduced-motion states use.
  * ========================================================================== */
 
-// One arm: the chevron, tip outward. Five of these at 72° make the star.
-const ARM = 'M-13 -24 L0 -40 L13 -24';
-const ARMS = [0, 72, 144, 216, 288];
+/* One arm is the WHOLE mark — the caret and the arc that crowns it — with the
+   arc outermost. Four of them at 90° put the carets nose-to-nose in a diamond
+   at the centre and ring it with the four arcs, which is the four-pointed
+   sparkle the design calls for. Using the caret alone would draw a plain
+   diamond and throw away half the logo. */
+const CARET = 'M-13 -14 L0 -28 L13 -14';
+const ARC = 'M-15 -34 A20 20 0 0 1 15 -34';
+const ARMS = [0, 90, 180, 270];
 
 export default function VocareStar({ size = 21, spinning = true, className = '', title }) {
   return (
@@ -44,15 +49,16 @@ export default function VocareStar({ size = 21, spinning = true, className = '',
         className="vs-spin"
         fill="none"
         stroke="currentColor"
-        strokeWidth="10"
+        strokeWidth="7"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
         {ARMS.map((angle, index) => (
-          <g key={angle} transform={`rotate(${angle})`}>
-            {/* The per-arm delay is what makes the chase travel around the
-                star instead of every arm pulsing together. */}
-            <path d={ARM} className="vs-arm" style={{ animationDelay: `${index * 0.16}s` }} />
+          <g key={angle} transform={`rotate(${angle})`} className="vs-arm" style={{ animationDelay: `${index * 0.2}s` }}>
+            {/* Caret and arc travel together: they are one mark, and dimming
+                them separately would read as two shapes rather than one. */}
+            <path d={CARET} />
+            <path d={ARC} />
           </g>
         ))}
       </g>
