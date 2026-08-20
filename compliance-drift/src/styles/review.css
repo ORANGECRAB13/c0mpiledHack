@@ -477,15 +477,11 @@
 }
 
 /* three quiet marks that hint at the three columns the sweep resolves into */
-.sw-invite-art { display: flex; gap: 8px; justify-content: center; }
-.sw-invite-art span {
-  width: 42px; height: 4px; border-radius: 999px; display: block;
-  background: var(--line, #D2D6DA);
-  animation: sw-breathe 2.6s ease-in-out infinite;
-}
-.sw-invite-art span:nth-child(1) { background: var(--rust, #B4532A); animation-delay: 0s; }
-.sw-invite-art span:nth-child(2) { background: var(--amber, #8A6D3B); animation-delay: .25s; }
-.sw-invite-art span:nth-child(3) { background: var(--green, #1D5C4F); animation-delay: .5s; }
+.sw-invite-art { display: flex; justify-content: center; color: var(--ink, #09090B); margin-bottom: var(--s3, 12px); }
+
+
+
+
 @keyframes sw-breathe {
   0%, 100% { opacity: .35; transform: scaleX(.8); }
   50%      { opacity: 1;   transform: scaleX(1); }
@@ -502,7 +498,9 @@
   display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
   font-size: 15px; color: var(--ink, #09090B);
 }
-.sw-glyph { color: var(--rust, #B4532A); font-size: 15px; width: 15px; display: inline-block; }
+/* Ink, not the rust accent: the brief was the mark inverted — insides black —
+   rather than a coloured spinner. */
+.sw-glyph { color: var(--ink, #09090B); flex: none; }
 .sw-word { font-weight: 600; }
 .sw-facts {
   font-size: 13px; color: var(--muted, #6E767E);
@@ -637,7 +635,7 @@
     animation: sw-fade .2s linear both;
     animation-delay: 0s;
   }
-  .sw-invite-art span { animation: none; opacity: .8; transform: none; }
+  
   .sw-bar > span { transition: none; }
   .sw-card { transition: none; }
   @keyframes sw-fade { from { opacity: 0; } to { opacity: 1; } }
@@ -646,4 +644,25 @@
 @media (max-width: 1100px) {
   .sw-cols { grid-template-columns: minmax(0, 1fr); }
   .sw-col:nth-child(1), .sw-col:nth-child(3) { --dx: 0px; }
+}
+
+/* ── Vocare star: the mark, five times, as a working indicator ───────────── */
+.vs-star { display: block; flex: none; color: inherit; }
+/* The star only turns while work is in flight; at rest it is just the mark. */
+.vs-star.is-spinning .vs-spin { animation: vs-turn 3s linear infinite; transform-origin: 50% 50%; }
+.vs-star.is-spinning .vs-arm { animation: vs-chase 1.6s ease-in-out infinite; }
+.vs-arm { opacity: 1; }
+
+@keyframes vs-turn { to { transform: rotate(360deg); } }
+/* Dips rather than blinks: the star must never look broken mid-cycle. */
+@keyframes vs-chase {
+  0%, 100% { opacity: 1; }
+  45%      { opacity: .55; }
+}
+
+/* A spinning logo is decoration; motion sensitivity outranks it. The star
+   still renders, it simply stops moving. */
+@media (prefers-reduced-motion: reduce) {
+  .vs-star.is-spinning .vs-spin,
+  .vs-star.is-spinning .vs-arm { animation: none; }
 }

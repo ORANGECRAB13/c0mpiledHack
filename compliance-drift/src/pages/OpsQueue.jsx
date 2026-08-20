@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { AskBar } from '../components/Chrome.jsx';
+import VocareStar from '../components/VocareStar.jsx';
 import SingleReview from '../components/SingleReview.jsx';
 import ReviewAllSummary from '../components/ReviewAllSummary.jsx';
 import BulkApproval from '../components/BulkApproval.jsx';
@@ -106,8 +107,10 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters, que
       {/* ── 1. INVITATION ────────────────────────────────────────────────── */}
       {idle && (
         <div className="sw-invite">
+          {/* The mark at rest — the same star the sweep spins, so the page
+              answers its own question before you press anything. */}
           <div className="sw-invite-art" aria-hidden="true">
-            <span /><span /><span />
+            <VocareStar size={40} spinning={false} />
           </div>
           <h2>Run the hardship sweep</h2>
           <p>

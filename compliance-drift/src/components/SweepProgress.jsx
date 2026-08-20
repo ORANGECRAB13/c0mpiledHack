@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import VocareStar from './VocareStar.jsx';
 import { flagsOf, BATCH_LIMIT, BATCH_CONCURRENCY } from './HardshipSweepRunner.js';
 
 /* ============================================================================
@@ -23,8 +24,6 @@ const WORDS = [
   'Tracing decision lineage',
 ];
 
-const SPINNER = ['✻', '✳', '✼', '✳'];
-
 export default function SweepProgress({ sweep }) {
   const [tick, setTick] = useState(0);
 
@@ -38,7 +37,6 @@ export default function SweepProgress({ sweep }) {
   const elapsedMs = (sweep.finishedAt || Date.now()) - (sweep.startedAt || Date.now());
   const elapsed = Math.max(0, Math.round(elapsedMs / 1000));
   const word = WORDS[Math.floor(tick / 10) % WORDS.length];
-  const glyph = SPINNER[tick % SPINNER.length];
 
   // The bar is a ratio of two real counts, so it can never run ahead of the work.
   const pct = sweep.total ? Math.min(100, (sweep.assessed / sweep.total) * 100) : 0;
@@ -47,7 +45,7 @@ export default function SweepProgress({ sweep }) {
   return (
     <div className="sw-run" role="status" aria-live="polite">
       <div className="sw-line">
-        <span className="sw-glyph" aria-hidden="true">{glyph}</span>
+        <VocareStar size={21} spinning={sweep.phase === 'running'} className="sw-glyph" />
         <span className="sw-word">{word}…</span>
         <span className="sw-facts">
           ({elapsed}s · <b>{sweep.assessed}</b> of <b>{sweep.total ?? '…'}</b> assessed
