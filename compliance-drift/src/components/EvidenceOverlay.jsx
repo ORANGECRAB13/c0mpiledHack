@@ -74,78 +74,126 @@ function humanOutcome(record) {
   return outcome ? outcome.charAt(0).toUpperCase() + outcome.slice(1) : 'Evaluation recorded';
 }
 
-/* The design renders a finding as a mono status in a fixed left column beside
-   the rule and its explanation. The tone vocabulary is unchanged — it is still
-   `reasonTone`, still driven by the backend's BLOCKING/ATTENTION/PASS/INFO —
-   only the shape of the marker differs from the pill used elsewhere. */
+/* A finding at rest is status · rule · explanation. Its clause citation and
+   civil-penalty provision are the legal backing an officer reaches for when
+   challenging or writing up the finding — real, retained, but not something
+   every finding needs to shout at rest (P3). One click reveals them.
+   The tone vocabulary is unchanged — still `reasonTone`, still driven by the
+   backend's BLOCKING/ATTENTION/PASS/INFO. */
 function Reason({ reason, quiet = false }) {
+  // A blocking finding's citation is the payload an officer writes a breach up
+  // from, so it stays at rest. Everything else keeps its citation one click
+  // away — that distinction is what stopped the trail being a wall.
+  const [open, setOpen] = useState(reasonTone(reason) === 'blocking');
+  const backing = [
+    reason.citation ? { k: 'clause', v: reason.citation, className: 'ev-cite' } : null,
+    reason.penaltyProvision ? { k: 'civil penalty', v: reason.penaltyProvision, className: 'ev-penalty' } : null,
+    reason.thresholdSource ? { k: 'threshold', v: reason.thresholdSource, className: '' } : null,
+  ].filter(Boolean);
+
   return (
-    <div className="ev-reason">
+    <div className={`ev-reason ${open ? 'is-open' : ''}`}>
       <span className={`ev-reason-status ov-t-${reasonTone(reason)}`}>{reason.status || 'no status'}</span>
       <div className="ev-reason-main">
         <b>{reason.rule || 'Unnamed rule'}</b>
         {!quiet && reason.explanation && <p>{reason.explanation}</p>}
-        {!quiet && reason.citation && <span className="ev-cite">{reason.citation}</span>}
-        {!quiet && reason.penaltyProvision && <span className="ev-penalty">civil penalty · {reason.penaltyProvision}</span>}
+        {backing.length > 0 && (
+          <button type="button" className="ev-reason-more" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+            {open ? 'Hide clause citation' : reason.penaltyProvision ? 'Clause citation · civil penalty' : 'Clause citation'}
+          </button>
+        )}
+        {open && (
+          <div className="ev-reason-backing">
+            {backing.map((item) => (
+              <div key={item.k} className={item.className}><em>{item.k}</em> {item.v}</div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function AuditEntry({ record }) {
+/* An entry's whole detail lives behind its own header. Only the newest record
+ * opens by default: a customer with four superseded decisions should read as
+ * four lines, not four screens. */
+function AuditEntry({ record, defaultOpen }) {
+  const [open, setOpen] = useState(Boolean(defaultOpen));
   const reasons = Array.isArray(record.evidence) ? record.evidence : [];
   /* P1/P3: findings lead; checks that merely passed collapse behind a count. */
   const findings = reasons.filter((reason) => reasonTone(reason) === 'blocking' || reasonTone(reason) === 'attention');
   const quiet = reasons.filter((reason) => !findings.includes(reason));
   const when = stamp(record.decided_at || record.created_at);
+  /* Penalty exposure as ONE marker on the entry, not a badge per finding. The
+   * provisions themselves stay on each finding, one click away. */
+  const penalties = new Set(findings.map((reason) => reason.penaltyProvision).filter(Boolean));
 
-  /* One provenance line instead of three stacked blocks: policy, actor,
-   * verdict. Every part is omitted only when the ledger has no value for it. */
+  /* Provenance: decision key, policy id + version, actor, verdict, action type
+   * and the snapshot hash. All retained (P7), all demoted into one quiet group
+   * rather than four stacked headline rows. */
   const provenance = [
-    record.policy_id ? `Policy ${record.policy_id}${record.policy_version ? ` v${record.policy_version}` : ''}` : 'No policy recorded',
-    record.actor_id ? `by ${record.actor_id}` : 'no actor recorded',
-    record.verdict ? `verdict ${record.verdict}` : null,
-    record.action_type || null,
-  ].filter(Boolean).join(' · ');
+    ['decision key', record.decision_key || 'not recorded'],
+    ['policy', record.policy_id ? `${record.policy_id}${record.policy_version ? ` v${record.policy_version}` : ''}` : 'No policy recorded'],
+    ['actor', record.actor_id || 'no actor recorded'],
+    record.verdict ? ['verdict', record.verdict] : null,
+    record.action_type ? ['action', record.action_type] : null,
+    /* Integrity anchor. Small, mono — retained, never prominent. */
+    record.snapshot_hash ? ['snapshot', record.snapshot_hash] : null,
+  ].filter(Boolean);
 
   return (
-    <article className={`ev-entry ${outcomeTone(record.outcome)}`}>
-      <div className="ev-entry-top">
+    <article className={`ev-entry ${outcomeTone(record.outcome)} ${open ? 'is-open' : ''}`}>
+      <button type="button" className="ev-entry-top" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+        <i className="u-caret" aria-hidden="true" />
         <b>{humanOutcome(record)}</b>
-        {record.action_status && <Chip tone={reasonTone({ status: record.action_status })}>{record.action_status}</Chip>}
         {when && <span className="ev-when">{when}</span>}
-      </div>
+        <span className="ev-entry-marks">
+          {findings.length > 0 && (
+            <span className="ev-mark ev-mark-finding">
+              {findings.length} {findings.length === 1 ? 'finding' : 'findings'}
+            </span>
+          )}
+          {penalties.size > 0 && <span className="ev-mark ev-mark-penalty" title="A finding cites a civil-penalty provision">civil penalty</span>}
+          {record.override_reason && <span className="ev-mark ev-mark-override">override</span>}
+          {record.action_status && <Chip tone={reasonTone({ status: record.action_status })}>{record.action_status}</Chip>}
+        </span>
+      </button>
 
-      <div className="ev-entry-sub">{provenance}</div>
+      {open && (
+        <div className="ev-entry-body">
+          {record.override_reason && (
+            <div className="ev-override"><b>Override:</b> {record.override_reason}</div>
+          )}
 
-      {record.override_reason && (
-        <div className="ev-override"><b>Override:</b> {record.override_reason}</div>
-      )}
+          {/* The design's "Why this was flagged" heading, carrying the real count. */}
+          {reasons.length > 0 && (
+            <div className={`ev-findings-h ${findings.length ? '' : 'ev-findings-none'}`}>
+              {findings.length
+                ? `Why this was flagged · ${findings.length} ${findings.length === 1 ? 'finding' : 'findings'}`
+                : 'No blocking or attention finding'}
+            </div>
+          )}
 
-      {/* The design's "Why this was flagged" heading, carrying the real count. */}
-      {reasons.length > 0 && (
-        <div className={`ev-findings-h ${findings.length ? '' : 'ev-findings-none'}`}>
-          {findings.length
-            ? `Why this was flagged · ${findings.length} ${findings.length === 1 ? 'finding' : 'findings'}`
-            : 'No blocking or attention finding'}
+          {findings.length > 0 && (
+            <div className="ev-reasons">{findings.map((reason, index) => <Reason key={`${record.id}-f-${reason.rule || index}`} reason={reason} />)}</div>
+          )}
+
+          {quiet.length > 0 && (
+            <Disclosure label="Checks that passed" count={quiet.length}>
+              <div className="ev-reasons ev-reasons-quiet">
+                {quiet.map((reason, index) => <Reason key={`${record.id}-q-${reason.rule || index}`} reason={reason} quiet />)}
+              </div>
+            </Disclosure>
+          )}
+
+          <Disclosure label="Provenance and integrity" count={provenance.length}>
+            <dl className="ev-prov">
+              {provenance.map(([key, value]) => (
+                <div key={key}><dt>{key}</dt><dd>{value}</dd></div>
+              ))}
+            </dl>
+          </Disclosure>
         </div>
-      )}
-
-      {findings.length > 0 && (
-        <div className="ev-reasons">{findings.map((reason, index) => <Reason key={`${record.id}-f-${reason.rule || index}`} reason={reason} />)}</div>
-      )}
-
-      {quiet.length > 0 && (
-        <Disclosure label="Checks that passed" count={quiet.length}>
-          <div className="ev-reasons ev-reasons-quiet">
-            {quiet.map((reason, index) => <Reason key={`${record.id}-q-${reason.rule || index}`} reason={reason} quiet />)}
-          </div>
-        </Disclosure>
-      )}
-
-      {/* Integrity anchor. Small, mono, last — retained, never prominent. */}
-      {record.snapshot_hash && (
-        <div className="ev-hash"><em>snapshot</em><span>{record.snapshot_hash}</span></div>
       )}
     </article>
   );
@@ -259,7 +307,11 @@ export default function EvidenceOverlay({ open, reference, name, subtitle, onClo
           <section className="ev-pane ev-pane-left">
             <div className="ev-pane-h">
               <b>Decision trail</b>
-              <small>{audit.loading ? 'loading' : `${records.length} ledger ${records.length === 1 ? 'record' : 'records'}`}</small>
+              <small>
+                {audit.loading
+                  ? 'loading'
+                  : `${records.length} ledger ${records.length === 1 ? 'record' : 'records'}${records.length > 1 ? ' · newest open' : ''}`}
+              </small>
             </div>
 
             {audit.error && (
@@ -276,7 +328,13 @@ export default function EvidenceOverlay({ open, reference, name, subtitle, onClo
 
             {!audit.error && records.length > 0 && (
               <div className="ev-trail">
-                {records.map((record) => <AuditEntry key={record.id} record={record} />)}
+                {/* Newest open, plus any entry carrying an override: a reason an
+                    officer typed to justify departing from the recommendation is
+                    the most consequential human act in the trail, and it should
+                    not need a click to read. */}
+                {records.map((record, index) => (
+                  <AuditEntry key={record.id} record={record} defaultOpen={index === 0 || Boolean(record.override_reason)} />
+                ))}
               </div>
             )}
           </section>

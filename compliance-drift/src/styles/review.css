@@ -446,3 +446,204 @@
 .rv-evidence-link:hover { background: var(--page, #F7F8F9); }
 .rv-evidence-link b { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink, #09090B); }
 .rv-evidence-link small { display: block; font-size: 12.5px; color: var(--muted, #6E767E); margin-top: 4px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HARDSHIP SWEEP  (Detection: invitation → live run → three columns)
+
+   Written against the canonical tokens. Colour still carries only the four
+   meanings: rust = attention, amber = caution, green = cleared/pass,
+   blue = informational.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. the invitation (first load: no tabs, no results) ────────────────── */
+
+.sw-invite {
+  margin-top: 40px; padding: 56px 40px 52px; text-align: center;
+  border: 1px solid var(--line2, #E4DFDB); border-radius: 14px;
+  background: var(--card, #FFFFFF);
+}
+.sw-invite h2 {
+  font-family: var(--serif, 'Newsreader', Georgia, serif);
+  font-size: 30px; font-weight: 400; line-height: 1.15; margin: 22px 0 0;
+  color: var(--ink, #09090B);
+}
+.sw-invite p {
+  font-size: 13.5px; line-height: 1.65; color: var(--body, #454B52);
+  margin: 12px auto 26px; max-width: 60ch; text-wrap: pretty;
+}
+.dq-btn.lg { height: 46px; padding: 0 26px; font-size: 14px; }
+.sw-invite-warn {
+  margin-top: 18px; font-size: 11.5px; color: var(--muted, #6E767E);
+}
+
+/* three quiet marks that hint at the three columns the sweep resolves into */
+.sw-invite-art { display: flex; gap: 8px; justify-content: center; }
+.sw-invite-art span {
+  width: 42px; height: 4px; border-radius: 999px; display: block;
+  background: var(--line, #D2D6DA);
+  animation: sw-breathe 2.6s ease-in-out infinite;
+}
+.sw-invite-art span:nth-child(1) { background: var(--rust, #B4532A); animation-delay: 0s; }
+.sw-invite-art span:nth-child(2) { background: var(--amber, #8A6D3B); animation-delay: .25s; }
+.sw-invite-art span:nth-child(3) { background: var(--green, #1D5C4F); animation-delay: .5s; }
+@keyframes sw-breathe {
+  0%, 100% { opacity: .35; transform: scaleX(.8); }
+  50%      { opacity: 1;   transform: scaleX(1); }
+}
+
+/* ── 2. the live run ────────────────────────────────────────────────────── */
+
+.sw-run {
+  margin-top: 36px; padding: 28px 30px 26px;
+  border: 1px solid var(--line2, #E4DFDB); border-radius: 14px;
+  background: var(--card, #FFFFFF);
+}
+.sw-line {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  font-size: 15px; color: var(--ink, #09090B);
+}
+.sw-glyph { color: var(--rust, #B4532A); font-size: 15px; width: 15px; display: inline-block; }
+.sw-word { font-weight: 600; }
+.sw-facts {
+  font-size: 13px; color: var(--muted, #6E767E);
+  font-variant-numeric: tabular-nums;
+}
+.sw-facts b { color: var(--ink2, #26292D); font-weight: 600; }
+
+.sw-bar {
+  margin-top: 16px; height: 3px; border-radius: 999px;
+  background: var(--line3, #EFEAE6); overflow: hidden;
+}
+.sw-bar > span {
+  display: block; height: 100%; background: var(--rust, #B4532A);
+  transition: width .5s cubic-bezier(.22, 1, .36, 1);
+}
+.sw-meta {
+  margin-top: 12px; font-size: 11.5px; line-height: 1.55;
+  color: var(--muted, #6E767E); max-width: 74ch;
+}
+
+/* the single stack results land in before they fan out */
+.sw-stack { margin-top: 22px; border-top: 1px solid var(--line3, #EFEAE6); }
+.sw-stack-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 9px 2px; border-bottom: 1px solid var(--line3, #EFEAE6);
+  font-size: 12.5px; color: var(--body, #454B52);
+  animation: sw-land .45s cubic-bezier(.22, 1, .36, 1) both;
+  opacity: calc(1 - var(--i, 0) * .11);
+}
+.sw-stack-row .nm { font-weight: 600; color: var(--ink, #09090B); }
+.sw-stack-row .cat { color: var(--muted, #6E767E); }
+.sw-stack-row.placeholder { color: var(--muted, #6E767E); }
+@keyframes sw-land {
+  from { opacity: 0; transform: translate3d(0, -10px, 0); }
+}
+
+/* ── flag chips (sensitive / opted out / tailored assistance) ───────────── */
+
+.sw-flag {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .02em;
+  padding: 2px 7px; border-radius: 999px; white-space: nowrap;
+  color: var(--muted, #6E767E); background: var(--line3, #EFEAE6);
+}
+.sw-flag.bad { color: var(--rust2, #8E3F1F); background: var(--rust-wash, rgba(180, 83, 42, .07)); }
+
+/* ── 3. the three columns ───────────────────────────────────────────────── */
+
+.sw-cols {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px; margin-top: 26px; align-items: start;
+}
+.sw-col {
+  border: 1px solid var(--line2, #E4DFDB); border-radius: 14px;
+  background: var(--card, #FFFFFF); padding: 20px 18px 18px;
+  border-top: 3px solid var(--line, #D2D6DA);
+  --dx: 0px;
+}
+.sw-col.tone-rust  { border-top-color: var(--rust, #B4532A); }
+.sw-col.tone-amber { border-top-color: var(--amber, #8A6D3B); }
+.sw-col.tone-green { border-top-color: var(--green, #1D5C4F); }
+.sw-col:nth-child(1) { --dx: 90px; }
+.sw-col:nth-child(3) { --dx: -90px; }
+
+.sw-col-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.sw-col-head h2 {
+  font-family: var(--serif, 'Newsreader', Georgia, serif);
+  font-size: 20px; font-weight: 400; margin: 0; color: var(--ink, #09090B);
+}
+.sw-col-head .n {
+  font-size: 18px; font-weight: 600; color: var(--ink2, #26292D);
+  font-variant-numeric: tabular-nums;
+}
+.sw-audit {
+  display: inline-block; margin-top: 8px;
+  font-size: 10px; letter-spacing: .11em; text-transform: uppercase; font-weight: 700;
+  color: var(--green, #1D5C4F); background: var(--green-wash, rgba(29, 92, 79, .08));
+  padding: 3px 8px; border-radius: 999px;
+}
+.sw-col-note {
+  font-size: 11.5px; line-height: 1.55; color: var(--muted, #6E767E);
+  margin: 10px 0 14px;
+}
+.sw-col-body { display: grid; gap: 8px; }
+
+.sw-card {
+  display: grid; gap: 4px; text-align: left; width: 100%;
+  border: 1px solid var(--line3, #EFEAE6); border-radius: 10px;
+  background: var(--card, #FFFFFF); padding: 12px 13px;
+  font: inherit; color: inherit; cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease;
+}
+.sw-card:hover { background: var(--page, #F7F8F9); border-color: var(--line, #D2D6DA); }
+.sw-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sw-card-top b { font-size: 13px; font-weight: 600; color: var(--ink, #09090B); }
+.sw-prio { font-size: 10.5px; font-weight: 600; color: var(--muted, #6E767E); }
+.sw-prio.p-high { color: var(--rust, #B4532A); }
+.sw-card-meta { font-size: 10.5px; color: var(--faint, #AEB5BC); }
+.sw-card-reason { font-size: 12px; line-height: 1.5; color: var(--body, #454B52); }
+.sw-card-flags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
+
+.sw-col-empty { font-size: 12px; color: var(--muted, #6E767E); padding: 14px 2px; }
+.sw-more {
+  border: 0; background: none; padding: 8px 2px; text-align: left;
+  font: inherit; font-size: 12px; font-weight: 600;
+  color: var(--rust, #B4532A); cursor: pointer;
+}
+.sw-more:hover { color: var(--rust2, #8E3F1F); }
+
+/* ── the transition: one stack fans out into three columns ──────────────── */
+
+.sw-cols.is-entering .sw-col {
+  animation: sw-col-in .5s cubic-bezier(.22, 1, .36, 1) both;
+  animation-delay: calc(var(--c, 0) * 70ms);
+}
+.sw-cols.is-entering .sw-card {
+  animation: sw-fly .55s cubic-bezier(.22, 1, .36, 1) both;
+  animation-delay: calc(180ms + var(--c, 0) * 70ms + var(--i, 0) * 34ms);
+}
+@keyframes sw-col-in {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+}
+@keyframes sw-fly {
+  from { opacity: 0; transform: translate3d(var(--dx), -34px, 0) scale(.93); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Reduced motion: no travel, no rotation, no breathing — a plain fade. */
+@media (prefers-reduced-motion: reduce) {
+  .sw-cols.is-entering .sw-col,
+  .sw-cols.is-entering .sw-card,
+  .sw-stack-row {
+    animation: sw-fade .2s linear both;
+    animation-delay: 0s;
+  }
+  .sw-invite-art span { animation: none; opacity: .8; transform: none; }
+  .sw-bar > span { transition: none; }
+  .sw-card { transition: none; }
+  @keyframes sw-fade { from { opacity: 0; } to { opacity: 1; } }
+}
+
+@media (max-width: 1100px) {
+  .sw-cols { grid-template-columns: minmax(0, 1fr); }
+  .sw-col:nth-child(1), .sw-col:nth-child(3) { --dx: 0px; }
+}

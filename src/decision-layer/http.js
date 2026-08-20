@@ -109,6 +109,31 @@ router.post('/actions/:actionId/approval', asyncRoute(async (req, res) => {
  * laboured category so the UI can show the count, and it must never be merged
  * into the work queue.
  */
+const LINEAGE_OUTCOMES = ['PREVIOUS_DECISION_SUPERSEDED', 'SUPERSEDED_BY_POLICY_CHANGE'];
+
+/**
+ * The policy's verdict, as distinct from how history moved.
+ *
+ * When an outcome changes, `evaluation.outcome` records the LINEAGE outcome
+ * (PREVIOUS_DECISION_SUPERSEDED) and `service.js` preserves the real verdict as
+ * a synthetic `Evaluated result` reason. Reading only the column therefore made
+ * a freshly-evaluated customer look never-assessed: a sweep of the whole book
+ * left 36 customers reported as NOT_EVALUATED, and the queue, the dashboard and
+ * the nav badge each disagreed about the same 151 people.
+ *
+ * Falls back to the open action, then to null — a genuine "we have not looked".
+ */
+export function policyVerdictOf(row = {}, hasOpenAction = false) {
+  const recorded = row.evaluation_outcome || null;
+  if (!recorded) return hasOpenAction ? 'ACTION_REQUIRED' : null;
+  if (!LINEAGE_OUTCOMES.includes(recorded)) return recorded;
+
+  const reasons = Array.isArray(row.evaluation_reasons) ? row.evaluation_reasons : [];
+  const preserved = reasons.find((item) => item?.rule === 'Evaluated result')?.status;
+  if (preserved && !LINEAGE_OUTCOMES.includes(preserved)) return preserved;
+  return hasOpenAction ? 'ACTION_REQUIRED' : null;
+}
+
 export const CATEGORIES = Object.freeze({
   ACTION_REQUIRED: { key: 'ACTION_REQUIRED', label: 'Action required', actionable: true },
   INSUFFICIENT_EVIDENCE: { key: 'INSUFFICIENT_EVIDENCE', label: 'Insufficient evidence', actionable: true },
@@ -290,7 +315,7 @@ router.get('/review-summary', asyncRoute(async (req, res) => {
   const includeCustomers = req.query.includeCustomers !== 'false';
   const { rows } = await ledgerPool().query(`
     SELECT c.id, c.name, c.external_customer_id, c.jurisdiction, c.current_state, c.pipeline_halted,
-           e.outcome AS evaluation_outcome, e.evaluated_at, e.policy_id, e.policy_version,
+           e.outcome AS evaluation_outcome, e.evaluated_at, e.policy_id, e.policy_version, e.reasons AS evaluation_reasons,
            d.id AS decision_id, d.outcome AS decision_outcome,
            a.id AS action_id, a.type AS action_type, a.status AS action_status,
            count(*) OVER () AS total
@@ -306,8 +331,7 @@ router.get('/review-summary', asyncRoute(async (req, res) => {
     const hasOpenAction = ['AWAITING_APPROVAL', 'PENDING', 'EXECUTING'].includes(row.action_status);
     // Lineage outcomes describe how history moved, not what the policy found;
     // fall back to the decision outcome only when it is a real policy verdict.
-    const lineage = ['PREVIOUS_DECISION_SUPERSEDED', 'SUPERSEDED_BY_POLICY_CHANGE'].includes(row.evaluation_outcome);
-    const outcome = lineage ? (hasOpenAction ? 'ACTION_REQUIRED' : null) : row.evaluation_outcome;
+    const outcome = policyVerdictOf(row, hasOpenAction);
     const category = categorize(row.current_state, outcome, { hasOpenAction });
     categories[category.key] += 1;
     if (includeCustomers) {
