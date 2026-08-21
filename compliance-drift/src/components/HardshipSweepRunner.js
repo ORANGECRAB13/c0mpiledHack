@@ -203,25 +203,3 @@ export function flagsOf(result) {
   return [...keys].map((key) => ({ key, label: FLAG_LABEL[key] || key.toLowerCase().replace(/_/g, ' ') }));
 }
 
-/** The plain-English reason for a sweep result. One line per outcome the backend
- *  returns; an unrecognised outcome is shown verbatim rather than guessed at. */
-export function reasonOfResult(result) {
-  switch (result.category) {
-    case 'ACTION_REQUIRED':
-      return 'Eligible for a better hardship arrangement than the one in force.';
-    case 'INSUFFICIENT_EVIDENCE':
-      return 'A limb of the eligibility test could not be proven from the records available.';
-    case 'NO_CHANGE':
-      return 'Evaluated against the policy; the arrangement in force is already correct.';
-    case 'SENSITIVE_CUSTOMER':
-      return 'The CRM flags this customer as sensitive, so automated switching is held.';
-    case 'OPTED_OUT':
-      return 'This customer has opted out of best-offer switching.';
-    case 'ON_TAILORED_ASSISTANCE':
-      return 'Already on tailored assistance; no transition is proposed.';
-    case 'NOT_EVALUATED':
-      return 'No policy verdict was established for this customer in the sweep.';
-    default:
-      return result.categoryLabel || result.outcome || 'Outcome not recorded.';
-  }
-}

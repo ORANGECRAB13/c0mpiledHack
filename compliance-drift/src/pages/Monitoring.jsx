@@ -56,8 +56,8 @@ const TABS = [
 ];
 
 const TAB_NOTE = {
-  unscheduled: 'Salesforce holds no review date for these accounts. That absence is shown as-is — it is never rendered as a date or a zero.',
-  recorded: 'Decisions recorded in this session. They are held in the browser and do not replace the ledger record.',
+  unscheduled: 'No review date in Salesforce. Shown as missing, not as a date.',
+  recorded: 'Recorded this session, in the browser only — the ledger is unchanged.',
 };
 
 export default function Monitoring({ decisions = {}, onDecision, openCase, openCustomer, focusId, monitoring = [] }) {

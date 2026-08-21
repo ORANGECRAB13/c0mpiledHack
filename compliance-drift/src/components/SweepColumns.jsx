@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { COLUMN_OF, flagsOf, reasonOfResult } from './HardshipSweepRunner.js';
+import { COLUMN_OF, flagsOf } from './HardshipSweepRunner.js';
 
 /* ============================================================================
  * The three columns the sweep separates into.
@@ -15,6 +15,22 @@ import { COLUMN_OF, flagsOf, reasonOfResult } from './HardshipSweepRunner.js';
  * NOT_EVALUATED has no column. After a sweep it should be zero; if any remain
  * they are surfaced in their own honest strip by the page, not hidden here.
  * ========================================================================== */
+
+/* What differs between two cards in the same column: how much is owed and for
+   how long. The column header already states the verdict, so repeating it on
+   every card added a line of text and no information. Missing values are simply
+   omitted — never rendered as a zero. */
+function exposureOf(item) {
+  if (!item) return null;
+  const parts = [];
+  const balance = Number(item.balance);
+  if (Number.isFinite(balance) && balance > 0) {
+    parts.push(balance.toLocaleString('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }));
+  }
+  const days = Number(item.oldestDebtDays);
+  if (Number.isFinite(days) && days > 0) parts.push(`${days} days`);
+  return parts.length ? parts.join(' · ') : null;
+}
 
 const COLUMNS = [
   {
@@ -79,7 +95,7 @@ export default function SweepColumns({ sweep, queue, openCase, animate }) {
                       <b>{row.name || row.customerId}</b>
                       <span className="sw-card-id">{row.customerId}</span>
                     </span>
-                    <span className="sw-card-reason">{reasonOfResult(row)}</span>
+                    {exposureOf(item) && <span className="sw-card-exposure">{exposureOf(item)}</span>}
                     {(!!flags.length || item?.pipelineHalted) && (
                       <span className="sw-card-flags">
                         {flags.map((flag) => <span className="sw-flag" key={flag.key}>{flag.label}</span>)}

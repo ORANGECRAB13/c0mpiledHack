@@ -593,7 +593,6 @@
 .sw-card-top b { font-size: 13px; font-weight: 600; color: var(--ink, #09090B); }
 .sw-prio { font-size: 10.5px; font-weight: 600; color: var(--muted, #6E767E); }
 .sw-prio.p-high { color: var(--rust, #B4532A); }
-.sw-card-reason { font-size: 12px; line-height: 1.5; color: var(--body, #454B52); }
 .sw-card-flags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
 
 .sw-col-empty { font-size: 12px; color: var(--muted, #6E767E); padding: 14px 2px; }
@@ -667,3 +666,9 @@
    and team is not a field the org actually holds. */
 .sw-card-id { font-size: var(--fs1, 10px); color: var(--faint, #AEB5BC); font-variant-numeric: tabular-nums; }
 .sw-card-top { display: flex; align-items: baseline; gap: var(--s2, 8px); }
+
+/* The one line that differs between cards in a column: what is owed, how long. */
+.sw-card-exposure {
+  font-size: var(--fs2, 11.5px); color: var(--body, #454B52);
+  font-variant-numeric: tabular-nums;
+}

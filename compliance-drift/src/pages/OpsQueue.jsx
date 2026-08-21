@@ -90,11 +90,11 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters, que
       <div className="dq-head">
         <div>
           <h1>{idle ? 'Find the customers in hardship' : 'The book, assessed'}</h1>
-          <p>
-            {idle
-              ? `Nothing is assessed until you ask for it. The sweep evaluates every customer in the book against ${queue[0]?.policy || 'the policy in force'}, records each decision in the ledger, and separates the result into what needs a decision, what is blocked on evidence, and what is cleared.`
-              : `${sweep.assessed} of ${sweep.total ?? '—'} customers evaluated against ${queue[0]?.policy || 'the policy in force'}. Every decision below is recorded in the ledger.`}
-          </p>
+          {/* Idle needs no explanation — the card below states what the sweep
+              does, and repeating it here was the same paragraph twice. */}
+          {!idle && (
+            <p>{sweep.assessed} of {sweep.total ?? '—'} evaluated · {queue[0]?.policy || 'policy in force'}</p>
+          )}
         </div>
         {hasResults && (
           <div className="dq-head-actions">
@@ -115,8 +115,8 @@ export default function OpsQueue({ openCase, decisions, filters, setFilters, que
           <h2>Run the hardship sweep</h2>
           <p>
             {queue.length
-              ? `${queue.length} customers are in the book. The sweep works through them in batches of ${BATCH_LIMIT} at concurrency ${BATCH_CONCURRENCY}; progress below counts customers the decision layer has actually evaluated, not elapsed time.`
-              : 'The ledger has not returned any customers yet. The sweep will report what it finds.'}
+              ? `${queue.length} customers in the book. Progress counts customers actually evaluated, not elapsed time.`
+              : 'No customers returned by the ledger yet.'}
           </p>
           <button className="dq-btn solid lg" onClick={startSweep}>Run the hardship sweep →</button>
           <div className="sw-invite-warn">This writes a decision for every customer it evaluates. It is a recorded action, not a preview.</div>

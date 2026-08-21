@@ -164,7 +164,7 @@ export default function Home({ openCase, goQueue, goAudit, queue = [], cases = {
   const driftRows = [
     {
       label: 'Better offer not applied', value: betterOfferNotApplied, tone: 'is-ink',
-      note: 'Switches evaluated and held for an officer’s approval.',
+      note: 'Held for an officer’s approval.',
     },
     {
       label: 'Hardship not reassessed', value: overdueReassessments, tone: '',
@@ -201,10 +201,10 @@ export default function Home({ openCase, goQueue, goAudit, queue = [], cases = {
     const label = (key) => tabs.find((tab) => tab.key === key)?.label || key;
     const value = (key) => summary.categories?.[key] ?? 0;
     return [
-      { key: 'ACTION_REQUIRED', actionable: true, caption: 'A switch is required and is waiting on approval.' },
-      { key: 'INSUFFICIENT_EVIDENCE', actionable: true, caption: 'The record cannot support a conclusion; evidence must be resolved first.' },
-      { key: 'NO_CHANGE', actionable: false, caption: 'Assessed and correct as they stand. Recorded for audit, not work.' },
-      { key: 'NOT_EVALUATED', actionable: false, caption: 'Never assessed against this policy. Not a pass — an unknown.' },
+      { key: 'ACTION_REQUIRED', actionable: true, caption: 'Switch required, waiting on approval.' },
+      { key: 'INSUFFICIENT_EVIDENCE', actionable: true, caption: 'Evidence must be resolved before a conclusion.' },
+      { key: 'NO_CHANGE', actionable: false, caption: 'Correct as they stand. Audit only.' },
+      { key: 'NOT_EVALUATED', actionable: false, caption: 'Never assessed. Not a pass — an unknown.' },
     ].map((cell) => ({ ...cell, label: label(cell.key), value: value(cell.key) }));
   }, [summary]);
 

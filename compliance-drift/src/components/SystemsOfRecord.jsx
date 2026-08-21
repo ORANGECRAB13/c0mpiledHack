@@ -64,10 +64,10 @@ function Reconciliation({ rec, currency }) {
     ? 'Cannot reconcile CRM against billing'
     : state === 'ok' ? 'CRM and billing agree' : 'CRM and billing disagree — compliance finding';
   const detail = state === 'unknown'
-    ? 'One of the two systems did not return a figure, so no comparison is possible.'
+    ? 'One system returned no figure, so there is nothing to compare.'
     : state === 'ok'
-      ? 'The arrears figure the CRM holds matches the amount Stripe has open.'
-      : 'The arrears figure driving the regulatory assessment does not match the billed amount. Resolve before acting on either number.';
+      ? 'The CRM figure matches the amount Stripe has open.'
+      : 'The figure driving the threshold does not match the billed amount. Resolve before acting on either.';
   return (
     <div className={`u-recon u-recon-${state}`}>
       <Icon name={state === 'unknown' ? 'help' : state === 'ok' ? 'check' : 'warn'} size={15} />

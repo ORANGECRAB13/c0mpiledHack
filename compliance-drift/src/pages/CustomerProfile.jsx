@@ -39,7 +39,7 @@ export default function CustomerProfile({ account, onClose, onOpenCase }) {
 
   useEffect(() => {
     if (!account || !lookupId) {
-      setState({ loading: false, error: account ? 'No customer identifier on this record — cannot reconcile Salesforce or Stripe.' : null, profile: null });
+      setState({ loading: false, error: account ? 'No customer id on this record — nothing to reconcile.' : null, profile: null });
       return undefined;
     }
     let cancelled = false;

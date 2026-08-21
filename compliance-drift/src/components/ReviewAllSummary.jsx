@@ -116,7 +116,7 @@ export default function ReviewAllSummary({ actorId, onClose, openCase, onApprove
           {active && !active.actionable && (
             <div className="rv-note">
               {active.key === 'NO_CHANGE'
-                ? 'These customers were evaluated and require no change. They are recorded for audit only and never enter the operations queue.'
+                ? 'Evaluated, no change required. Recorded for audit; never queued as work.'
                 : `${active.label} customers are recorded for audit. No transition is proposed for them.`}
             </div>
           )}
