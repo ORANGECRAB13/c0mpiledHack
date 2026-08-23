@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReviewModal from './ReviewModal.jsx';
-import { Chip } from './ui.jsx';
+import { Chip, phrase } from './ui.jsx';
 import RecommendedPlan from './RecommendedPlan.jsx';
 import { decisionLayerApi } from '../api/decisionLayerApi.js';
 
@@ -132,7 +132,7 @@ export default function ReviewAllSummary({ actorId, onClose, openCase, onApprove
                 </span>
                 <span className="num">
                   {customer.balance != null ? `$${customer.balance}` : 'balance not recorded'}
-                  <div className="meta">{customer.hardshipStatus || 'no hardship status'}</div>
+                  <div className="meta">{phrase(customer.hardshipStatus, 'no hardship status')}</div>
                 </span>
                 <span>
                   <Chip tone={customer.actionable ? 'attention' : 'neutral'}>{customer.categoryLabel}</Chip>

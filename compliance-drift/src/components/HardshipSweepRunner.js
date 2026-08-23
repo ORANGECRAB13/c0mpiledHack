@@ -21,6 +21,7 @@
  * ========================================================================== */
 
 import { decisionLayerApi } from '../api/decisionLayerApi.js';
+import { phraseInline } from './ui.jsx';
 
 /* Batch size is a compromise between the two things the officer can see:
    - small enough that the counter moves often (a 12-customer batch lands every
@@ -200,6 +201,6 @@ const FLAG_LABEL = {
 export function flagsOf(result) {
   const keys = new Set(result.flags || []);
   if (FLAG_LABEL[result.category]) keys.add(result.category);
-  return [...keys].map((key) => ({ key, label: FLAG_LABEL[key] || key.toLowerCase().replace(/_/g, ' ') }));
+  return [...keys].map((key) => ({ key, label: FLAG_LABEL[key] || phraseInline(key, key) }));
 }
 

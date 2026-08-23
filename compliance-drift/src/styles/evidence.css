@@ -449,3 +449,58 @@
   .ov-audit-rail { border-left: 0; padding-left: 20px; }
   .ov-rule, .ev-reason { grid-template-columns: 1fr; gap: 6px; }
 }
+
+/* ── Finding — one scannable line, detail behind its own disclosure ─────────
+   Shared by the case workspace panel and the evidence overlay's trail. The
+   line is the whole finding at rest; .fi-body is where the explanation,
+   citation, penalty provision and threshold provenance live. */
+.fi-list { display: grid; }
+.fi { border-top: 1px solid var(--line3); }
+.fi-list > .fi:first-child { border-top: 0; }
+.fi-top {
+  width: 100%; display: grid; align-items: baseline;
+  grid-template-columns: 12px 148px minmax(0, 1fr); gap: 10px;
+  padding: 11px 0; border: 0; background: none; cursor: pointer; text-align: left;
+  font-family: var(--sans);
+}
+.fi-top .u-caret { transform: translateY(1px); }
+.fi.is-open .u-caret { transform: translateY(1px) rotate(90deg); }
+.fi-status {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs1); letter-spacing: .02em; color: var(--muted);
+  word-break: break-word;
+}
+.fi-status.ov-t-blocking { color: var(--rust2); }
+.fi-status.ov-t-attention { color: var(--amber); }
+.fi-status.ov-t-pass { color: var(--green); }
+.fi-status.ov-t-info { color: var(--blue); }
+.fi-rule { font-size: 13px; font-weight: 600; color: var(--ink); min-width: 0; }
+.fi-top:hover .fi-rule { color: var(--rust); }
+.fi-body { padding: 0 0 14px 170px; }
+.fi-body p {
+  margin: 0; color: var(--body); font-size: var(--fs3); line-height: 1.55;
+  max-width: 62ch; text-wrap: pretty;
+}
+.fi-body p.fi-none { color: var(--muted); font-style: italic; }
+.fi-backing {
+  margin-top: 8px; display: grid; gap: 4px;
+  border-left: 2px solid var(--line2); padding-left: 10px;
+  font-size: 11px; line-height: 1.5; max-width: 62ch; color: var(--body);
+}
+.fi-backing em {
+  font-style: normal; color: var(--faint); margin-right: 6px;
+}
+.fi-backing > div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 8px; }
+.fi-backing .ev-cite { color: var(--rust); }
+.fi-backing .ev-penalty { color: var(--amber); font-weight: 600; }
+/* the regulatory reference sits one level deeper again — a quiet line inside
+   the expanded finding, never open at rest */
+.fi-body > .u-disc { border-top: 0; margin-top: 8px; }
+.fi-body > .u-disc .u-disc-b { padding: 4px 0; font-size: 11px; }
+.fi-body > .u-disc .u-disc-body { padding-bottom: 4px; }
+.fi-list-quiet .fi-rule { font-weight: 400; color: var(--body); }
+
+@media (max-width: 900px) {
+  .fi-top { grid-template-columns: 12px minmax(0, 1fr); row-gap: 4px; }
+  .fi-body { padding-left: 22px; }
+}

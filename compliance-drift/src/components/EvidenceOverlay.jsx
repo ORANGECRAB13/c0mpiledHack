@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '../icons.jsx';
 import { decisionLayerApi } from '../api/decisionLayerApi.js';
 import SystemsOfRecord from './SystemsOfRecord.jsx';
-import { Chip, Disclosure, StateNote, stamp, toneForSeverity } from './ui.jsx';
+import { FindingList, findingTone } from './Finding.jsx';
+import { Chip, Disclosure, StateNote, phrase, stamp } from './ui.jsx';
 import '../styles/evidence.css';
 
 /* ============================================================================
@@ -56,62 +57,13 @@ function outcomeTone(outcome) {
   return '';
 }
 
-/* A reason's chip tone. `severity` is the backend vocabulary (rules[4]:
- * BLOCKING / ATTENTION / PASS / INFO) and is authoritative when present; older
- * ledger rows carry only a status string, so we derive from that instead. */
-function reasonTone(reason) {
-  if (reason.severity) return toneForSeverity(reason.severity);
-  const value = String(reason.status || '').toUpperCase();
-  if (value === 'NOT_TRIGGERED') return 'pass';
-  if (/TRIGGERED$|^BLOCK|BREACH|OVERDUE|PROHIBIT/.test(value)) return 'blocking';
-  if (/INSUFFICIENT|UNVERIFIED|UNKNOWN|OPTED_OUT|SENSITIVE/.test(value)) return 'attention';
-  if (/CLEAR|MET|OK|PASS|NO_LOWER_OFFER|NO_MONETARY_FLOOR/.test(value)) return 'pass';
-  return 'info';
-}
+/* Findings render through the shared <Finding/> (Finding.jsx) so the trail and
+ * the case workspace cannot drift apart. `findingTone` is that component's
+ * export of the same BLOCKING/ATTENTION/PASS/INFO vocabulary this file used to
+ * carry privately; it is reused here for the entry's own marks. */
 
 function humanOutcome(record) {
-  const outcome = record.outcome ? String(record.outcome).replace(/_/g, ' ').toLowerCase() : null;
-  return outcome ? outcome.charAt(0).toUpperCase() + outcome.slice(1) : 'Evaluation recorded';
-}
-
-/* A finding at rest is status · rule · explanation. Its clause citation and
-   civil-penalty provision are the legal backing an officer reaches for when
-   challenging or writing up the finding — real, retained, but not something
-   every finding needs to shout at rest (P3). One click reveals them.
-   The tone vocabulary is unchanged — still `reasonTone`, still driven by the
-   backend's BLOCKING/ATTENTION/PASS/INFO. */
-function Reason({ reason, quiet = false }) {
-  // A blocking finding's citation is the payload an officer writes a breach up
-  // from, so it stays at rest. Everything else keeps its citation one click
-  // away — that distinction is what stopped the trail being a wall.
-  const [open, setOpen] = useState(reasonTone(reason) === 'blocking');
-  const backing = [
-    reason.citation ? { k: 'clause', v: reason.citation, className: 'ev-cite' } : null,
-    reason.penaltyProvision ? { k: 'civil penalty', v: reason.penaltyProvision, className: 'ev-penalty' } : null,
-    reason.thresholdSource ? { k: 'threshold', v: reason.thresholdSource, className: '' } : null,
-  ].filter(Boolean);
-
-  return (
-    <div className={`ev-reason ${open ? 'is-open' : ''}`}>
-      <span className={`ev-reason-status ov-t-${reasonTone(reason)}`}>{reason.status || 'no status'}</span>
-      <div className="ev-reason-main">
-        <b>{reason.rule || 'Unnamed rule'}</b>
-        {!quiet && reason.explanation && <p>{reason.explanation}</p>}
-        {backing.length > 0 && (
-          <button type="button" className="ev-reason-more" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
-            {open ? 'Hide clause citation' : reason.penaltyProvision ? 'Clause citation · civil penalty' : 'Clause citation'}
-          </button>
-        )}
-        {open && (
-          <div className="ev-reason-backing">
-            {backing.map((item) => (
-              <div key={item.k} className={item.className}><em>{item.k}</em> {item.v}</div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  return phrase(record.outcome, 'Evaluation recorded');
 }
 
 /* An entry's whole detail lives behind its own header. Only the newest record
@@ -121,8 +73,7 @@ function AuditEntry({ record, defaultOpen }) {
   const [open, setOpen] = useState(Boolean(defaultOpen));
   const reasons = Array.isArray(record.evidence) ? record.evidence : [];
   /* P1/P3: findings lead; checks that merely passed collapse behind a count. */
-  const findings = reasons.filter((reason) => reasonTone(reason) === 'blocking' || reasonTone(reason) === 'attention');
-  const quiet = reasons.filter((reason) => !findings.includes(reason));
+  const findings = reasons.filter((reason) => ['blocking', 'attention'].includes(findingTone(reason)));
   const when = stamp(record.decided_at || record.created_at);
   /* Penalty exposure as ONE marker on the entry, not a badge per finding. The
    * provisions themselves stay on each finding, one click away. */
@@ -135,8 +86,9 @@ function AuditEntry({ record, defaultOpen }) {
     ['decision key', record.decision_key || 'not recorded'],
     ['policy', record.policy_id ? `${record.policy_id}${record.policy_version ? ` v${record.policy_version}` : ''}` : 'No policy recorded'],
     ['actor', record.actor_id || 'no actor recorded'],
-    record.verdict ? ['verdict', record.verdict] : null,
-    record.action_type ? ['action', record.action_type] : null,
+    record.verdict ? ['verdict', phrase(record.verdict)] : null,
+    record.action_type ? ['action', phrase(record.action_type)] : null,
+    record.outcome ? ['recorded outcome', record.outcome] : null,
     /* Integrity anchor. Small, mono — retained, never prominent. */
     record.snapshot_hash ? ['snapshot', record.snapshot_hash] : null,
   ].filter(Boolean);
@@ -155,7 +107,7 @@ function AuditEntry({ record, defaultOpen }) {
           )}
           {penalties.size > 0 && <span className="ev-mark ev-mark-penalty" title="A finding cites a civil-penalty provision">civil penalty</span>}
           {record.override_reason && <span className="ev-mark ev-mark-override">override</span>}
-          {record.action_status && <Chip tone={reasonTone({ status: record.action_status })}>{record.action_status}</Chip>}
+          {record.action_status && <Chip tone={findingTone({ status: record.action_status })}>{phrase(record.action_status)}</Chip>}
         </span>
       </button>
 
@@ -174,17 +126,9 @@ function AuditEntry({ record, defaultOpen }) {
             </div>
           )}
 
-          {findings.length > 0 && (
-            <div className="ev-reasons">{findings.map((reason, index) => <Reason key={`${record.id}-f-${reason.rule || index}`} reason={reason} />)}</div>
-          )}
+          {/* The same shared finding list the case workspace renders. */}
+          <FindingList findings={reasons} idPrefix={record.id} quietLabel="Checks that passed" />
 
-          {quiet.length > 0 && (
-            <Disclosure label="Checks that passed" count={quiet.length}>
-              <div className="ev-reasons ev-reasons-quiet">
-                {quiet.map((reason, index) => <Reason key={`${record.id}-q-${reason.rule || index}`} reason={reason} quiet />)}
-              </div>
-            </Disclosure>
-          )}
 
           <Disclosure label="Provenance and integrity" count={provenance.length}>
             <dl className="ev-prov">

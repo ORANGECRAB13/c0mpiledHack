@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon } from '../icons.jsx';
 import {
   Disclosure, FieldRow, Fields, Section, StateNote,
-  NOT_SET, aud, count, days, isoDate, money, plain,
+  NOT_SET, aud, count, days, isoDate, money, phrase, plain,
 } from './ui.jsx';
 import '../styles/evidence.css';
 
@@ -139,7 +139,7 @@ export default function SystemsOfRecord({ profile }) {
     reviewOverdue && ['Hardship review overdue', isoDate(reviewDue), 'Salesforce'],
     sfUp && ['Arrears balance', money(sf.arrearsBalance, 'AUD'), 'Salesforce'],
     sfUp && ['Oldest debt', days(sf.oldestDebtDays), 'Salesforce'],
-    sfUp && ['Hardship status', plain(sf.hardshipStatus), 'Salesforce'],
+    sfUp && ['Hardship status', phrase(sf.hardshipStatus, plain(sf.hardshipStatus)), 'Salesforce'],
     sfUp && ['Best-offer opt out', plain(sf.bestOfferOptOut), 'Salesforce'],
     sfUp && ['Sensitive customer', plain(sf.sensitiveCustomer), 'Salesforce'],
     stripeUp && ['Open amount', money(stripe.openAmount, currency), 'Stripe'],

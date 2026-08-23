@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { AskBar } from '../components/Chrome.jsx';
+import { phrase } from '../components/ui.jsx';
 import '../styles/evidence.css';
 
 /* ============================================================================
@@ -59,9 +60,8 @@ function dotClass(outcome) {
 }
 
 function humanOutcome(value) {
-  if (!value) return 'Evaluation recorded';
-  const text = String(value).replace(/_/g, ' ').toLowerCase();
-  return text.charAt(0).toUpperCase() + text.slice(1);
+  /* Display only — `rawOutcome` is kept on every row and still drives dotClass. */
+  return phrase(value, 'Evaluation recorded');
 }
 
 export default function AuditHistory({ latestDecision, sessionDecisions = [], records: persisted = [] }) {
@@ -200,12 +200,12 @@ export default function AuditHistory({ latestDecision, sessionDecisions = [], re
                     {record.officer
                       ? <span>Approved by <b>{record.officer}</b></span>
                       : <span className="ov-unapproved">Awaiting approval</span>}
-                    {record.verdict && <span>Verdict <b>{record.verdict}</b></span>}
+                    {record.verdict && <span>Verdict <b>{phrase(record.verdict)}</b></span>}
                     {typeof record.sources === 'number' && (
                       <span>{record.sources} {record.sources === 1 ? 'source' : 'sources'}</span>
                     )}
                     {record.policy && <span>{record.policy}</span>}
-                    {record.trigger && <span>{record.trigger}</span>}
+                    {record.trigger && <span>{phrase(record.trigger)}</span>}
                   </div>
                   {record.overrideReason && (
                     <div className="ov-audit-override">

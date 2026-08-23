@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Icon } from '../icons.jsx';
 import { AskBar } from '../components/Chrome.jsx';
 import EvidenceOverlay from '../components/EvidenceOverlay.jsx';
-import { Disclosure, toneForSeverity } from '../components/ui.jsx';
+import { FindingList, findingsOf, findingTone } from '../components/Finding.jsx';
+import { humanSummary, phrase } from '../components/ui.jsx';
 import '../styles/review.css';
 import '../styles/evidence.css';
 
@@ -81,25 +82,14 @@ export default function CaseWorkspace({
   // P2/P3: rules that could block or change the officer's next move stay
   // visible; passes and informational limbs are demoted behind one disclosure.
   // Nothing is dropped — every evaluated rule is still on the page.
-  const rules = Array.isArray(customer.rules) ? customer.rules : [];
-  const liveRules = rules.filter(([, , , , severity]) => ['BLOCKING', 'ATTENTION'].includes(String(severity || '').toUpperCase()));
-  const quietRules = rules.filter((rule) => !liveRules.includes(rule));
+  const findings = findingsOf(customer);
+  const liveCount = findings.filter((item) => ['blocking', 'attention'].includes(findingTone(item))).length;
   const sourceCount = Array.isArray(customer.sources) ? customer.sources.length : null;
 
   useEffect(() => {
     setModal(false);
     setEvidenceOpen(false);
   }, [customer.id]);
-
-  const renderRule = ([name, result, , explanation, severity]) => (
-    <div className="ov-rule" key={name}>
-      <span className={`ov-rule-status ov-t-${toneForSeverity(severity)}`}>{result}</span>
-      <div>
-        <b>{name}</b>
-        {explanation && <p>{explanation}</p>}
-      </div>
-    </div>
-  );
 
   return (
     <div className="page ov-audit case-profile">
@@ -129,9 +119,11 @@ export default function CaseWorkspace({
         <div className="ov-reco-main">
           <div className="ov-eyebrow ov-eyebrow-accent">Recommendation</div>
           <h2 className="ov-reco-title">{customer.recommendation}</h2>
-          {customer.recommendationSummary && <p className="ov-reco-summary">{customer.recommendationSummary}</p>}
+          {/* The ledger writes this as "Latest deterministic outcome: X."
+              humanSummary states the same fact in plain English. */}
+          {customer.recommendationSummary && <p className="ov-reco-summary">{humanSummary(customer.recommendationSummary)}</p>}
           {customer.action && (
-            <div className="ov-reco-next"><span>Next action</span>{customer.action}</div>
+            <div className="ov-reco-next"><span>Next action</span>{phrase(customer.action)}</div>
           )}
           <div className="ov-reco-actions">
             <button className="ov-btn-dark ov-btn-sm" onClick={() => setModal(true)} disabled={approved}>
@@ -151,27 +143,26 @@ export default function CaseWorkspace({
       <section className="ov-panel">
         <div className="ov-panel-h">
           <h2>Why this was flagged</h2>
-          <small>{rules.length} {rules.length === 1 ? 'rule' : 'rules'} evaluated</small>
+          <small>
+            {liveCount ? `${liveCount} ${liveCount === 1 ? 'finding' : 'findings'} · ` : ''}
+            {findings.length} {findings.length === 1 ? 'check' : 'checks'} evaluated
+          </small>
         </div>
         <div className="ov-panel-b">
-          {liveRules.map(renderRule)}
-
-          {!rules.length && (
-            <p className="ov-quiet">
-              This customer has not been evaluated against the policy yet, so no rule has been
-              applied and no finding exists. Run a review from the detection queue to produce one.
-            </p>
-          )}
-          {!!rules.length && !liveRules.length && (
-            <p className="ov-quiet">
-              No rule raised a blocking or attention finding. Every evaluated limb is listed below.
-            </p>
-          )}
-          {!!quietRules.length && (
-            <Disclosure label="Rules that passed or were informational" count={quietRules.length}>
-              {quietRules.map(renderRule)}
-            </Disclosure>
-          )}
+          {/* One line per finding. The explanation, the clause it cites, its
+              civil-penalty provision and the threshold provenance are all one
+              click away — demoted, never removed. */}
+          <FindingList
+            findings={findings}
+            idPrefix={customer.id}
+            quietLabel="Checks that passed or were informational"
+            emptyNote={(
+              <p className="ov-quiet">
+                This customer has not been evaluated against the policy yet, so no rule has been
+                applied and no finding exists. Run a review from the detection queue to produce one.
+              </p>
+            )}
+          />
         </div>
       </section>
 

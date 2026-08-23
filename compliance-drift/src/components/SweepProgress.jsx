@@ -1,3 +1,4 @@
+import { phrase } from './ui.jsx';
 import React, { useEffect, useState } from 'react';
 import VocareStar from './VocareStar.jsx';
 import { flagsOf, BATCH_LIMIT, BATCH_CONCURRENCY } from './HardshipSweepRunner.js';
@@ -70,7 +71,7 @@ export default function SweepProgress({ sweep }) {
         {recent.map((row, index) => (
           <div className="sw-stack-row" key={`${row.customerId}-${index}`} style={{ '--i': index }}>
             <span className="nm">{row.name || row.customerId}</span>
-            <span className="cat">{row.categoryLabel || row.category}</span>
+            <span className="cat">{row.categoryLabel || phrase(row.category)}</span>
             {flagsOf(row).slice(0, 2).map((flag) => (
               <span className="sw-flag" key={flag.key}>{flag.label}</span>
             ))}

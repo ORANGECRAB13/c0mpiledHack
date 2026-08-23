@@ -1,5 +1,5 @@
 import React from 'react';
-import { Chip, Disclosure, toneForSeverity } from './ui.jsx';
+import { Chip, Disclosure, humanSummary, outcomeSentence, phrase, phraseInline, toneForSeverity } from './ui.jsx';
 
 // Pulls the recommended plan out of a live case record. Nothing here invents a
 // value: if the pricing provider returned no cheaper offer, or a limb of the
@@ -33,7 +33,7 @@ function Evidence({ items }) {
       {items.map((item, index) => (
         <li key={`${item.rule}-${index}`}>
           <span className="r">{item.rule}</span>
-          <Chip tone={toneForSeverity(item.severity || 'ATTENTION')}>{item.severity || 'ATTENTION'}</Chip>
+          <Chip tone={toneForSeverity(item.severity || 'ATTENTION')}>{phrase(item.severity || 'ATTENTION')}</Chip>
           <div>{item.explanation}</div>
           {item.citation && <div className="cite">{item.citation}</div>}
           {item.penaltyProvision && <div className="cite penalty">Civil penalty exposure · {item.penaltyProvision}</div>}
@@ -52,11 +52,11 @@ export default function RecommendedPlan({ caseData, result }) {
   const meta = (
     <Disclosure label="Decision record" count={6}>
     <dl className="rv-kv">
-      <dt>Outcome</dt><dd>{caseData.outcome}{result?.lineageOutcome && result.lineageOutcome !== caseData.outcome ? ` · lineage ${result.lineageOutcome}` : ''}</dd>
-      <dt>Category</dt><dd>{category}</dd>
+      <dt>Outcome</dt><dd>{phrase(caseData.outcome)}{result?.lineageOutcome && result.lineageOutcome !== caseData.outcome ? ` · lineage ${phrase(result.lineageOutcome)}` : ''}</dd>
+      <dt>Category</dt><dd>{phrase(category)}</dd>
       <dt>Policy</dt><dd>{caseData.policyVersion || result?.policyVersion || 'not recorded'}</dd>
       <dt>Decision</dt><dd>{caseData.decisionId || result?.decisionId || 'none written'}</dd>
-      <dt>Action</dt><dd>{caseData.actionId ? `${caseData.action} · ${caseData.actionStatus}` : 'no approval-gated action'}</dd>
+      <dt>Action</dt><dd>{caseData.actionId ? `${phrase(caseData.action)} · ${phraseInline(caseData.actionStatus)}` : 'no approval-gated action'}</dd>
       <dt>Snapshot hash</dt><dd className="mono">{(caseData.snapshotHash || '').slice(0, 24) || 'not recorded'}</dd>
     </dl>
     </Disclosure>
@@ -82,7 +82,7 @@ export default function RecommendedPlan({ caseData, result }) {
         <p>The eligibility test could not be completed, so no switch is proposed. The unresolved limbs are listed below.</p>
         {plan.blocking.length
           ? <Evidence items={plan.blocking} />
-          : <p>The evaluation returned {plan.outcome} without naming a blocking rule. Nothing further is recorded.</p>}
+          : <p>The evaluation returned {phraseInline(plan.outcome)} without naming a blocking rule. Nothing further is recorded.</p>}
         {!!caseData.missing?.length && (
           <div className="rv-note bad">Missing inputs:<ul>{caseData.missing.map((item) => <li key={item}>{item}</li>)}</ul></div>
         )}
@@ -106,7 +106,7 @@ export default function RecommendedPlan({ caseData, result }) {
   return (
     <div className="rv-plan none">
       <h3>No change required</h3>
-      <p>{caseData.recommendationSummary || `The evaluation returned ${caseData.outcome}.`}</p>
+      <p>{humanSummary(caseData.recommendationSummary) || outcomeSentence(caseData.outcome)}</p>
       <div className="rv-note">No action is queued for this customer, and nothing enters the operations queue.</div>
       {meta}
     </div>

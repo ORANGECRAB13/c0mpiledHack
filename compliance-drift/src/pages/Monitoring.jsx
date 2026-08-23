@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AskBar } from '../components/Chrome.jsx';
 import { Icon } from '../icons.jsx';
+import { humanSummary } from '../components/ui.jsx';
 import '../styles/review.css';
 import CustomerProfile from './CustomerProfile.jsx';
 
@@ -212,7 +213,7 @@ export default function Monitoring({ decisions = {}, onDecision, openCase, openC
                   <small>{item.id}{item.debt ? ` · ${item.debt}` : ''}</small>
                 </span>
                 <span className="dq-reason">{reviewLabel(item)}</span>
-                <span className="dq-action">{item.nextAction || item.rec || 'Reassess current support'}</span>
+                <span className="dq-action">{item.nextAction || humanSummary(item.rec) || 'Reassess current support'}</span>
                 <span className={`dq-state ${recorded ? 'dq-fg-green' : risk === 'High' ? 'dq-fg-rust' : 'dq-fg-muted'}`}>
                   {recorded ? 'Decision recorded' : item.status}
                 </span>
@@ -227,7 +228,7 @@ export default function Monitoring({ decisions = {}, onDecision, openCase, openC
             {monitoring.length === 0 ? (
               <>
                 <b>No accounts under continuous monitoring</b>
-                <div>Accounts appear here once Salesforce records a hardship status other than NONE. Nothing is shown until the CRM says so.</div>
+                <div>Accounts appear here once Salesforce records a hardship status other than none. Nothing is shown until the CRM says so.</div>
               </>
             ) : (
               <>

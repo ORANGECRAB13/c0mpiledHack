@@ -58,6 +58,163 @@ export function plain(value) {
   return String(value);
 }
 
+/* -- phrase(): the ONE place a backend constant becomes English -------------
+ *
+ * The API speaks in constants (ACTION_REQUIRED, TAILORED_ASSISTANCE,
+ * NO_MONETARY_FLOOR…). Officers and regulators do not. `phrase` is the single
+ * translation layer: every render site that shows a backend enum runs it
+ * through here, and nowhere else keeps its own lookup table.
+ *
+ * CONTRACT
+ *  - Curated first. Several constants do not read well from a mechanical
+ *    transform ("CONFLICT_MATERIAL" is "Systems disagree", not "Conflict
+ *    material"), so known values get a written phrase.
+ *  - Unknown values DEGRADE, never disappear: SOME_NEW_STATE → "Some new
+ *    state". A constant the backend adds tomorrow renders readably today.
+ *  - Display only. The underlying value is untouched — every comparison,
+ *    filter and request in this app still branches on the raw constant.
+ *  - Non-constant input (prose, ids, clause citations) is returned unchanged,
+ *    so it is safe to call on a field that may already be human text.
+ */
+
+/* Constant-shaped: SCREAMING_SNAKE, or a single all-caps word. */
+const CONSTANT = /^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$/;
+/* Words that must not be sentence-cased into nonsense by the fallback. */
+const KEEP_UPPER = new Set(['GST', 'CRM', 'VIC', 'NSW', 'QLD', 'SA', 'WA', 'NT', 'ACT', 'TAS', 'AUD', 'ID', 'API', 'ERCoP'.toUpperCase()]);
+
+const PHRASES = {
+  /* outcomes / categories */
+  ACTION_REQUIRED: 'Action required',
+  INSUFFICIENT_EVIDENCE: 'Insufficient evidence',
+  NO_CHANGE: 'No change',
+  NOT_EVALUATED: 'Not evaluated',
+  ESCALATION_REQUIRED: 'Escalation required',
+  PREVIOUS_DECISION_SUPERSEDED: 'Replaces an earlier decision',
+  SUPERSEDED_BY_POLICY_CHANGE: 'Superseded by a policy change',
+  SENSITIVE_CUSTOMER: 'Sensitive customer',
+  OPTED_OUT: 'Opted out',
+  ON_TAILORED_ASSISTANCE: 'On tailored assistance',
+
+  /* hardship status (Salesforce) */
+  TAILORED_ASSISTANCE: 'Tailored assistance',
+  PAYMENT_DIFFICULTY: 'Payment difficulty',
+  NONE: 'None',
+
+  /* finding statuses */
+  UNVERIFIED: 'Unverified',
+  APPLIES: 'Applies',
+  AVAILABLE: 'Available',
+  NOT_AVAILABLE: 'Not available',
+  NOT_TRIGGERED: 'Not triggered',
+  NO_MONETARY_FLOOR: 'No monetary floor',
+  NO_LOWER_OFFER: 'No cheaper offer',
+  CONFLICT_MATERIAL: 'Systems disagree',
+  CONFLICT_IMMATERIAL: 'Systems differ slightly',
+  MATCHED: 'Systems agree',
+  CLEAR: 'Clear',
+  BLOCKED: 'Blocked',
+  MISSING: 'Missing',
+  REVIEW: 'Needs review',
+
+  /* threshold / assessment provenance */
+  FUEL_SPLIT_UNKNOWN: 'Fuel split unknown',
+  AGGREGATE_CONCLUSIVE: 'Conclusive on the aggregate balance',
+  GST_INCLUSIVE: 'GST inclusive',
+  GST_EXCLUSIVE: 'GST exclusive',
+  CALENDAR_MONTHS: 'Calendar months',
+
+  /* severities */
+  BLOCKING: 'Blocking',
+  ATTENTION: 'Needs attention',
+  PASS: 'Passed',
+  INFO: 'Informational',
+
+  /* actions, verdicts, action status */
+  REQUEST_PLAN_SWITCH: 'Request plan switch',
+  APPROVAL_REQUIRED: 'Approval required',
+  AWAITING_APPROVAL: 'Awaiting approval',
+  SUPERSEDED: 'Superseded',
+  REJECTED: 'Rejected',
+  DONE: 'Done',
+  AGREED: 'Agreed',
+  OVERRIDDEN: 'Overridden',
+  DISAGREED: 'Disagreed',
+
+  /* systems */
+  SALESFORCE: 'Salesforce',
+  STRIPE: 'Stripe',
+};
+
+/** Sentence-case a constant, preserving acronyms. The never-blank fallback. */
+function sentenceCase(token) {
+  const words = token.split('_').filter(Boolean);
+  if (!words.length) return token;
+  return words
+    .map((word, index) => {
+      if (KEEP_UPPER.has(word)) return word;
+      const lower = word.toLowerCase();
+      return index === 0 ? lower.charAt(0).toUpperCase() + lower.slice(1) : lower;
+    })
+    .join(' ');
+}
+
+/**
+ * A backend constant as English. Unknown constants degrade to sentence case;
+ * anything that is not constant-shaped comes back untouched.
+ * @param {*} value    the raw value from the API
+ * @param {*} fallback returned for null / undefined / '' (default null)
+ */
+export function phrase(value, fallback = null) {
+  if (value === null || value === undefined) return fallback;
+  const raw = String(value).trim();
+  if (!raw) return fallback;
+  const key = raw.toUpperCase();
+  if (PHRASES[key]) return PHRASES[key];
+  if (!CONSTANT.test(raw)) return raw;      // already prose / an identifier
+  if (KEEP_UPPER.has(raw)) return raw;      // a bare acronym stays an acronym
+  return sentenceCase(raw);
+}
+
+/** phrase(), lower-cased for mid-sentence use — acronym-safe. */
+export function phraseInline(value, fallback = null) {
+  const text = phrase(value, fallback);
+  if (!text || typeof text !== 'string') return text;
+  const [first, ...rest] = text.split(' ');
+  return KEEP_UPPER.has(first.toUpperCase()) ? text : [first.toLowerCase(), ...rest].join(' ');
+}
+
+/* The ledger's own summary line arrives as developer prose — "Latest
+ * deterministic outcome: ACTION_REQUIRED." Rewrite it into a sentence an
+ * officer can read. Same fact, same outcome vocabulary underneath. */
+const OUTCOME_SENTENCES = {
+  ACTION_REQUIRED: 'The last policy check found something that needs an officer decision.',
+  INSUFFICIENT_EVIDENCE: 'The last policy check could not reach a conclusion — evidence is missing.',
+  NO_CHANGE: 'The last policy check found nothing that needs to change.',
+  NOT_EVALUATED: 'This customer has not been checked against the policy yet.',
+  ESCALATION_REQUIRED: 'The last policy check needs escalation beyond this queue.',
+  PREVIOUS_DECISION_SUPERSEDED: 'This check replaces an earlier decision for this customer.',
+  SUPERSEDED_BY_POLICY_CHANGE: 'A policy change has superseded the earlier decision for this customer.',
+};
+
+/** Plain-English sentence for an outcome constant. Never blank, never a crash. */
+export function outcomeSentence(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const key = String(value).trim().toUpperCase();
+  return OUTCOME_SENTENCES[key] || `The last policy check returned ${phraseInline(value)}.`;
+}
+
+/**
+ * Free text from the API, made readable: the known developer sentence is
+ * rewritten outright, and any bare constant left inside prose is phrased.
+ */
+export function humanSummary(text) {
+  if (text === null || text === undefined || text === '') return null;
+  const value = String(text);
+  const known = value.match(/^\s*latest deterministic outcome:\s*([A-Za-z0-9_]+)\.?\s*$/i);
+  if (known) return outcomeSentence(known[1]);
+  return value.replace(/\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b/g, (token) => phrase(token, token));
+}
+
 export function isMissing(value) {
   return value === NOT_SET || value === null || value === undefined || value === '';
 }

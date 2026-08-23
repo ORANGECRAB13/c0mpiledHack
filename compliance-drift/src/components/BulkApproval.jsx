@@ -1,3 +1,4 @@
+import { phrase, phraseInline } from './ui.jsx';
 import React, { useEffect, useMemo, useState } from 'react';
 import ReviewModal from './ReviewModal.jsx';
 import { decisionLayerApi } from '../api/decisionLayerApi.js';
@@ -61,7 +62,7 @@ export default function BulkApproval({ actorId, onClose, onApproved, openCase })
           <span>
             {outcome ? 'Result recorded below.' : missingReasons.length
               ? `${missingReasons.length} item${missingReasons.length === 1 ? ' needs' : 's need'} a reason before this batch can be submitted.`
-              : `Submitting as ${actorId}: ${VERDICTS.filter((verdict) => byVerdictPreview[verdict]).map((verdict) => `${byVerdictPreview[verdict]} ${verdict.toLowerCase()}`).join(', ') || 'nothing'}.`}
+              : `Submitting as ${actorId}: ${VERDICTS.filter((verdict) => byVerdictPreview[verdict]).map((verdict) => `${byVerdictPreview[verdict]} ${phraseInline(verdict)}`).join(', ') || 'nothing'}.`}
           </span>
           <span className="rv-actions">
             <button className="rv-btn" onClick={onClose}>Close</button>
@@ -93,7 +94,7 @@ export default function BulkApproval({ actorId, onClose, onApproved, openCase })
         <div className="rv-note good">
           <b>{outcome.batch.approved} of {outcome.batch.requested} recorded</b> by {outcome.batch.actorId} at {new Date(outcome.batch.decidedAt).toLocaleString('en-AU')}.
           <ul>
-            {Object.entries(outcome.batch.byVerdict || {}).map(([verdict, count]) => <li key={verdict}>{verdict}: {count}</li>)}
+            {Object.entries(outcome.batch.byVerdict || {}).map(([verdict, count]) => <li key={verdict}>{phrase(verdict)}: {count}</li>)}
             {outcome.batch.failed ? <li className="bad">Failed: {outcome.batch.failed}</li> : null}
           </ul>
           {!!outcome.failures?.length && (
@@ -106,7 +107,7 @@ export default function BulkApproval({ actorId, onClose, onApproved, openCase })
 
       {!!actions?.length && (
         <>
-          <div className="rv-note">Approvals <b>append</b> to the ledger — decisions are never rewritten. A verdict other than <b>AGREED</b> requires its own reason.</div>
+          <div className="rv-note">Approvals <b>append</b> to the ledger — decisions are never rewritten. A verdict other than <b>Agreed</b> requires its own reason.</div>
           <div className="rv-scroll">
             <div className="rv-appr rv-appr-head"><span>Customer</span><span>Action</span><span>Verdict</span><span>Override reason</span></div>
             {items.map(({ action, verdict, overrideReason }) => (
@@ -114,14 +115,15 @@ export default function BulkApproval({ actorId, onClose, onApproved, openCase })
                 <span>
                   <button className="rv-linkname" onClick={() => { onClose(); openCase?.(action.customerId); }}>{action.customer}</button>
                   <div className="meta">
-                    {action.customerId} · {action.jurisdiction} · balance {action.balance != null ? `$${action.balance}` : 'not recorded'} · {action.hardshipStatus || 'no hardship status'}
+                    {action.customerId} · {action.jurisdiction} · balance {action.balance != null ? `$${action.balance}` : 'not recorded'} · {phrase(action.hardshipStatus, 'no hardship status')}
                     {action.sensitiveCustomer ? ' · sensitive' : ''}{action.pipelineHalted ? ' · pipeline halted' : ''}
                   </div>
                 </span>
-                <span className="num">{action.actionType}<div className="meta">{action.policy}</div></span>
+                <span className="num">{phrase(action.actionType)}<div className="meta">{action.policy}</div></span>
                 <span>
                   <select aria-label={`Verdict for ${action.customer}`} value={verdict} onChange={(event) => setRow(action.actionId, { verdict: event.target.value })} disabled={!!outcome?.ok}>
-                    {VERDICTS.map((option) => <option key={option} value={option}>{option}</option>)}
+                    {/* Value stays the API's constant; only the label is phrased. */}
+                    {VERDICTS.map((option) => <option key={option} value={option}>{phrase(option)}</option>)}
                   </select>
                 </span>
                 <span>
