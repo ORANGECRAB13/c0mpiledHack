@@ -76,7 +76,9 @@ test('"three months or more" is calendar months, not 90 days', () => {
 
 test('a derived debt start date is disclosed as derived', () => {
   const r = find(v13().evaluate(snap({ fuels: ['electricity'] })), 'high debt');
-  assert.match(r.explanation, /derived from oldestDebtDays/);
+  // Must disclose that the start date was inferred, however it is worded.
+  assert.match(r.explanation, /rather than a recorded start date|derived/i);
+  assert.doesNotMatch(r.explanation, /oldestDebtDays/, 'no raw field names in officer-facing text');
 });
 
 test('dual-fuel eligibility is never assumed from an aggregate balance', () => {
@@ -89,7 +91,12 @@ test('dual-fuel eligibility is never assumed from an aggregate balance', () => {
   const unknown = v13().evaluate(snap({ balance: 1200 }));
   assert.equal(find(unknown, 'high debt').status, 'INSUFFICIENT_EVIDENCE');
   assert.equal(find(unknown, 'high debt').assessmentBasis, 'FUEL_SPLIT_UNKNOWN');
-  assert.match(find(unknown, 'high debt').explanation, /no electricity\/gas split/);
+  // Must name both fuels and say the split is unknown, however it is worded.
+  const text = find(unknown, 'high debt').explanation;
+  assert.match(text, /electricity/i);
+  assert.match(text, /gas/i);
+  assert.match(text, /no split is recorded|no electricity\/gas split/i);
+  assert.doesNotMatch(text, /\blimb\b/i, 'no regulatory jargon in officer-facing text');
   assert.equal(unknown.outcome, 'INSUFFICIENT_EVIDENCE');
 
   // Aggregate under the threshold is conclusive without any split.
@@ -101,7 +108,7 @@ test('dual-fuel eligibility is never assumed from an aggregate balance', () => {
 test('GST basis of the balance is surfaced rather than assumed', () => {
   const unknown = find(v13().evaluate(snap({ fuels: ['electricity'] })), 'GST basis');
   assert.equal(unknown.status, 'UNVERIFIED');
-  assert.match(unknown.explanation, /inclusive of GST/);
+  assert.match(unknown.explanation, /includ\w* GST/i);
   assert.equal(find(v13().evaluate(snap({ fuels: ['electricity'], balanceIncludesGst: true })), 'GST basis').status, 'GST_INCLUSIVE');
   assert.equal(find(v13().evaluate(snap({ fuels: ['electricity'], balanceIncludesGst: false })), 'GST basis').status, 'GST_EXCLUSIVE');
 });
@@ -140,7 +147,7 @@ test('CRM vs billing disagreement is a compliance finding', () => {
 test('opt-out changes the schedule, not just the switch', () => {
   const r = find(v13().evaluate(snap({ bestOfferOptOut: true, fuels: ['electricity'] })), 'Customer opt-out');
   assert.equal(r.status, 'OPTED_OUT');
-  assert.match(r.explanation, /12-month cycle/);
+  assert.match(r.explanation, /every 12 months/i);
 });
 
 test('evaluate() reads no clock: the result depends only on snapshot asOf', () => {

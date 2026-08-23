@@ -100,7 +100,7 @@ function assessArrearsAmount(state, threshold) {
   return {
     met: null,
     basis: 'FUEL_SPLIT_UNKNOWN',
-    detail: `Aggregate arrears of ${money(total)} reach ${money(threshold.value)}, but cl 132B(3) is assessed per fuel and the snapshot carries no electricity/gas split. Eligibility on this limb cannot be asserted${fuels && fuels.length > 1 ? ` for a ${fuels.join('/')} account` : ''}.`
+    detail: `Arrears of ${money(total)} pass the ${money(threshold.value)} mark, but the threshold applies to electricity and gas separately and no split is recorded${fuels && fuels.length > 1 ? ` for this ${fuels.join('/')} account` : ''}. Eligibility cannot be confirmed either way.`
   };
 }
 
@@ -125,7 +125,7 @@ function assessReconciliation(state, thresholds) {
       reason: reason('Arrears corroboration — billing system', 'UNVERIFIED', CLAUSES.requiredEvidence,
         billing && billing.available === false
           ? 'The billing system is unavailable, so the CRM arrears figure driving the threshold is uncorroborated.'
-          : 'No billing figure is present in the snapshot; the CRM arrears figure is uncorroborated.',
+          : 'No billing figure was available, so the CRM arrears figure is uncorroborated.',
         PENALTY_PROVISIONS.requiredEvidence)
     };
   }
@@ -228,7 +228,7 @@ export function evaluateBestOffer(snapshot, config) {
       ? (belowFloor
         ? `Arrears of ${money(balance)} are below the ${money(disconnectionFloor.value)} floor, so disconnection for arrears is not available.`
         : `Arrears of ${money(balance)} are at or above the ${money(disconnectionFloor.value)} floor; every other protection still applies.`)
-      : `The Code version in force (${version}) imposes no monetary floor on disconnection for arrears; the floor limb cannot block.`,
+      : `The version of the Code in force (${version}) sets no minimum arrears for disconnection, so no amount blocks it here.`,
     disconnectionFloor ? PENALTY_PROVISIONS.disconnectionThreshold : null,
     { thresholdValue: disconnectionFloor ? disconnectionFloor.value : null, thresholdSource: disconnectionFloor ? disconnectionFloor.source : null }
   ));
@@ -239,10 +239,10 @@ export function evaluateBestOffer(snapshot, config) {
   reasons.push(reason('GST basis of arrears', gstUnknown ? 'UNVERIFIED' : (state.balanceIncludesGst ? 'GST_INCLUSIVE' : 'GST_EXCLUSIVE'),
       CLAUSES.disconnectionThreshold,
       gstUnknown
-        ? 'cl 187(2) assesses arrears inclusive of GST. The snapshot does not record whether the balance includes GST, so a balance near a threshold may be misclassified by up to 10%.'
+        ? 'Arrears are assessed including GST, but the records do not say whether this balance includes it. A balance close to the threshold could be out by up to 10%.'
         : (state.balanceIncludesGst
-          ? 'The balance is recorded as GST-inclusive, matching the cl 187(2) basis.'
-          : 'The balance is recorded as GST-exclusive; it must be grossed up before applying cl 187(2).'),
+          ? 'The balance is recorded as including GST, which is the basis the rule requires.'
+          : 'The balance is recorded as excluding GST, so GST must be added before the threshold is applied.'),
     PENALTY_PROVISIONS.disconnectionThreshold));
 
   reasons.push(reason('Automatic best offer — tailored assistance',
@@ -256,8 +256,8 @@ export function evaluateBestOffer(snapshot, config) {
     [
       amount.detail,
       age.met === null
-        ? 'The age of the debt could not be established from the snapshot.'
-        : `Oldest debt is ${age.met ? 'at least' : 'less than'} ${arrearsAge.months} calendar months old${age.derived ? ' (start date derived from oldestDebtDays, not a recorded date)' : ''}.`
+        ? 'The age of the debt could not be established from the records available.'
+        : `The oldest debt is ${age.met ? 'at least' : 'less than'} ${arrearsAge.months} calendar months old${age.derived ? ', worked out from its age in days rather than a recorded start date' : ''}.`
     ].join(' '),
     PENALTY_PROVISIONS.highDebt,
     {
@@ -272,14 +272,14 @@ export function evaluateBestOffer(snapshot, config) {
     CLAUSES.bestAvailableOffer,
     cheaperOffer
       ? `${state.bestOffer.planId} saves ${money(state.bestOffer.annualSaving)} annually.`
-      : 'Pricing provider returned no cheaper eligible offer; cl 109(3) notice obligations follow a negative result.',
+      : 'No cheaper eligible plan was found. A customer must still be told when a check finds nothing better.',
     PENALTY_PROVISIONS.bestAvailableOffer));
 
   reasons.push(reason('Customer opt-out', optedOut ? 'OPTED_OUT' : 'CLEAR', CLAUSES.optOut,
     optedOut
       // Opt-out suppresses the switch but NOT the obligation: cl 132C(1)(b)
       // keeps running at 12-monthly intervals instead of 6.
-      ? 'A recorded opt-out prevents automatic switching. The best offer check continues on a 12-month cycle (cl 132C(1)(b)).'
+      ? 'A recorded opt-out prevents automatic switching. The best-offer check still runs, every 12 months instead of every 6.'
       : 'No opt-out is recorded.',
     PENALTY_PROVISIONS.optOut));
 
