@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { billingSection, reconcile, captureSnapshot } from '../../src/decision-layer/service.js';
 import { pricingProvider, UnavailableBestOfferProvider, StaticBestOfferProvider } from '../../src/decision-layer/pricing.js';
 import { seedDecisionLayer } from '../../src/decision-layer/seed.js';
+import { inputFor, sha256 } from '../../src/decision-layer/hash.js';
 
 const customer = Object.freeze({
   id: 'C-1',
@@ -98,4 +99,27 @@ test('synthetic seeding refuses to run without an explicit opt-in', async () => 
   } finally {
     if (previous === undefined) delete process.env.ALLOW_SYNTHETIC_SEED; else process.env.ALLOW_SYNTHETIC_SEED = previous;
   }
+});
+
+test('an observation timestamp never changes the input hash', () => {
+  // bestOffer.checkedAt is stamped on every pricing call. It sits inside a
+  // declared readField, so before this was stripped every evaluation produced a
+  // new inputHash, the skip check never matched, and an unchanged customer
+  // accumulated a full decision per run.
+  const readFields = ['balance', 'bestOffer'];
+  const at = (checkedAt) => ({
+    balance: 1200,
+    bestOffer: { available: true, planId: 'Hardship Saver', annualSaving: 210, checkedAt },
+  });
+
+  const first = sha256(inputFor(at('2026-08-23T09:00:00.000Z'), readFields));
+  const later = sha256(inputFor(at('2026-08-23T11:47:12.913Z'), readFields));
+  assert.equal(first, later, 'same offer checked twice must hash identically');
+
+  // A real change to the offer must still move the hash.
+  const cheaper = sha256(inputFor({
+    balance: 1200,
+    bestOffer: { available: true, planId: 'Hardship Saver', annualSaving: 260, checkedAt: '2026-08-23T09:00:00.000Z' },
+  }, readFields));
+  assert.notEqual(first, cheaper, 'a changed saving must change the hash');
 });
